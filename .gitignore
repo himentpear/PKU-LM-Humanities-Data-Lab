@@ -1,0 +1,27 @@
+# Environment and secrets
+.env
+.env.*
+.venv/
+venv/
+
+# Python and Jupyter
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+
+# Editor and operating system files
+.vscode/
+.DS_Store
+Thumbs.db
+
+# Remote-workspace platform files
+Microsoft/
+cloud-code/
+motd.legal-displayed
+ms-playwright-go/
+
+# Data and temporary output
+data/raw/*
+!data/raw/.gitkeep
+*.log
+*.tmp
