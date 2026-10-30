@@ -1,23 +1,987 @@
 <!doctype html>
-<html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>考古文献 · 数字阅览室</title>
-<style>
-:root{font:15px/1.65 "Microsoft YaHei",system-ui,sans-serif;color:#273c39;background:#f4f3ee;--green:#275d51;--line:#d9dfd7}*{box-sizing:border-box}body{margin:0}header{padding:17px 28px;background:#203e36;color:#fff;display:flex;justify-content:space-between;align-items:center}h1{font-family:serif;font-size:23px;letter-spacing:2px;margin:0}header span{font-size:12px;color:#c6d6ce}.toolbar{display:flex;gap:10px;padding:14px 24px;align-items:center;border-bottom:1px solid var(--line);background:#fff;flex-wrap:wrap}select,input,textarea,button{font:inherit;border:1px solid #bdc9be;border-radius:5px;padding:7px 10px;background:#fff;color:inherit}select{max-width:410px}button{cursor:pointer}button:hover{background:#e8eee6}button.primary{background:var(--green);color:white;border-color:var(--green)}button:disabled{opacity:.5;cursor:default}a{color:var(--green)}main{display:grid;grid-template-columns:205px minmax(400px,1fr) 350px;height:calc(100vh - 145px);min-height:500px}.side,.textpanel{overflow:auto;background:#fff;padding:16px}.side{border-right:1px solid var(--line)}.textpanel{border-left:1px solid var(--line)}h2{font-size:13px;letter-spacing:1px;color:#6b7a6b;margin:0 0 12px}.pagebtn{display:block;width:100%;text-align:left;margin:4px 0;font-size:13px}.active{background:#e0ece5!important;border-color:#568570}.viewer{overflow:auto;padding:22px;background:#e7e9e1}.sheet{position:relative;max-width:1050px;margin:auto;box-shadow:0 5px 25px #243e3320}.sheet img{display:block;width:100%}.sheet svg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}.sheet rect{fill:#d8b04344;stroke:#b17e20;stroke-width:2}.line{font-size:14px;padding:7px;border-bottom:1px solid #edf0e9;cursor:pointer;white-space:pre-wrap}.line:hover,.line.selected{background:#f6edce}.muted{color:#7e887b;font-size:12px}.empty{padding:40px;text-align:center;color:#7c887a}details{border:1px solid var(--line);border-radius:5px;margin:15px 0;padding:10px}summary{cursor:pointer;color:var(--green)}label{display:block;font-size:12px;margin:8px 0 3px}textarea{width:100%;min-height:70px}#status{font-size:12px;margin-left:auto}#results button{display:block;width:100%;text-align:left;font-size:12px;margin:5px 0}#notice{padding:6px 24px;font-size:12px;background:#ecf0e8;min-height:30px}@media(max-width:1050px){main{grid-template-columns:150px 1fr 290px}.toolbar{padding:10px}.viewer{padding:8px}}@media(max-width:760px){main{display:block;height:auto}.side{max-height:160px}.viewer{height:70vh}.textpanel{height:60vh}header{padding:15px}header span{display:none}}
-</style>
-<header><h1>考古文献 · 数字阅览室</h1><span>原页 · 文字 · 证据</span></header>
-<div class="toolbar"><select id="documents" aria-label="选择文献"><option>正在载入文献…</option></select><button id="previous">上一页</button><input id="pageNumber" type="number" min="1" value="1" style="width:75px" aria-label="物理页序"><button id="next">下一页</button><input id="query" placeholder="搜索原文或器物编号" aria-label="检索词"><button id="search" class="primary">检索</button><span id="status"></span></div>
-<div id="notice">选择一份文献开始阅览。页码不确定的页面保留审校提示。</div>
-<main><aside class="side"><h2>页面</h2><div id="pageList"></div><h2 style="margin-top:20px">检索结果</h2><div id="results"></div></aside><section class="viewer"><div class="sheet"><img id="scan" alt="文献原始页面"><svg id="overlay"></svg></div></section><aside class="textpanel"><h2 id="pageTitle">原文</h2><div id="exports"></div><details><summary>审校当前页面</summary><p class="muted">先选择文字行，再填写校对结果。原始识别文字会保留。</p><label>审校任务</label><select id="task" style="width:100%"></select><label>校对文字</label><textarea id="correction"></textarea><label>审校人</label><input id="actor" placeholder="姓名" style="width:100%"><label>依据与说明</label><textarea id="note" placeholder="对照原页说明修改依据"></textarea><button id="approve" class="primary">确认通过</button> <button id="reject">标记不通过</button><p id="reviewStatus" class="muted"></p></details><div id="lines" class="empty">尚未选择页面</div></aside></main>
-<script>
-const $=id=>document.getElementById(id);let docs=[],pages=[],current=0,bundle=null,selected=null;
-const request=async(url,options)=>{let r=await fetch(url,options);let d=await r.json();if(!r.ok)throw Error(d.error||'请求失败');return d};
-function element(tag,text,parent){let el=document.createElement(tag);el.textContent=text;parent.append(el);return el}
-function notice(text){$('notice').textContent=text}
-function highlight(xywh){$('overlay').replaceChildren();if(!xywh)return;let [x,y,w,h]=xywh.split(',');let rect=document.createElementNS('http://www.w3.org/2000/svg','rect');for(let [k,v] of Object.entries({x,y,width:w,height:h}))rect.setAttribute(k,v);$('overlay').append(rect)}
-async function loadDocs(){docs=await request('/api/documents');$('documents').replaceChildren();for(let d of docs){let o=element('option',d.title+' · '+d.pages+' 页',$('documents'));o.value=d.id}if(docs.length)await loadDocument();else notice('尚无处理完成的文献。处理任务完成后刷新此页。')}
-async function loadDocument(){pages=await request('/api/pages?manifest='+encodeURIComponent($('documents').value));$('pageList').replaceChildren();$('results').replaceChildren();for(let [i,p]of pages.entries()){let b=element('button',p.scan_index+' · '+(p.label||'未识别页码'),$('pageList'));b.className='pagebtn';b.onclick=()=>showPage(i)}current=0;await showPage(0)}
-async function showPage(index,xywh){if(index<0||index>=pages.length)return;current=index;selected=null;let p=pages[index];bundle=await request('/api/page?id='+p.id);$('scan').src=bundle.scan_image.full_image_url;$('overlay').setAttribute('viewBox','0 0 '+bundle.geometry.canvas.join(' '));highlight(xywh);$('pageNumber').value=p.scan_index;$('status').textContent=(index+1)+' / '+pages.length;$('pageTitle').textContent='原文 · '+(p.label||'未识别页码');$('previous').disabled=index===0;$('next').disabled=index===pages.length-1;for(let [i,b] of [...$('pageList').children].entries())b.classList.toggle('active',i===index);$('lines').replaceChildren();$('lines').className='';for(let line of bundle.lines){let el=element('div',line.text,$('lines'));el.className='line';el.onclick=()=>{selected=line;$('correction').value=line.text;for(let x of $('lines').children)x.classList.remove('selected');el.classList.add('selected');highlight(line.xywh)}}if(!bundle.lines.length)element('p','本页未提取到文字，请对照原页。',$('lines'));$('task').replaceChildren();for(let t of bundle.review_tasks){let o=element('option',t.risk_type+' · '+t.status,$('task'));o.value=t.task_id}if(!bundle.review_tasks.length)element('option','本页没有待审校任务',$('task'));$('exports').replaceChildren();for(let [name,file]of [['Manifest','manifest.json'],['质量报告','quality.json'],['本页 ALTO','alto/'+String(p.scan_index).padStart(5,'0')+'.xml']]){let a=element('a',name+'  ',$('exports'));a.href='/api/export/'+$('documents').value+'/'+file;a.target='_blank'}$('reviewStatus').textContent='';notice('物理页 '+p.scan_index+' · 印刷页码 '+(p.label||'待确认')+' · '+p.domain+' · '+bundle.review_tasks.length+' 项审校记录')}
-async function search(){let q=$('query').value.trim();if(!q)return;let data=await request('/api/search?manifest='+$('documents').value+'&q='+encodeURIComponent(q));$('results').replaceChildren();for(let hit of data.items){let b=element('button',(hit.printed_page||'?')+' · '+hit.body.value.slice(0,80),$('results'));b.onclick=()=>{let id=hit.target.split('/canvas/')[1].split('#')[0];let index=pages.findIndex(p=>p.id===id);showPage(index,hit.target.split('xywh=')[1])}}notice('检索“'+q+'”命中 '+data.total+' 行')}
-async function review(status){if(!bundle||!$('task').value)return;try{let data={task_id:$('task').value,actor:$('actor').value,note:$('note').value,status,expected_revision:bundle.revision};if(selected&&status==='approved'&&$('correction').value!==selected.text){data.line_id=selected.id;data.text=$('correction').value}await request('/api/review',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});await showPage(current);$('reviewStatus').textContent='已保存审校记录'}catch(e){$('reviewStatus').textContent=e.message}}
-$('documents').onchange=()=>loadDocument().catch(e=>notice(e.message));$('previous').onclick=()=>showPage(current-1);$('next').onclick=()=>showPage(current+1);$('pageNumber').onchange=()=>showPage(Number($('pageNumber').value)-1);$('search').onclick=()=>search().catch(e=>notice(e.message));$('query').onkeydown=e=>{if(e.key==='Enter')search().catch(e=>notice(e.message))};$('approve').onclick=()=>review('approved');$('reject').onclick=()=>review('rejected');loadDocs().catch(e=>notice(e.message));
-</script></html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>考古文献 · 数字阅览与图版知识库</title>
+  <style>
+    :root {
+      font: 14px/1.6 "Microsoft YaHei", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      color: #273c39;
+      background: #f4f3ee;
+      --green: #275d51;
+      --green-dark: #1b4239;
+      --green-light: #e4eee9;
+      --gold: #b38228;
+      --line: #d8ded6;
+      --card-bg: #ffffff;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: #f4f3ee; display: flex; flex-direction: column; min-height: 100vh; }
+
+    /* Header */
+    header {
+      padding: 12px 24px;
+      background: #1f3b33;
+      color: #fff;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+      z-index: 100;
+    }
+    .header-brand { display: flex; align-items: baseline; gap: 14px; }
+    h1 { font-family: serif; font-size: 21px; letter-spacing: 1.5px; font-weight: normal; margin: 0; color: #f5f8f6; }
+    .header-sub { font-size: 12px; color: #a9c5ba; }
+
+    /* Navigation Tabs */
+    .nav-tabs { display: flex; gap: 6px; }
+    .nav-tab {
+      background: transparent;
+      border: 1px solid rgba(255,255,255,0.25);
+      color: #d1e2dc;
+      padding: 6px 14px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 13px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+    }
+    .nav-tab:hover { background: rgba(255,255,255,0.12); color: #fff; }
+    .nav-tab.active { background: #f4f3ee; color: var(--green); border-color: #f4f3ee; font-weight: 600; }
+
+    /* Toolbar */
+    .toolbar {
+      display: flex;
+      gap: 10px;
+      padding: 10px 24px;
+      align-items: center;
+      border-bottom: 1px solid var(--line);
+      background: #fff;
+      flex-wrap: wrap;
+    }
+    select, input, textarea, button {
+      font: inherit;
+      border: 1px solid #c2cdc3;
+      border-radius: 4px;
+      padding: 6px 10px;
+      background: #fff;
+      color: inherit;
+    }
+    select { max-width: 320px; }
+    button { cursor: pointer; transition: background 0.15s; }
+    button:hover { background: #e8eee6; }
+    button.primary { background: var(--green); color: white; border-color: var(--green); }
+    button.primary:hover { background: var(--green-dark); }
+    button:disabled { opacity: .45; cursor: default; }
+    a { color: var(--green); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    #notice {
+      padding: 6px 24px;
+      font-size: 12px;
+      background: #edf2eb;
+      border-bottom: 1px solid var(--line);
+      color: #445952;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    /* Views Container */
+    .view-container { flex: 1; display: none; overflow: hidden; }
+    .view-container.active { display: flex; flex-direction: column; }
+
+    /* ========================================================= */
+    /* View 1: Document Viewer                                   */
+    /* ========================================================= */
+    #view-reader {
+      display: grid;
+      grid-template-columns: 240px minmax(400px, 1fr) 360px;
+      height: calc(100vh - 128px);
+    }
+    .side, .textpanel { overflow-y: auto; background: #fff; padding: 14px; }
+    .side { border-right: 1px solid var(--line); }
+    .textpanel { border-left: 1px solid var(--line); }
+    h2 { font-size: 13px; letter-spacing: 0.5px; color: #5a6e67; margin: 0 0 10px; font-weight: 600; }
+    .pagebtn {
+      display: block; width: 100%; text-align: left; margin: 3px 0; font-size: 13px;
+      padding: 6px 8px; border: 1px solid transparent; border-radius: 4px; background: transparent;
+    }
+    .pagebtn:hover { background: #f0f4f1; }
+    .pagebtn.active { background: var(--green-light)!important; border-color: #568570; font-weight: 600; }
+    
+    .viewer { overflow: auto; padding: 20px; background: #e4e7df; display: flex; justify-content: center; align-items: flex-start; }
+    .sheet { position: relative; max-width: 1020px; width: 100%; box-shadow: 0 6px 30px rgba(0,0,0,0.16); background: #fff; }
+    .sheet img { display: block; width: 100%; height: auto; }
+    .sheet svg { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+    .sheet rect.highlight-text { fill: rgba(224, 182, 60, 0.35); stroke: #bd891c; stroke-width: 2.5; }
+    .sheet rect.highlight-figure { fill: rgba(39, 93, 81, 0.25); stroke: #275d51; stroke-width: 3; stroke-dasharray: 4,4; }
+
+    .line {
+      font-size: 13.5px; padding: 6px 8px; border-bottom: 1px solid #edf0e9;
+      cursor: pointer; white-space: pre-wrap; word-break: break-all; border-radius: 3px;
+    }
+    .line:hover { background: #f9f5e6; }
+    .line.selected { background: #f6ecc6; font-weight: 500; }
+    .muted { color: #7e887b; font-size: 12px; }
+    .empty { padding: 30px; text-align: center; color: #7c887a; }
+
+    /* In-page Figures Preview Strip */
+    .page-figures-box {
+      margin-bottom: 14px;
+      padding: 10px;
+      background: #f7faf8;
+      border: 1px solid #d3dfd8;
+      border-radius: 5px;
+    }
+    .page-figures-title { font-size: 12px; font-weight: 600; color: var(--green); margin-bottom: 8px; }
+    .page-figures-list { display: flex; flex-direction: column; gap: 8px; }
+    .page-fig-item {
+      display: flex; gap: 8px; align-items: center; padding: 6px;
+      background: #fff; border: 1px solid #e0e6e2; border-radius: 4px; cursor: pointer;
+    }
+    .page-fig-item:hover { border-color: var(--green); background: #f3f8f5; }
+    .page-fig-thumb { width: 56px; height: 56px; object-fit: contain; background: #fafafa; border-radius: 3px; border: 1px solid #eef0ed; }
+    .page-fig-meta { font-size: 12px; overflow: hidden; }
+    .page-fig-num { font-weight: 600; color: #20473e; margin-bottom: 2px; }
+    .page-fig-cap { color: #55665f; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; line-height: 1.3; }
+
+    details { border: 1px solid var(--line); border-radius: 4px; margin: 12px 0; padding: 8px 12px; }
+    summary { cursor: pointer; color: var(--green); font-weight: 600; font-size: 13px; }
+    label { display: block; font-size: 12px; margin: 8px 0 3px; color: #55665f; }
+    textarea { width: 100%; min-height: 60px; font-size: 13px; }
+
+    /* ========================================================= */
+    /* View 2: Cross-Volume & Cross-Chapter Index                */
+    /* ========================================================= */
+    #view-toc {
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      height: calc(100vh - 128px);
+      background: #fff;
+    }
+    .toc-sidebar {
+      padding: 18px; border-right: 1px solid var(--line); overflow-y: auto; background: #fafbfa;
+    }
+    .toc-main { padding: 24px 32px; overflow-y: auto; }
+    .toc-group { margin-bottom: 28px; }
+    .toc-group-title {
+      font-size: 16px; font-weight: 700; color: var(--green);
+      padding-bottom: 8px; border-bottom: 2px solid var(--green); margin-bottom: 12px;
+      display: flex; justify-content: space-between; align-items: baseline;
+    }
+    .toc-item {
+      display: flex; align-items: baseline; justify-content: space-between;
+      padding: 8px 12px; margin: 4px 0; border-radius: 4px; border: 1px solid #edf2ee;
+      background: #fff; transition: all 0.15s;
+    }
+    .toc-item:hover { background: #f2f7f4; border-color: #b7d1c5; }
+    .toc-item.level-1 { font-weight: 700; font-size: 14.5px; background: #f5f8f6; margin-top: 10px; }
+    .toc-item.level-2 { margin-left: 20px; font-size: 13.5px; }
+    .toc-item.level-3 { margin-left: 40px; font-size: 13px; color: #435952; }
+    .toc-item.level-4 { margin-left: 56px; font-size: 12px; color: #62756f; }
+    .toc-badge {
+      font-size: 11px; padding: 2px 6px; border-radius: 3px; background: #e5ece8; color: #32564b; margin-right: 8px;
+    }
+    .toc-jump-btn {
+      font-size: 12px; padding: 3px 8px; background: #eef4f1; border: 1px solid #b7d1c5;
+      color: var(--green); border-radius: 3px; cursor: pointer; white-space: nowrap; margin-left: 12px;
+    }
+    .toc-jump-btn:hover { background: var(--green); color: #fff; }
+
+    /* ========================================================= */
+    /* View 3: Plates & Figures Gallery                          */
+    /* ========================================================= */
+    #view-gallery {
+      height: calc(100vh - 128px);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      background: #f4f3ee;
+    }
+    .gallery-filter-bar {
+      padding: 12px 24px;
+      background: #fff;
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .gallery-content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 24px;
+    }
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 20px;
+    }
+    .figure-card {
+      background: #fff;
+      border: 1px solid #dbe2dc;
+      border-radius: 6px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+      transition: transform 0.15s, box-shadow 0.15s;
+    }
+    .figure-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(0,0,0,0.09);
+      border-color: #b7cebe;
+    }
+    .figure-img-wrapper {
+      height: 200px;
+      background: #f8faf8;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-bottom: 1px solid #edf1ed;
+      overflow: hidden;
+      cursor: pointer;
+      position: relative;
+    }
+    .figure-img-wrapper img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+      transition: transform 0.2s ease;
+    }
+    .figure-card:hover .figure-img-wrapper img { transform: scale(1.03); }
+    .figure-body {
+      padding: 12px 14px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .figure-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 6px;
+    }
+    .figure-num {
+      font-weight: 700;
+      color: #1e3f36;
+      font-size: 13.5px;
+    }
+    .figure-book {
+      font-size: 11px;
+      background: #edf3f0;
+      color: var(--green);
+      padding: 2px 6px;
+      border-radius: 3px;
+    }
+    .figure-caption {
+      font-size: 13px;
+      color: #3f524c;
+      line-height: 1.45;
+      margin-bottom: 12px;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .figure-footer {
+      display: flex;
+      gap: 8px;
+      border-top: 1px solid #f0f4f1;
+      padding-top: 10px;
+      margin-top: auto;
+    }
+    .figure-btn {
+      flex: 1;
+      padding: 5px 8px;
+      font-size: 12px;
+      text-align: center;
+      border-radius: 4px;
+      border: 1px solid #c8d4cd;
+      background: #fafcfa;
+      cursor: pointer;
+    }
+    .figure-btn:hover { background: #eef5f1; border-color: var(--green); color: var(--green); }
+    .figure-btn.primary { background: var(--green); color: #fff; border-color: var(--green); }
+    .figure-btn.primary:hover { background: var(--green-dark); }
+
+    /* Lightbox Modal */
+    .modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(18, 32, 28, 0.85);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+    .modal.active { display: flex; }
+    .modal-box {
+      background: #fff;
+      max-width: 900px;
+      width: 100%;
+      max-height: 90vh;
+      border-radius: 8px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+    }
+    .modal-head {
+      padding: 12px 20px;
+      background: #1f3b33;
+      color: #fff;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .modal-title { font-size: 15px; font-weight: 600; }
+    .modal-close {
+      background: transparent; border: none; color: #cfded8; font-size: 22px; cursor: pointer; padding: 0 4px;
+    }
+    .modal-close:hover { color: #fff; }
+    .modal-img-area {
+      flex: 1; max-height: 60vh; background: #28302d; display: flex; align-items: center; justify-content: center; overflow: auto; padding: 16px;
+    }
+    .modal-img-area img { max-width: 100%; max-height: 100%; object-fit: contain; }
+    .modal-body { padding: 16px 20px; overflow-y: auto; background: #fff; }
+
+    /* Responsive */
+    @media (max-width: 1100px) {
+      #view-reader { grid-template-columns: 200px 1fr 300px; }
+    }
+    @media (max-width: 860px) {
+      header { flex-direction: column; align-items: flex-start; gap: 10px; }
+      #view-reader { display: block; height: auto; }
+      .side { max-height: 200px; }
+      .viewer { height: 60vh; }
+      .textpanel { height: 50vh; }
+      #view-toc { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Header -->
+  <header>
+    <div class="header-brand">
+      <h1>考古文献 · 数字阅览室</h1>
+      <span class="header-sub">落马桥考古发掘报告 · 多卷本数字化知识库</span>
+    </div>
+    <div class="nav-tabs">
+      <button class="nav-tab active" data-view="reader">📖 文献逐页阅览</button>
+      <button class="nav-tab" data-view="toc">📑 跨书目录索引</button>
+      <button class="nav-tab" data-view="gallery">🖼️ 考古图版图库</button>
+    </div>
+  </header>
+
+  <!-- Global Toolbar for Viewer -->
+  <div class="toolbar" id="reader-toolbar">
+    <select id="documents" aria-label="选择文献"><option>正在载入文献…</option></select>
+    <button id="previous" title="上一页">上一页</button>
+    <input id="pageNumber" type="number" min="1" value="1" style="width: 70px" aria-label="物理页序">
+    <button id="next" title="下一页">下一页</button>
+    
+    <span style="border-left: 1px solid var(--line); height: 20px; margin: 0 4px;"></span>
+
+    <select id="searchScope" style="width: 130px">
+      <option value="current">当前卷检索</option>
+      <option value="all" selected>全库跨卷检索</option>
+    </select>
+    <input id="query" placeholder="搜索关键词、遗迹或器物编号 (如: 白瓷、T3H5)" style="width: 280px" aria-label="检索词">
+    <button id="search" class="primary">检索</button>
+
+    <span id="status" style="margin-left: auto; font-size: 12px; color: #5f7069;"></span>
+  </div>
+
+  <div id="notice">选择一份文献开始阅览。页码不确定的页面保留审校提示。</div>
+
+  <!-- View 1: Document Reader -->
+  <main id="view-reader" class="view-container active">
+    <!-- Left Sidebar: Pages & Hits -->
+    <aside class="side">
+      <div style="display: flex; gap: 8px; margin-bottom: 10px;">
+        <button id="tabPages" class="figure-btn primary" style="font-size: 11px;">物理页码</button>
+        <button id="tabHits" class="figure-btn" style="font-size: 11px;">检索命中 (<span id="hitCount">0</span>)</button>
+      </div>
+      <div id="pageListContainer">
+        <div id="pageList"></div>
+      </div>
+      <div id="resultsContainer" style="display: none;">
+        <div id="results"></div>
+      </div>
+    </aside>
+
+    <!-- Center: Page Scan Viewer -->
+    <section class="viewer">
+      <div class="sheet">
+        <img id="scan" alt="文献原始页面">
+        <svg id="overlay"></svg>
+      </div>
+    </section>
+
+    <!-- Right: Text & In-Page Figures & Review -->
+    <aside class="textpanel">
+      <!-- In-Page Figures Strip -->
+      <div id="inPageFigures" class="page-figures-box" style="display: none;">
+        <div class="page-figures-title">📸 本页识别图版与器物插图</div>
+        <div id="inPageFiguresList" class="page-figures-list"></div>
+      </div>
+
+      <h2 id="pageTitle">原文</h2>
+      <div id="exports" style="margin-bottom: 12px; font-size: 12px;"></div>
+
+      <details>
+        <summary>审校当前页面</summary>
+        <p class="muted" style="margin-top: 6px;">先选择文字行，再填写校对结果。原始识别文字会保留在数据库中。</p>
+        <label>审校任务</label><select id="task" style="width:100%"></select>
+        <label>校对文字</label><textarea id="correction"></textarea>
+        <label>审校人</label><input id="actor" placeholder="姓名" style="width:100%">
+        <label>依据与说明</label><textarea id="note" placeholder="对照原页说明修改依据"></textarea>
+        <div style="margin-top: 10px;">
+          <button id="approve" class="primary">确认通过</button>
+          <button id="reject">标记不通过</button>
+        </div>
+        <p id="reviewStatus" class="muted" style="margin-top: 6px;"></p>
+      </details>
+
+      <div id="lines" class="empty">尚未选择页面</div>
+    </aside>
+  </main>
+
+  <!-- View 2: Cross-Volume & Cross-Chapter Index -->
+  <main id="view-toc" class="view-container">
+    <aside class="toc-sidebar">
+      <h2>目录过滤</h2>
+      <label>选择卷次</label>
+      <select id="tocDocFilter" style="width: 100%; margin-bottom: 12px;">
+        <option value="all">全部文献卷次</option>
+      </select>
+      <label>层级深度</label>
+      <select id="tocLevelFilter" style="width: 100%; margin-bottom: 12px;">
+        <option value="2">大纲 (第一部分 / 第一章)</option>
+        <option value="3" selected>详细 (至节级)</option>
+        <option value="4">精细 (至条目级)</option>
+      </select>
+      <label>过滤章节标题</label>
+      <input id="tocSearchInput" placeholder="输入关键词 (如: 地层、元代、窑具)" style="width: 100%;">
+      <div style="margin-top: 18px; font-size: 12px; color: #6f8078; line-height: 1.5;">
+        💡 <strong>提示</strong>：点击任意章节右侧的“跳转原页”按钮，将直接载入对应的文献卷次并在原页上准确定位高亮标题位置。
+      </div>
+    </aside>
+    <section class="toc-main">
+      <div id="tocTreeContainer">
+        <div class="empty">正在载入跨书目与跨章节目录…</div>
+      </div>
+    </section>
+  </main>
+
+  <!-- View 3: Plates & Figures Gallery -->
+  <main id="view-gallery" class="view-container">
+    <div class="gallery-filter-bar">
+      <label style="margin: 0; font-size: 13px;">卷次：</label>
+      <select id="galleryDocFilter" style="width: 180px;">
+        <option value="all">全部文献 (全库)</option>
+      </select>
+      <input id="galleryQuery" placeholder="搜索图号或图题 (如: 康熙、白瓷、剖面图、T1)" style="width: 260px;">
+      <button id="gallerySearchBtn" class="primary">筛选图版</button>
+      <span id="galleryCount" style="margin-left: auto; font-size: 12px; color: #5a6e67;">共 0 张图版</span>
+    </div>
+    <div class="gallery-content">
+      <div id="galleryGrid" class="gallery-grid">
+        <div class="empty">正在载入图版与器物图录…</div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Lightbox Modal for Figures -->
+  <div id="figureModal" class="modal">
+    <div class="modal-box">
+      <div class="modal-head">
+        <div id="modalFigureTitle" class="modal-title">图版查看</div>
+        <button id="modalCloseBtn" class="modal-close">&times;</button>
+      </div>
+      <div class="modal-img-area">
+        <img id="modalImg" alt="器物大图">
+      </div>
+      <div class="modal-body">
+        <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 8px;">
+          <h3 id="modalFigureNumber" style="font-size: 16px; color: var(--green);"></h3>
+          <span id="modalFigureMeta" style="font-size: 12px; color: #6d7f78;"></span>
+        </div>
+        <p id="modalFigureCaption" style="font-size: 14px; color: #2e3e38; line-height: 1.5; margin-bottom: 14px;"></p>
+        <button id="modalJumpBtn" class="primary figure-btn" style="padding: 8px 16px;">📖 在原书原页中定位该图</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const $ = id => document.getElementById(id);
+    let docs = [], pages = [], current = 0, bundle = null, selected = null;
+    let tocData = [], galleryData = [];
+
+    const request = async (url, options) => {
+      let r = await fetch(url, options);
+      let d = await r.json();
+      if (!r.ok) throw Error(d.error || '请求失败');
+      return d;
+    };
+    function notice(text) { $('notice').textContent = text; }
+
+    function highlight(xywh, type = 'text') {
+      $('overlay').replaceChildren();
+      if (!xywh) return;
+      let [x, y, w, h] = xywh.split(',');
+      let rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+      for (let [k, v] of Object.entries({ x, y, width: w, height: h })) rect.setAttribute(k, v);
+      rect.setAttribute('class', type === 'figure' ? 'highlight-figure' : 'highlight-text');
+      $('overlay').append(rect);
+    }
+
+    // =========================================================
+    // Tab Navigation
+    // =========================================================
+    document.querySelectorAll('.nav-tab').forEach(tab => {
+      tab.addEventListener('click', async () => {
+        document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.view-container').forEach(v => v.classList.remove('active'));
+        tab.classList.add('active');
+        let viewName = tab.dataset.view;
+        $('view-' + viewName).classList.add('active');
+
+        // Toggle global reader toolbar
+        $('reader-toolbar').style.display = (viewName === 'reader') ? 'flex' : 'none';
+
+        if (viewName === 'toc' && !tocData.length) {
+          await loadToc();
+        } else if (viewName === 'gallery' && !galleryData.length) {
+          await loadGallery();
+        }
+      });
+    });
+
+    // =========================================================
+    // Document Reader Logic
+    // =========================================================
+    async function loadDocs() {
+      docs = await request('/api/documents');
+      $('documents').replaceChildren();
+      $('tocDocFilter').replaceChildren();
+      $('galleryDocFilter').replaceChildren();
+
+      $('tocDocFilter').appendChild(new Option('全部文献 (跨卷汇总)', 'all'));
+      $('galleryDocFilter').appendChild(new Option('全部文献 (全库图版)', 'all'));
+
+      for (let d of docs) {
+        let text = d.title + ' (' + d.pages + ' 页)';
+        $('documents').appendChild(new Option(text, d.id));
+        $('tocDocFilter').appendChild(new Option(text, d.id));
+        $('galleryDocFilter').appendChild(new Option(text, d.id));
+      }
+
+      if (docs.length) {
+        await loadDocument();
+      } else {
+        notice('尚无处理完成的文献。');
+      }
+    }
+
+    async function loadDocument(targetIndex = 0, targetXywh = null, targetType = 'text') {
+      let docId = $('documents').value;
+      pages = await request('/api/pages?manifest=' + encodeURIComponent(docId));
+      $('pageList').replaceChildren();
+      for (let [i, p] of pages.entries()) {
+        let b = document.createElement('button');
+        b.textContent = p.scan_index + ' · ' + (p.label || '未识别页码');
+        b.className = 'pagebtn';
+        b.onclick = () => showPage(i);
+        $('pageList').appendChild(b);
+      }
+      current = targetIndex;
+      await showPage(targetIndex, targetXywh, targetType);
+    }
+
+    async function showPage(index, xywh = null, type = 'text') {
+      if (index < 0 || index >= pages.length) return;
+      current = index;
+      selected = null;
+      let p = pages[index];
+      bundle = await request('/api/page?id=' + p.id);
+
+      $('scan').src = bundle.scan_image.full_image_url;
+      $('overlay').setAttribute('viewBox', '0 0 ' + bundle.geometry.canvas.join(' '));
+      highlight(xywh, type);
+
+      $('pageNumber').value = p.scan_index;
+      $('status').textContent = (index + 1) + ' / ' + pages.length;
+      $('pageTitle').textContent = '原文 · ' + (p.label ? '第 ' + p.label + ' 页' : '无页码') + ' (物理页 ' + p.scan_index + ')';
+      $('previous').disabled = (index === 0);
+      $('next').disabled = (index === pages.length - 1);
+
+      for (let [i, b] of [...$('pageList').children].entries()) {
+        b.classList.toggle('active', i === index);
+      }
+
+      // Render In-page Figures Strip
+      let inPageFigs = bundle.figures || [];
+      if (inPageFigs.length > 0) {
+        $('inPageFigures').style.display = 'block';
+        $('inPageFiguresList').replaceChildren();
+        for (let fig of inPageFigs) {
+          let item = document.createElement('div');
+          item.className = 'page-fig-item';
+          item.innerHTML = `
+            <img class="page-fig-thumb" src="${fig.image_url}" alt="图版">
+            <div class="page-fig-meta">
+              <div class="page-fig-num">${fig.figure_number || '图版'}</div>
+              <div class="page-fig-cap">${fig.caption || '无图题'}</div>
+            </div>
+          `;
+          item.onclick = () => {
+            highlight(fig.xywh, 'figure');
+            openFigureModal(fig, docs.find(d => d.id === $('documents').value)?.title || '');
+          };
+          $('inPageFiguresList').appendChild(item);
+        }
+      } else {
+        $('inPageFigures').style.display = 'none';
+      }
+
+      // Render Text Lines
+      $('lines').replaceChildren();
+      $('lines').className = '';
+      for (let line of bundle.lines) {
+        let el = document.createElement('div');
+        el.className = 'line';
+        el.textContent = line.text;
+        el.onclick = () => {
+          selected = line;
+          $('correction').value = line.text;
+          for (let x of $('lines').children) x.classList.remove('selected');
+          el.classList.add('selected');
+          highlight(line.xywh, 'text');
+        };
+        $('lines').appendChild(el);
+      }
+      if (!bundle.lines.length) {
+        $('lines').innerHTML = '<p class="empty">本页未提取到文字，请对照原图。</p>';
+      }
+
+      // Review tasks
+      $('task').replaceChildren();
+      for (let t of bundle.review_tasks) {
+        let o = document.createElement('option');
+        o.value = t.task_id;
+        o.textContent = t.risk_type + ' · ' + t.status;
+        $('task').appendChild(o);
+      }
+      if (!bundle.review_tasks.length) {
+        $('task').appendChild(new Option('本页无待审校任务', ''));
+      }
+
+      // Export Links
+      $('exports').replaceChildren();
+      for (let [name, file] of [
+        ['IIIF Manifest', 'manifest.json'],
+        ['质检报告', 'quality.json'],
+        ['ALTO XML', 'alto/' + String(p.scan_index).padStart(5, '0') + '.xml']
+      ]) {
+        let a = document.createElement('a');
+        a.textContent = name + '  ';
+        a.href = '/api/export/' + $('documents').value + '/' + file;
+        a.target = '_blank';
+        $('exports').appendChild(a);
+      }
+
+      $('reviewStatus').textContent = '';
+      notice('物理页 ' + p.scan_index + ' · 印刷页码 ' + (p.label || '待确认') + ' · ' + p.domain + ' · ' + (inPageFigs.length) + ' 张图版 · ' + bundle.review_tasks.length + ' 项审校');
+    }
+
+    // Switch between page list and hits in sidebar
+    $('tabPages').onclick = () => {
+      $('tabPages').classList.add('primary');
+      $('tabHits').classList.remove('primary');
+      $('pageListContainer').style.display = 'block';
+      $('resultsContainer').style.display = 'none';
+    };
+    $('tabHits').onclick = () => {
+      $('tabHits').classList.add('primary');
+      $('tabPages').classList.remove('primary');
+      $('pageListContainer').style.display = 'none';
+      $('resultsContainer').style.display = 'block';
+    };
+
+    // =========================================================
+    // Search (Current / Global Cross-Volume)
+    // =========================================================
+    async function search() {
+      let q = $('query').value.trim();
+      if (!q) return;
+      let scope = $('searchScope').value;
+      let url = '/api/search?q=' + encodeURIComponent(q);
+      if (scope === 'current') {
+        url += '&manifest=' + encodeURIComponent($('documents').value);
+      } else {
+        url += '&manifest=all';
+      }
+
+      notice('正在执行检索“' + q + '”…');
+      let data = await request(url);
+      $('results').replaceChildren();
+      $('hitCount').textContent = data.total;
+
+      // Switch to hits tab
+      $('tabHits').click();
+
+      if (!data.items.length) {
+        $('results').innerHTML = '<div class="empty">未找到匹配内容</div>';
+        notice('检索“' + q + '”未命中任何文字。');
+        return;
+      }
+
+      for (let hit of data.items) {
+        let b = document.createElement('button');
+        b.className = 'pagebtn';
+        b.style.fontSize = '12px';
+        b.style.border = '1px solid #e1e8e3';
+        b.style.padding = '6px';
+        b.style.margin = '4px 0';
+        b.style.background = '#fff';
+
+        let bookTitle = hit.work_title || (docs.find(d => d.id === $('documents').value)?.title) || '';
+        let pageStr = hit.printed_page ? ('p.' + hit.printed_page) : ('第' + hit.scan_index + '页');
+        b.innerHTML = `<span class="toc-badge">${bookTitle}</span> <span style="font-weight:600;">${pageStr}</span><div style="color:#4a5953; margin-top:3px;">${hit.body.value}</div>`;
+
+        b.onclick = async () => {
+          // If hit is in a different document, switch document first!
+          if (hit.manifest_id && hit.manifest_id !== $('documents').value) {
+            $('documents').value = hit.manifest_id;
+            pages = await request('/api/pages?manifest=' + encodeURIComponent(hit.manifest_id));
+            let idx = pages.findIndex(p => p.id === hit.canvas_id || p.scan_index === hit.scan_index);
+            await loadDocument(idx >= 0 ? idx : (hit.scan_index - 1), hit.xywh, 'text');
+          } else {
+            let idx = pages.findIndex(p => p.id === hit.canvas_id || p.scan_index === hit.scan_index);
+            showPage(idx >= 0 ? idx : (hit.scan_index - 1), hit.xywh, 'text');
+          }
+        };
+        $('results').appendChild(b);
+      }
+      notice('检索“' + q + '”共命中 ' + data.total + ' 行。');
+    }
+
+    // =========================================================
+    // View 2: Cross-Volume & Cross-Chapter Index
+    // =========================================================
+    async function loadToc() {
+      let docId = $('tocDocFilter').value;
+      let maxLevel = $('tocLevelFilter').value;
+      let url = '/api/toc?manifest=' + encodeURIComponent(docId) + '&max_level=' + maxLevel;
+      notice('正在载入章节目录大纲…');
+      tocData = await request(url);
+      renderToc();
+      notice('目录加载完成，共 ' + tocData.length + ' 个章节节点。');
+    }
+
+    function renderToc() {
+      let filterText = $('tocSearchInput').value.trim().toLowerCase();
+      let container = $('tocTreeContainer');
+      container.replaceChildren();
+
+      // Group by book title
+      let groups = {};
+      for (let item of tocData) {
+        if (filterText && !item.title.toLowerCase().includes(filterText)) continue;
+        if (!groups[item.work_title]) groups[item.work_title] = [];
+        groups[item.work_title].push(item);
+      }
+
+      let groupNames = Object.keys(groups);
+      if (!groupNames.length) {
+        container.innerHTML = '<div class="empty">未找到匹配的章节。</div>';
+        return;
+      }
+
+      for (let gName of groupNames) {
+        let groupDiv = document.createElement('div');
+        groupDiv.className = 'toc-group';
+        groupDiv.innerHTML = `<div class="toc-group-title"><span>📚 ${gName}</span><span style="font-size:12px; font-weight:normal; color:#687b74;">${groups[gName].length} 个章节</span></div>`;
+
+        for (let item of groups[gName]) {
+          let row = document.createElement('div');
+          row.className = 'toc-item level-' + item.level;
+          let levelTag = item.level === 1 ? '部分' : (item.level === 2 ? '章' : (item.level === 3 ? '节' : '目'));
+          let pageLabel = item.printed_page ? ('第 ' + item.printed_page + ' 页') : (item.scan_index ? '物理第 ' + item.scan_index + ' 页' : '未知页');
+
+          row.innerHTML = `
+            <div style="display:flex; align-items:baseline; overflow:hidden;">
+              <span class="toc-badge">${levelTag}</span>
+              <span style="word-break:break-all;">${item.title}</span>
+            </div>
+            <div style="display:flex; align-items:center; flex-shrink:0;">
+              <span style="font-size:12px; color:#788882;">${pageLabel}</span>
+              <button class="toc-jump-btn">📖 跳转原页</button>
+            </div>
+          `;
+
+          row.querySelector('.toc-jump-btn').onclick = async () => {
+            // Switch to reader tab
+            document.querySelector('.nav-tab[data-view="reader"]').click();
+            // Switch document
+            $('documents').value = item.manifest_id;
+            pages = await request('/api/pages?manifest=' + encodeURIComponent(item.manifest_id));
+            let idx = pages.findIndex(p => p.id === item.canvas_id || p.scan_index === item.scan_index);
+            await loadDocument(idx >= 0 ? idx : 0, item.xywh, 'text');
+          };
+          groupDiv.appendChild(row);
+        }
+        container.appendChild(groupDiv);
+      }
+    }
+
+    $('tocDocFilter').onchange = loadToc;
+    $('tocLevelFilter').onchange = loadToc;
+    $('tocSearchInput').oninput = renderToc;
+
+    // =========================================================
+    // View 3: Plates & Figures Gallery
+    // =========================================================
+    async function loadGallery() {
+      let docId = $('galleryDocFilter').value;
+      let q = $('galleryQuery').value.trim();
+      let url = '/api/figures?manifest=' + encodeURIComponent(docId) + '&q=' + encodeURIComponent(q) + '&limit=80';
+      notice('正在载入考古图版与器物图录…');
+      let res = await request(url);
+      galleryData = res.items || [];
+      $('galleryCount').textContent = '共 ' + res.total + ' 张图版 (当前展示 ' + galleryData.length + ' 张)';
+      renderGallery();
+      notice('图版载入完成。');
+    }
+
+    function renderGallery() {
+      let grid = $('galleryGrid');
+      grid.replaceChildren();
+
+      if (!galleryData.length) {
+        grid.innerHTML = '<div class="empty">未找到符合条件的图版或器物插图。</div>';
+        return;
+      }
+
+      for (let fig of galleryData) {
+        let card = document.createElement('div');
+        card.className = 'figure-card';
+
+        let pageStr = fig.printed_page ? ('第 ' + fig.printed_page + ' 页') : ('物理页 ' + fig.scan_index);
+        card.innerHTML = `
+          <div class="figure-img-wrapper" title="点击查看大图">
+            <img src="${fig.image_url}" loading="lazy" alt="${fig.figure_number || '图版'}">
+          </div>
+          <div class="figure-body">
+            <div>
+              <div class="figure-header">
+                <span class="figure-num">${fig.figure_number || '插图/图版'}</span>
+                <span class="figure-book">${fig.work_title || ''} · ${pageStr}</span>
+              </div>
+              <div class="figure-caption" title="${fig.caption || ''}">${fig.caption || '（无图题说明）'}</div>
+            </div>
+            <div class="figure-footer">
+              <button class="figure-btn view-large-btn">🔍 放大查看</button>
+              <button class="figure-btn primary jump-page-btn">📖 定位原页</button>
+            </div>
+          </div>
+        `;
+
+        card.querySelector('.figure-img-wrapper').onclick = () => openFigureModal(fig, fig.work_title);
+        card.querySelector('.view-large-btn').onclick = () => openFigureModal(fig, fig.work_title);
+        card.querySelector('.jump-page-btn').onclick = async () => {
+          document.querySelector('.nav-tab[data-view="reader"]').click();
+          $('documents').value = fig.manifest_id;
+          pages = await request('/api/pages?manifest=' + encodeURIComponent(fig.manifest_id));
+          let idx = pages.findIndex(p => p.id === fig.canvas_id || p.scan_index === fig.scan_index);
+          await loadDocument(idx >= 0 ? idx : (fig.scan_index - 1), fig.xywh, 'figure');
+        };
+
+        grid.appendChild(card);
+      }
+    }
+
+    $('galleryDocFilter').onchange = loadGallery;
+    $('gallerySearchBtn').onclick = loadGallery;
+    $('galleryQuery').onkeydown = e => { if (e.key === 'Enter') loadGallery(); };
+
+    // =========================================================
+    // Lightbox Modal
+    // =========================================================
+    let currentModalFig = null;
+    function openFigureModal(fig, workTitle) {
+      currentModalFig = fig;
+      $('modalFigureTitle').textContent = fig.figure_number ? ('图版详情 · ' + fig.figure_number) : '图版大图';
+      $('modalFigureNumber').textContent = fig.figure_number || '图版/插图';
+      let pageStr = fig.printed_page ? ('印刷页码：第 ' + fig.printed_page + ' 页') : ('物理页：' + fig.scan_index);
+      $('modalFigureMeta').textContent = (workTitle || '') + ' | ' + pageStr + ' | 坐标：' + (fig.xywh || '自动截取');
+      $('modalFigureCaption').textContent = fig.caption || '（暂无图题说明）';
+      $('modalImg').src = fig.image_url;
+      $('figureModal').classList.add('active');
+    }
+
+    $('modalCloseBtn').onclick = () => $('figureModal').classList.remove('active');
+    $('figureModal').onclick = e => {
+      if (e.target === $('figureModal')) $('figureModal').classList.remove('active');
+    };
+    $('modalJumpBtn').onclick = async () => {
+      if (!currentModalFig) return;
+      $('figureModal').classList.remove('active');
+      document.querySelector('.nav-tab[data-view="reader"]').click();
+      $('documents').value = currentModalFig.manifest_id;
+      pages = await request('/api/pages?manifest=' + encodeURIComponent(currentModalFig.manifest_id));
+      let idx = pages.findIndex(p => p.id === currentModalFig.canvas_id || p.scan_index === currentModalFig.scan_index);
+      await loadDocument(idx >= 0 ? idx : (currentModalFig.scan_index - 1), currentModalFig.xywh, 'figure');
+    };
+
+    // Review action
+    async function review(status) {
+      if (!bundle || !$('task').value) return;
+      try {
+        let data = {
+          task_id: $('task').value,
+          actor: $('actor').value,
+          note: $('note').value,
+          status,
+          expected_revision: bundle.revision
+        };
+        if (selected && status === 'approved' && $('correction').value !== selected.text) {
+          data.line_id = selected.id;
+          data.text = $('correction').value;
+        }
+        await request('/api/review', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        });
+        await showPage(current);
+        $('reviewStatus').textContent = '已保存审校记录';
+      } catch (e) {
+        $('reviewStatus').textContent = e.message;
+      }
+    }
+
+    // Event Bindings
+    $('documents').onchange = () => loadDocument().catch(e => notice(e.message));
+    $('previous').onclick = () => showPage(current - 1);
+    $('next').onclick = () => showPage(current + 1);
+    $('pageNumber').onchange = () => showPage(Number($('pageNumber').value) - 1);
+    $('search').onclick = () => search().catch(e => notice(e.message));
+    $('query').onkeydown = e => { if (e.key === 'Enter') search().catch(e => notice(e.message)); };
+    $('approve').onclick = () => review('approved');
+    $('reject').onclick = () => review('rejected');
+
+    // Init
+    loadDocs().catch(e => notice(e.message));
+  </script>
+</body>
+</html>
