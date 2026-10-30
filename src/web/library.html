@@ -12,7 +12,7 @@
       --green: #23574b;
       --green-dark: #173d34;
       --green-light: #e3efe9;
-      --green-Mid: #367a6b;
+      --green-mid: #367a6b;
       --gold: #b8821e;
       --gold-bg: #fdf6e4;
       --line: #d6ddd6;
@@ -112,6 +112,9 @@
     button:hover { background: #e8eee9; }
     button.primary { background: var(--green); color: white; border-color: var(--green); }
     button.primary:hover { background: var(--green-dark); }
+    button.gold-btn { background: #fdf4df; color: #8c5c08; border-color: #e6c677; font-weight: 600; }
+    button.gold-btn:hover { background: #d49b2a; color: #fff; border-color: #d49b2a; }
+    button.gold-btn.in-compare { background: #d49b2a; color: #fff; border-color: #b8821e; }
     button:disabled { opacity: .45; cursor: default; }
     a { color: var(--green); text-decoration: none; }
     a:hover { text-decoration: underline; }
@@ -212,6 +215,8 @@
       gap: 6px;
     }
     .toc-row:hover { background: var(--green-light); color: var(--green-dark); }
+    .toc-row.active { background: var(--green); color: #fff; font-weight: 600; }
+    .toc-row.active .toc-pnum { color: #e2efe9; }
     .toc-row.lvl-1 { font-weight: 700; color: #1d3f35; margin-top: 4px; background: #f8fbf9; }
     .toc-row.lvl-2 { padding-left: 14px; font-weight: 600; }
     .toc-row.lvl-3 { padding-left: 24px; color: #435851; }
@@ -310,7 +315,7 @@
     .index-results-area {
       flex: 1;
       overflow-y: auto;
-      padding: 16px 20px;
+      padding: 16px 20px 70px 20px;
     }
 
     /* Cross-Volume Artifact Card */
@@ -375,19 +380,20 @@
       gap: 8px;
       align-items: center;
       flex-wrap: wrap;
-      max-width: 340px;
+      max-width: 350px;
     }
     .art-thumb-box {
-      width: 100px;
+      width: 104px;
       border: 1px solid #dce3de;
       border-radius: 4px;
       overflow: hidden;
       background: #fafafa;
-      cursor: pointer;
+      cursor: grab;
       text-align: center;
+      position: relative;
     }
-    .art-thumb-box:hover { border-color: var(--green); }
-    .art-thumb-box img { width: 100%; height: 78px; object-fit: contain; display: block; background: #fff; }
+    .art-thumb-box:hover { border-color: var(--green); box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+    .art-thumb-box img { width: 100%; height: 78px; object-fit: contain; display: block; background: #fff; pointer-events: none; }
     .art-thumb-label {
       font-size: 10.5px;
       padding: 2px 4px;
@@ -399,7 +405,278 @@
     }
 
     /* ========================================================= */
-    /* View 2: Document Reader (#view-reader)                    */
+    /* View 2: Plates & Figures Gallery (#view-gallery)          */
+    /* ========================================================= */
+    .gallery-layout {
+      display: grid;
+      grid-template-columns: 320px 1fr;
+      flex: 1;
+      overflow: hidden;
+    }
+    .gallery-sidebar {
+      background: #fff;
+      border-right: 1px solid var(--line);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .gallery-side-tabs {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      padding: 8px 10px;
+      gap: 5px;
+      background: #f7faf8;
+      border-bottom: 1px solid var(--line);
+      flex-shrink: 0;
+    }
+    .gallery-side-tabs button {
+      font-size: 12px;
+      padding: 6px 4px;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+    .gal-group-item {
+      border-bottom: 1px solid #f0f4f1;
+      padding: 3px 0;
+    }
+    .gal-group-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 6px 8px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 12.5px;
+      gap: 6px;
+      color: #29423a;
+    }
+    .gal-group-row:hover { background: var(--green-light); color: var(--green-dark); }
+    .gal-group-row.active { background: var(--green); color: #fff; font-weight: 600; }
+    .gal-group-cnt {
+      font-size: 11px;
+      padding: 1px 6px;
+      border-radius: 9px;
+      background: #e9f0ec;
+      color: #4a635a;
+      flex-shrink: 0;
+    }
+    .gal-group-row.active .gal-group-cnt { background: rgba(255,255,255,0.22); color: #fff; }
+    .gal-sublist {
+      padding: 3px 0 5px 16px;
+      display: none;
+      border-left: 2px solid #dce6e0;
+      margin-left: 10px;
+    }
+    .gal-subitem {
+      font-size: 11.5px;
+      padding: 4px 6px;
+      border-radius: 3px;
+      cursor: pointer;
+      color: #4b6159;
+      display: flex;
+      justify-content: space-between;
+      gap: 6px;
+    }
+    .gal-subitem:hover { background: #edf5f0; color: var(--green-dark); }
+
+    .facet-section-title {
+      font-size: 12.5px;
+      font-weight: 700;
+      color: var(--green-dark);
+      margin: 8px 0 8px;
+      padding-bottom: 4px;
+      border-bottom: 1px solid #e5ede8;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .facet-chip-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 14px;
+    }
+    .facet-chip {
+      padding: 5px 10px;
+      border: 1px solid #d5e0da;
+      border-radius: 14px;
+      background: #fafcfa;
+      font-size: 12px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      transition: all 0.12s;
+    }
+    .facet-chip:hover, .facet-chip.active {
+      background: var(--green);
+      color: #fff;
+      border-color: var(--green);
+    }
+    .facet-chip span.fc-cnt {
+      font-size: 10.5px;
+      opacity: 0.8;
+    }
+
+    .gallery-main {
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      background: #f4f5f1;
+    }
+    .gallery-filter-bar {
+      padding: 9px 18px;
+      background: #fff;
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .active-filter-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--green-light);
+      color: var(--green-dark);
+      border: 1px solid #9ec2b4;
+      padding: 3px 9px;
+      border-radius: 14px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    .active-filter-tag button {
+      border: none;
+      background: transparent;
+      color: var(--green-dark);
+      padding: 0 2px;
+      font-size: 13px;
+      line-height: 1;
+    }
+    .gallery-content { flex: 1; overflow-y: auto; padding: 16px 20px 76px 20px; }
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 15px;
+    }
+    .figure-card {
+      background: #fff;
+      border: 1px solid #d8e0da;
+      border-radius: 6px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+      transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s;
+      position: relative;
+      cursor: grab;
+    }
+    .figure-card:active { cursor: grabbing; }
+    .figure-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(0,0,0,0.09);
+      border-color: #9ebbaf;
+    }
+    .figure-card.dragging {
+      opacity: 0.42;
+      border: 2px dashed var(--gold);
+      transform: scale(0.97);
+    }
+    .figure-card.drag-over {
+      border: 2px solid var(--gold);
+      box-shadow: 0 0 0 3px rgba(212, 155, 42, 0.25);
+    }
+    .figure-card.in-compare-card {
+      border-color: #d49b2a;
+      box-shadow: 0 0 0 2px rgba(212, 155, 42, 0.22);
+    }
+    .card-drag-bar {
+      padding: 3px 10px;
+      background: #f4f7f5;
+      border-bottom: 1px solid #ebefec;
+      font-size: 11px;
+      color: #6b7f77;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      user-select: none;
+    }
+    .figure-img-wrapper {
+      height: 188px;
+      background: #f8faf8;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-bottom: 1px solid #edf1ed;
+      overflow: hidden;
+      cursor: pointer;
+      padding: 6px;
+    }
+    .figure-img-wrapper img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+      transition: transform 0.2s ease;
+      pointer-events: none;
+    }
+    .figure-card:hover .figure-img-wrapper img { transform: scale(1.03); }
+    .figure-body {
+      padding: 9px 11px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .figure-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 4px;
+    }
+    .figure-num { font-weight: 700; color: #1b3d34; font-size: 13px; }
+    .figure-book {
+      font-size: 11px;
+      background: #e9f2ee;
+      color: var(--green);
+      padding: 2px 6px;
+      border-radius: 3px;
+      flex-shrink: 0;
+    }
+    .figure-caption {
+      font-size: 12px;
+      color: #42544e;
+      line-height: 1.45;
+      margin-bottom: 9px;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .figure-footer {
+      display: flex;
+      gap: 5px;
+      border-top: 1px solid #f0f4f1;
+      padding-top: 7px;
+      margin-top: auto;
+    }
+    .figure-btn {
+      flex: 1;
+      padding: 4px 6px;
+      font-size: 11.5px;
+      text-align: center;
+      border-radius: 4px;
+      border: 1px solid #c6d3cb;
+      background: #fafcfa;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+    .figure-btn:hover { background: #e9f2ed; border-color: var(--green); color: var(--green); }
+    .figure-btn.primary { background: var(--green); color: #fff; border-color: var(--green); }
+    .figure-btn.primary:hover { background: var(--green-dark); }
+
+    /* ========================================================= */
+    /* View 3: Document Reader (#view-reader)                    */
     /* ========================================================= */
     .reader-toolbar {
       display: flex;
@@ -473,109 +750,339 @@
     textarea { width: 100%; min-height: 54px; font-size: 12.5px; }
 
     /* ========================================================= */
-    /* View 3: Plates & Figures Gallery (#view-gallery)          */
+    /* Floating Comparison Dock (#compareDock)                   */
     /* ========================================================= */
-    .gallery-filter-bar {
-      padding: 10px 20px;
-      background: #fff;
-      border-bottom: 1px solid var(--line);
+    .compare-dock {
+      position: fixed;
+      bottom: 12px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(24, 48, 42, 0.96);
+      color: #fff;
+      padding: 8px 16px;
+      border-radius: 10px;
+      box-shadow: 0 8px 28px rgba(0,0,0,0.32);
+      border: 1px solid rgba(255,255,255,0.22);
       display: flex;
-      gap: 10px;
+      align-items: center;
+      gap: 12px;
+      z-index: 500;
+      max-width: 94vw;
+      transition: all 0.2s ease;
+    }
+    .compare-dock.drag-active {
+      border: 2px dashed #f5c04f;
+      background: rgba(31, 66, 56, 0.98);
+      transform: translateX(-50%) scale(1.03);
+    }
+    .dock-title {
+      font-size: 12.5px;
+      font-weight: 700;
+      color: #f3d078;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+    }
+    .dock-items {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      overflow-x: auto;
+      max-width: 52vw;
+      padding: 2px 0;
+    }
+    .dock-empty-hint {
+      font-size: 12px;
+      color: #a9c4ba;
+      padding: 4px 10px;
+      border: 1px dashed rgba(255,255,255,0.28);
+      border-radius: 6px;
+      white-space: nowrap;
+    }
+    .dock-thumb {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(255,255,255,0.12);
+      border: 1px solid rgba(255,255,255,0.22);
+      padding: 3px 7px 3px 4px;
+      border-radius: 5px;
+      flex-shrink: 0;
+      font-size: 11.5px;
+    }
+    .dock-thumb img {
+      width: 34px;
+      height: 34px;
+      object-fit: contain;
+      background: #fff;
+      border-radius: 3px;
+    }
+    .dock-thumb-rm {
+      background: transparent;
+      border: none;
+      color: #f2b8b5;
+      font-size: 14px;
+      padding: 0 2px;
+      cursor: pointer;
+    }
+    .dock-thumb-rm:hover { color: #ff6b6b; background: transparent; }
+
+    /* ========================================================= */
+    /* Multi-Artifact Comparison Workbench Modal (#compareModal) */
+    /* ========================================================= */
+    .workbench-modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(12, 22, 19, 0.92);
+      z-index: 1200;
+      flex-direction: column;
+    }
+    .workbench-modal.active { display: flex; }
+    .wb-header {
+      padding: 10px 20px;
+      background: #162d27;
+      color: #fff;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      border-bottom: 1px solid rgba(255,255,255,0.15);
+      flex-wrap: wrap;
+    }
+    .wb-mode-tabs { display: flex; gap: 6px; }
+    .wb-mode-btn {
+      padding: 6px 14px;
+      border-radius: 5px;
+      background: rgba(255,255,255,0.1);
+      color: #d5e5df;
+      border: 1px solid rgba(255,255,255,0.2);
+      font-size: 12.5px;
+      font-weight: 600;
+    }
+    .wb-mode-btn:hover { background: rgba(255,255,255,0.2); color: #fff; }
+    .wb-mode-btn.active { background: #d49b2a; color: #fff; border-color: #d49b2a; }
+
+    /* Mode 1: Free 2D Lighttable Canvas */
+    .wb-canvas-area {
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+      background-color: #1e2925;
+      user-select: none;
+    }
+    .wb-canvas-area.show-grid {
+      background-image:
+        linear-gradient(to right, rgba(255,255,255,0.05) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255,255,255,0.05) 1px, transparent 1px),
+        linear-gradient(to right, rgba(255,255,255,0.12) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255,255,255,0.12) 1px, transparent 1px);
+      background-size: 25px 25px, 25px 25px, 125px 125px, 125px 125px;
+    }
+    /* Draggable horizontal reference line for vessel rim/base alignment */
+    .wb-ref-line {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 260px;
+      height: 2px;
+      background: #f5b82e;
+      box-shadow: 0 0 6px rgba(245, 184, 46, 0.8);
+      z-index: 900;
+      cursor: ns-resize;
+      display: none;
+    }
+    .wb-ref-line::before {
+      content: "📏 器物口沿 / 底足水平对齐参考线（上下拖动校准）";
+      position: absolute;
+      left: 16px;
+      top: -22px;
+      background: #f5b82e;
+      color: #1b2e28;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 3px;
+    }
+
+    /* Floating Draggable Artifact Card on Lighttable */
+    .wb-float-card {
+      position: absolute;
+      background: #ffffff;
+      border: 2px solid #9ab5aa;
+      border-radius: 7px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.45);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      min-width: 220px;
+      min-height: 230px;
+    }
+    .wb-float-card.active-card {
+      border-color: #f5b82e;
+      box-shadow: 0 14px 38px rgba(0,0,0,0.6), 0 0 0 2px rgba(245, 184, 46, 0.35);
+    }
+    .wb-card-head {
+      padding: 6px 10px;
+      background: #204239;
+      color: #fff;
+      cursor: move;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      font-weight: 600;
+      user-select: none;
+    }
+    .wb-card-tools {
+      display: flex;
+      gap: 4px;
+      padding: 4px 8px;
+      background: #f2f6f4;
+      border-bottom: 1px solid #dde6e1;
       align-items: center;
       flex-wrap: wrap;
     }
-    .gallery-content { flex: 1; overflow-y: auto; padding: 20px; }
-    .gallery-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(265px, 1fr));
-      gap: 16px;
-    }
-    .figure-card {
+    .wb-tool-btn {
+      font-size: 11px;
+      padding: 2px 6px;
+      border-radius: 3px;
+      border: 1px solid #c5d3cc;
       background: #fff;
-      border: 1px solid #d8e0da;
-      border-radius: 6px;
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.04);
-      transition: transform 0.15s, box-shadow 0.15s;
+      color: #263d36;
     }
-    .figure-card:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 16px rgba(0,0,0,0.09);
-      border-color: #9ebbaf;
+    .wb-tool-btn:hover, .wb-tool-btn.active {
+      background: var(--green);
+      color: #fff;
+      border-color: var(--green);
     }
-    .figure-img-wrapper {
-      height: 195px;
-      background: #f8faf8;
+    .wb-card-stage {
+      flex: 1;
+      background: #fbfcfb;
       display: flex;
       align-items: center;
       justify-content: center;
-      border-bottom: 1px solid #edf1ed;
       overflow: hidden;
-      cursor: pointer;
-      padding: 6px;
+      position: relative;
+      padding: 8px;
     }
-    .figure-img-wrapper img {
+    .wb-card-stage img {
       max-width: 100%;
       max-height: 100%;
       object-fit: contain;
-      transition: transform 0.2s ease;
+      transition: transform 0.1s ease, filter 0.15s ease;
+      pointer-events: none;
     }
-    .figure-card:hover .figure-img-wrapper img { transform: scale(1.03); }
-    .figure-body {
-      padding: 10px 12px;
+    .wb-card-foot {
+      padding: 6px 10px;
+      background: #fff;
+      border-top: 1px solid #ebefec;
+      font-size: 11.5px;
+      color: #3d524b;
+      line-height: 1.35;
+      max-height: 54px;
+      overflow-y: auto;
+    }
+    .wb-resize-handle {
+      position: absolute;
+      right: 0;
+      bottom: 0;
+      width: 18px;
+      height: 18px;
+      cursor: nwse-resize;
+      background: linear-gradient(135deg, transparent 50%, #23574b 50%);
+      opacity: 0.7;
+    }
+
+    /* Mode 2: Side-by-Side Synchronized Grid */
+    .wb-sidebyside-area {
       flex: 1;
+      overflow-y: auto;
+      padding: 20px;
+      background: #23302c;
+      display: none;
+    }
+    .wb-sync-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 16px;
+    }
+    .wb-sync-col {
+      background: #fff;
+      border-radius: 7px;
+      overflow: hidden;
       display: flex;
       flex-direction: column;
-      justify-content: space-between;
+      border: 1px solid #dce4df;
     }
-    .figure-header {
+    .wb-sync-imgbox {
+      height: 340px;
+      background: #f9fbf9;
       display: flex;
-      justify-content: space-between;
       align-items: center;
-      gap: 6px;
-      margin-bottom: 5px;
-    }
-    .figure-num { font-weight: 700; color: #1b3d34; font-size: 13px; }
-    .figure-book {
-      font-size: 11px;
-      background: #e9f2ee;
-      color: var(--green);
-      padding: 2px 6px;
-      border-radius: 3px;
-      flex-shrink: 0;
-    }
-    .figure-caption {
-      font-size: 12px;
-      color: #42544e;
-      line-height: 1.45;
-      margin-bottom: 10px;
-      display: -webkit-box;
-      -webkit-line-clamp: 3;
-      -webkit-box-orient: vertical;
+      justify-content: center;
+      padding: 12px;
+      border-bottom: 1px solid #e6ece8;
       overflow: hidden;
     }
-    .figure-footer {
-      display: flex;
-      gap: 6px;
-      border-top: 1px solid #f0f4f1;
-      padding-top: 8px;
-      margin-top: auto;
+    .wb-sync-imgbox img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+      transition: transform 0.15s ease;
     }
-    .figure-btn {
+
+    /* Mode 3: Superimposed Overlay Mode */
+    .wb-overlay-area {
       flex: 1;
-      padding: 4px 8px;
-      font-size: 12px;
-      text-align: center;
-      border-radius: 4px;
-      border: 1px solid #c6d3cb;
-      background: #fafcfa;
-      cursor: pointer;
+      display: none;
+      flex-direction: column;
+      background: #1b2623;
+      overflow: hidden;
     }
-    .figure-btn:hover { background: #e9f2ed; border-color: var(--green); color: var(--green); }
-    .figure-btn.primary { background: var(--green); color: #fff; border-color: var(--green); }
-    .figure-btn.primary:hover { background: var(--green-dark); }
+    .wb-overlay-controls {
+      padding: 10px 20px;
+      background: #243832;
+      color: #e6f0ec;
+      display: flex;
+      gap: 16px;
+      align-items: center;
+      flex-wrap: wrap;
+      font-size: 12.5px;
+      border-bottom: 1px solid rgba(255,255,255,0.12);
+    }
+    .wb-overlay-stage {
+      flex: 1;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      background: #fff;
+      margin: 16px auto;
+      width: 90%;
+      max-width: 980px;
+      border-radius: 8px;
+      box-shadow: 0 10px 32px rgba(0,0,0,0.4);
+    }
+    .wb-overlay-base {
+      max-width: 85%;
+      max-height: 85%;
+      object-fit: contain;
+      pointer-events: none;
+      user-select: none;
+    }
+    .wb-overlay-top {
+      position: absolute;
+      max-width: 85%;
+      max-height: 85%;
+      object-fit: contain;
+      cursor: move;
+      user-select: none;
+      mix-blend-mode: multiply;
+    }
 
     /* Lightbox Modal */
     .modal {
@@ -641,7 +1148,7 @@
     .modal-subfig-item img { width: 100%; height: 64px; object-fit: contain; display: block; margin-bottom: 3px; }
 
     @media (max-width: 1020px) {
-      .index-layout { grid-template-columns: 260px 1fr; }
+      .index-layout, .gallery-layout { grid-template-columns: 260px 1fr; }
       .reader-grid { grid-template-columns: 210px 1fr 290px; }
     }
   </style>
@@ -754,31 +1261,81 @@
   <!-- View 2: Dedicated Plates & Figures Gallery (#view-gallery)          -->
   <!-- =================================================================== -->
   <main id="view-gallery" class="view-container">
-    <div class="gallery-filter-bar">
-      <span style="font-size:12.5px; font-weight:600;">卷次：</span>
-      <select id="galleryDocFilter" style="width:165px;"></select>
+    <div class="gallery-layout">
+      <!-- Left Index Directory Sidebar for Gallery -->
+      <aside class="gallery-sidebar">
+        <div class="gallery-side-tabs">
+          <button id="btnGalTree" class="primary">📚 图版目录树</button>
+          <button id="btnGalFacets">🏺 釉色/器型</button>
+          <button id="btnGalUnits">⛏️ 出土单位</button>
+        </div>
 
-      <span style="font-size:12.5px; font-weight:600;">图像类别：</span>
-      <select id="galleryTypeFilter" style="width:210px;">
-        <option value="all">全部整版图版与线图 (1,290)</option>
-        <option value="sub_plate">🏺 彩色图版单件器物切片 (4,558)</option>
-        <option value="line_drawing">📐 一、二卷器物与遗迹线图 (433)</option>
-        <option value="plate">🎨 三～五卷整页彩色图版 (857)</option>
-      </select>
+        <!-- Tab 1: 5-Volume Figure/Plate Directory Tree -->
+        <div id="galTreePane" style="display:flex; flex-direction:column; flex:1; overflow:hidden;">
+          <div class="sidebar-filter">
+            <input id="galTreeFilterInput" placeholder="快速过滤图版组或图号 (如: 青白釉、彩版)…" style="flex:1; font-size:12px;">
+            <button id="galTreeResetBtn" style="font-size:12px;">全部</button>
+          </div>
+          <div id="galTreeScroll" class="sidebar-scroll"></div>
+        </div>
 
-      <input id="galleryQuery" placeholder="搜索图号、器物名或标本号 (如: 青白釉碗、T10H4:333、剖面图)…" style="width:280px;">
-      <button id="gallerySearchBtn" class="primary">筛选图版</button>
+        <!-- Tab 2: Glaze & Vessel Shape Facets -->
+        <div id="galFacetsPane" style="display:none; flex-direction:column; flex:1; overflow:hidden;">
+          <div class="sidebar-scroll">
+            <div class="facet-section-title">
+              <span>🎨 釉色与遗存类别索引</span>
+              <button id="clearGalFacetBtn" style="font-size:11px; padding:1px 6px;">清除筛选</button>
+            </div>
+            <div id="galGlazeChips" class="facet-chip-grid"></div>
 
-      <div style="margin-left:auto; display:flex; align-items:center; gap:8px;">
-        <span id="galleryCount" style="font-size:12px; color:#52665f;"></span>
-        <button id="galleryPrevBtn" style="font-size:12px;">上一页</button>
-        <span id="galleryPageInfo" style="font-size:12px;">1 / 1</span>
-        <button id="galleryNextBtn" style="font-size:12px;">下一页</button>
-      </div>
-    </div>
+            <div class="facet-section-title">
+              <span>🏺 典型器型分类索引</span>
+            </div>
+            <div id="galShapeChips" class="facet-chip-grid"></div>
+          </div>
+        </div>
 
-    <div class="gallery-content">
-      <div id="galleryGrid" class="gallery-grid"></div>
+        <!-- Tab 3: Excavation Units in Gallery -->
+        <div id="galUnitsPane" style="display:none; flex-direction:column; flex:1; overflow:hidden;">
+          <div class="sidebar-filter">
+            <input id="galUnitFilterInput" placeholder="筛选探方/灰坑/房址 (如: T13H2, F12)…" style="flex:1; font-size:12px;">
+            <button id="galUnitResetBtn" style="font-size:12px;">重置</button>
+          </div>
+          <div id="galUnitScroll" class="sidebar-scroll"></div>
+        </div>
+      </aside>
+
+      <!-- Right Main Gallery Area -->
+      <section class="gallery-main">
+        <div class="gallery-filter-bar">
+          <span style="font-size:12.5px; font-weight:600;">卷次：</span>
+          <select id="galleryDocFilter" style="width:155px;"></select>
+
+          <span style="font-size:12.5px; font-weight:600;">图像类别：</span>
+          <select id="galleryTypeFilter" style="width:205px;">
+            <option value="all">全部整版图版与线图 (1,290)</option>
+            <option value="sub_plate">🏺 彩色图版单件器物切片 (4,558)</option>
+            <option value="line_drawing">📐 一、二卷器物与遗迹线图 (433)</option>
+            <option value="plate">🎨 三～五卷整页彩色图版 (857)</option>
+          </select>
+
+          <input id="galleryQuery" placeholder="搜索图号、器物名或标本号 (如: 青白釉碗、T10H4:333)…" style="width:240px;">
+          <button id="gallerySearchBtn" class="primary">筛选图版</button>
+
+          <span id="galleryActiveGroupBadge" style="display:none;"></span>
+
+          <div style="margin-left:auto; display:flex; align-items:center; gap:7px;">
+            <span id="galleryCount" style="font-size:12px; color:#52665f;"></span>
+            <button id="galleryPrevBtn" style="font-size:12px;">◀ 上一页</button>
+            <span id="galleryPageInfo" style="font-size:12px;">1 / 1</span>
+            <button id="galleryNextBtn" style="font-size:12px;">下一页 ▶</button>
+          </div>
+        </div>
+
+        <div class="gallery-content">
+          <div id="galleryGrid" class="gallery-grid"></div>
+        </div>
+      </section>
     </div>
   </main>
 
@@ -825,7 +1382,7 @@
       <!-- Right Panel: In-page Figures, Text Lines, Review -->
       <aside class="textpanel">
         <div id="inPageFigures" class="page-figures-box" style="display:none;">
-          <div class="page-figures-title">📸 本页识别图版与器物切片（点击高亮/放大）</div>
+          <div class="page-figures-title">📸 本页识别图版与器物切片（点击高亮/放大/对比）</div>
           <div id="inPageFiguresList" class="page-figures-list"></div>
         </div>
 
@@ -838,6 +1395,7 @@
           <summary>🛠️ 审校当前页面文字与任务</summary>
           <p class="muted" style="margin-top:4px;">先点击下方文字行，再填写校对结果。原始 OCR 保留。</p>
           <label>审校任务</label><select id="task" style="width:100%"></select>
+          <label>脚注关联目标（核对原图后选择）</label><select id="footnoteTarget" style="width:100%"></select>
           <label>校对文字</label><textarea id="correction"></textarea>
           <label>审校人</label><input id="actor" placeholder="姓名" style="width:100%">
           <label>依据与说明</label><textarea id="note" placeholder="对照原页说明修改依据"></textarea>
@@ -852,6 +1410,95 @@
       </aside>
     </div>
   </main>
+
+  <!-- =================================================================== -->
+  <!-- Floating Bottom Comparison Dock (#compareDock)                      -->
+  <!-- =================================================================== -->
+  <div id="compareDock" class="compare-dock">
+    <div class="dock-title">
+      <span>⚖️ 器物比对工作槽 (<span id="compareCount">0</span>)</span>
+    </div>
+    <div id="compareDockList" class="dock-items">
+      <div class="dock-empty-hint">💡 拖动任意器物卡片至此，或点击卡片上的「⚖️ +对比」即可自由同台比对</div>
+    </div>
+    <div style="display:flex; gap:6px; flex-shrink:0;">
+      <button id="openCompareBtn" class="gold-btn" style="padding:5px 12px; font-size:12.5px;">🔬 开启自由拖动比对台</button>
+      <button id="clearCompareBtn" style="background:rgba(255,255,255,0.12); color:#e0ece7; border-color:rgba(255,255,255,0.24); font-size:12px;">清空</button>
+    </div>
+  </div>
+
+  <!-- =================================================================== -->
+  <!-- Interactive Multi-Artifact Comparison Workbench (#compareModal)     -->
+  <!-- =================================================================== -->
+  <div id="compareModal" class="workbench-modal">
+    <div class="wb-header">
+      <div style="display:flex; align-items:center; gap:14px; flex-wrap:wrap;">
+        <h2 style="font-size:16px; color:#f7faf8;">🔬 考古器物跨卷同台比对工作台</h2>
+        <div class="wb-mode-tabs">
+          <button class="wb-mode-btn active" data-wbmode="canvas">✋ 自由画布拖动比对</button>
+          <button class="wb-mode-btn" data-wbmode="sidebyside">▥ 并排同步对照</button>
+          <button class="wb-mode-btn" data-wbmode="overlay">🌓 线图/彩版叠图比对</button>
+        </div>
+      </div>
+
+      <!-- Canvas Mode Quick Tools -->
+      <div id="wbCanvasToolbar" style="display:flex; align-items:center; gap:8px;">
+        <button id="wbTileBtn" class="wb-tool-btn" style="padding:4px 10px; font-size:12px;">📐 自动整齐排布</button>
+        <button id="wbToggleGridBtn" class="wb-tool-btn active" style="padding:4px 10px; font-size:12px;"># 标尺网格</button>
+        <button id="wbToggleRefLineBtn" class="wb-tool-btn" style="padding:4px 10px; font-size:12px;">📏 口沿/底足水平参考线</button>
+      </div>
+
+      <!-- Side-by-Side Zoom Control -->
+      <div id="wbSyncToolbar" style="display:none; align-items:center; gap:8px; font-size:12.5px;">
+        <span>同步缩放：</span>
+        <input id="wbSyncZoomSlider" type="range" min="60" max="220" value="100" style="width:130px;">
+        <span id="wbSyncZoomVal">100%</span>
+      </div>
+
+      <button id="closeCompareModalBtn" class="modal-close" title="关闭比对工作台">&times;</button>
+    </div>
+
+    <!-- Mode 1: Free 2D Lighttable Canvas -->
+    <div id="wbCanvasArea" class="wb-canvas-area show-grid">
+      <div id="wbRefLine" class="wb-ref-line"></div>
+      <div id="wbFloatingContainer" style="width:100%; height:100%; position:relative;"></div>
+    </div>
+
+    <!-- Mode 2: Side-by-Side Synchronized Grid -->
+    <div id="wbSideBySideArea" class="wb-sidebyside-area">
+      <div id="wbSyncGrid" class="wb-sync-grid"></div>
+    </div>
+
+    <!-- Mode 3: Superimposed Overlay Mode -->
+    <div id="wbOverlayArea" class="wb-overlay-area">
+      <div class="wb-overlay-controls">
+        <label style="display:inline-flex; align-items:center; gap:6px; color:#fff; margin:0;">
+          <span>底层基准图 (A)：</span>
+          <select id="wbOverlaySelectA" style="width:220px; font-size:12px;"></select>
+        </label>
+        <label style="display:inline-flex; align-items:center; gap:6px; color:#fff; margin:0;">
+          <span>上层叠合图 (B，可直接拖动对齐)：</span>
+          <select id="wbOverlaySelectB" style="width:220px; font-size:12px;"></select>
+        </label>
+        <label style="display:inline-flex; align-items:center; gap:6px; color:#fff; margin:0;">
+          <span>叠层透明度：</span>
+          <input id="wbOverlayAlpha" type="range" min="10" max="100" value="65" style="width:110px;">
+          <span id="wbOverlayAlphaVal">65%</span>
+        </label>
+        <label style="display:inline-flex; align-items:center; gap:6px; color:#fff; margin:0;">
+          <span>叠层缩放：</span>
+          <input id="wbOverlayScale" type="range" min="40" max="220" value="100" style="width:110px;">
+          <span id="wbOverlayScaleVal">100%</span>
+        </label>
+        <button id="wbOverlayFlipBtn" class="wb-tool-btn" style="padding:4px 9px;">🔄 水平镜像叠层</button>
+        <button id="wbOverlayResetBtn" class="wb-tool-btn" style="padding:4px 9px;">复位叠层</button>
+      </div>
+      <div id="wbOverlayStage" class="wb-overlay-stage">
+        <img id="wbOverlayImgA" class="wb-overlay-base" alt="基准图">
+        <img id="wbOverlayImgB" class="wb-overlay-top" alt="叠合图">
+      </div>
+    </div>
+  </div>
 
   <!-- Lightbox Modal -->
   <div id="figureModal" class="modal">
@@ -869,8 +1516,9 @@
           <span id="modalFigureMeta" style="font-size:12px; color:#647870;"></span>
         </div>
         <p id="modalFigureCaption" style="font-size:13px; color:#2b3d37; line-height:1.5; margin-bottom:10px; white-space:pre-wrap;"></p>
-        <div style="display:flex; gap:10px; align-items:center;">
+        <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
           <button id="modalJumpBtn" class="primary figure-btn" style="flex:0 0 auto; padding:6px 16px;">📖 在原书原页中定位该图</button>
+          <button id="modalAddCompareBtn" class="gold-btn figure-btn" style="flex:0 0 auto; padding:6px 16px;">⚖️ 加入器物比对槽</button>
           <span class="muted">提示：若该图版含多件器物，可点击下方单件器物切片切换预览</span>
         </div>
         <div id="modalSubFigs" class="modal-subfigs" style="display:none;"></div>
@@ -881,9 +1529,16 @@
   <script>
     const $ = id => document.getElementById(id);
     let docs = [], pages = [], current = 0, bundle = null, selected = null;
-    let allToc = [], topUnits = [];
+    let allToc = [], topUnits = [], galleryNav = null;
     let activeIndexVol = 'all', activeUnit = '', activeFacet = 'artifacts';
-    let galleryPage = 1, galleryLimit = 48, galleryTotal = 0;
+    let galleryPage = 1, galleryLimit = 48, galleryTotal = 0, galleryActiveGroup = '';
+
+    // Comparison state
+    let compareList = [];
+    let wbActiveMode = 'canvas';
+    let wbTopZ = 20;
+    let draggedCardPayload = null;
+    let draggedDomCard = null;
 
     const request = async (url, options) => {
       let r = await fetch(url, options);
@@ -913,7 +1568,7 @@
     });
 
     // =========================================================
-    // Initialize Documents, 5-Volume TOC & Cross-Volume Index
+    // Initialize Documents, 5-Volume TOC, Gallery Nav & Index
     // =========================================================
     async function initApp() {
       docs = await request('/api/documents');
@@ -931,10 +1586,10 @@
         $('galleryDocFilter').appendChild(new Option(`${d.short_title} (${d.figures_count}图)`, d.id));
       }
 
-      // Load full TOC and Initial Cross-Volume Index in parallel
       await Promise.all([
         loadAllToc(),
         loadCrossIndex(),
+        loadGalleryNav(),
         docs.length ? loadDocument(0) : Promise.resolve()
       ]);
     }
@@ -1123,7 +1778,6 @@
         request(`/api/cross_index?manifest=${encodeURIComponent(activeIndexVol)}&unit=${encodeURIComponent(activeUnit)}&q=${encodeURIComponent(q)}&cross_only=${crossOnly}&limit=50`)
       ]);
 
-      // Combine volume counts from text hits + artifact hits
       let combinedVolCounts = {};
       for (let d of docs) {
         combinedVolCounts[d.id] = (searchData.volume_counts?.[d.id] || 0) + (indexData.volume_counts?.[d.id] || 0);
@@ -1140,10 +1794,8 @@
       renderFigureHits(searchData.figure_hits || []);
       renderTocHits(searchData.toc_hits || []);
 
-      // Also populate reader sidebar hits so user can step through them in Reader mode
       populateReaderHits(searchData.items || []);
 
-      // Auto-select the most informative facet if current facet has 0 results
       if (activeFacet === 'artifacts' && indexData.total_artifacts === 0) {
         if (searchData.total > 0) selectFacet('lines');
         else if ((searchData.figure_hits || []).length > 0) selectFacet('figures');
@@ -1172,6 +1824,11 @@
           : '';
         let unitBadge = art.unit ? `<span class="badge badge-unit">单位: ${art.unit}</span>` : '';
 
+        let thumbOccs = art.occurrences.filter(o => o.thumb_url);
+        let compareAllBtnHtml = thumbOccs.length > 0
+          ? `<button class="gold-btn compare-art-btn" style="font-size:11.5px; padding:2px 9px; margin-left:auto;">⚖️ 跨卷图像同台比对 (${thumbOccs.length}图)</button>`
+          : '';
+
         left.innerHTML = `
           <div class="art-head">
             <span class="art-code">${art.code}</span>
@@ -1179,9 +1836,32 @@
             ${crossBadge}
             ${unitBadge}
             ${volBadges}
+            ${compareAllBtnHtml}
           </div>
           <div class="occ-list"></div>
         `;
+
+        if (thumbOccs.length > 0) {
+          left.querySelector('.compare-art-btn').onclick = () => {
+            for (let tOcc of thumbOccs) {
+              addToCompare({
+                id: `${tOcc.manifest_id}:${tOcc.canvas_id}:${tOcc.xywh || tOcc.figure_number}`,
+                manifest_id: tOcc.manifest_id,
+                short_title: tOcc.short_title,
+                canvas_id: tOcc.canvas_id,
+                scan_index: tOcc.scan_index,
+                printed_page: tOcc.printed_page,
+                figure_number: `${tOcc.figure_number || ''} · ${art.code}`,
+                title: `${art.code} ${art.vessel_name || ''} (${tOcc.short_title})`,
+                caption: tOcc.snippet,
+                category: tOcc.role === 'drawing' ? 'line_drawing' : 'sub_plate',
+                xywh: tOcc.xywh,
+                image_url: tOcc.thumb_url
+              }, false);
+            }
+            openCompareModal();
+          };
+        }
 
         let occList = left.querySelector('.occ-list');
         for (let occ of art.occurrences) {
@@ -1208,31 +1888,42 @@
 
         card.appendChild(left);
 
-        // Right side: Thumbnail previews for occurrences with thumb_url
-        let thumbOccs = art.occurrences.filter(o => o.thumb_url);
         if (thumbOccs.length > 0) {
           let right = document.createElement('div');
           right.className = 'art-thumbs';
           for (let tOcc of thumbOccs.slice(0, 3)) {
+            let figObj = {
+              id: `${tOcc.manifest_id}:${tOcc.canvas_id}:${tOcc.xywh || tOcc.figure_number}`,
+              manifest_id: tOcc.manifest_id,
+              short_title: tOcc.short_title,
+              canvas_id: tOcc.canvas_id,
+              scan_index: tOcc.scan_index,
+              printed_page: tOcc.printed_page,
+              figure_number: `${tOcc.figure_number || ''} · ${art.code}`,
+              title: `${art.code} ${art.vessel_name || ''}`,
+              caption: tOcc.snippet,
+              category: tOcc.role === 'drawing' ? 'line_drawing' : 'sub_plate',
+              xywh: tOcc.xywh,
+              image_url: tOcc.thumb_url
+            };
             let tBox = document.createElement('div');
             tBox.className = 'art-thumb-box';
-            tBox.title = '点击放大查看器物图版';
+            tBox.draggable = true;
+            tBox.title = '点击放大查看器物图版，或直接拖拽至下方比对工作槽';
             tBox.innerHTML = `
               <img src="${tOcc.thumb_url}" loading="lazy" alt="${art.code}">
               <div class="art-thumb-label">${tOcc.figure_number || tOcc.short_title}</div>
             `;
-            tBox.onclick = () => {
-              openFigureModal({
-                manifest_id: tOcc.manifest_id,
-                canvas_id: tOcc.canvas_id,
-                scan_index: tOcc.scan_index,
-                printed_page: tOcc.printed_page,
-                figure_number: `${tOcc.figure_number || ''} · ${art.code}`,
-                caption: tOcc.snippet,
-                xywh: tOcc.xywh,
-                image_url: tOcc.thumb_url
-              }, tOcc.short_title);
-            };
+            tBox.onclick = () => openFigureModal(figObj, tOcc.short_title);
+            tBox.addEventListener('dragstart', e => {
+              draggedCardPayload = figObj;
+              e.dataTransfer.setData('text/plain', figObj.id);
+              $('compareDock').classList.add('drag-active');
+            });
+            tBox.addEventListener('dragend', () => {
+              draggedCardPayload = null;
+              $('compareDock').classList.remove('drag-active');
+            });
             right.appendChild(tBox);
           }
           card.appendChild(right);
@@ -1353,15 +2044,255 @@
     });
 
     // =========================================================
-    // View 2: Dedicated Plates & Figures Gallery
+    // View 2: Gallery Left Sidebar Directory & Figure Cards
     // =========================================================
+    async function loadGalleryNav() {
+      galleryNav = await request('/api/gallery_nav');
+      renderGalleryTree();
+      renderGalleryFacets();
+      renderGalleryUnits();
+    }
+
+    function selectGallerySideTab(tab) {
+      $('btnGalTree').classList.toggle('primary', tab === 'tree');
+      $('btnGalFacets').classList.toggle('primary', tab === 'facets');
+      $('btnGalUnits').classList.toggle('primary', tab === 'units');
+      $('galTreePane').style.display = tab === 'tree' ? 'flex' : 'none';
+      $('galFacetsPane').style.display = tab === 'facets' ? 'flex' : 'none';
+      $('galUnitsPane').style.display = tab === 'units' ? 'flex' : 'none';
+    }
+    $('btnGalTree').onclick = () => selectGallerySideTab('tree');
+    $('btnGalFacets').onclick = () => selectGallerySideTab('facets');
+    $('btnGalUnits').onclick = () => selectGallerySideTab('units');
+
+    function renderGalleryTree() {
+      if (!galleryNav) return;
+      let container = $('galTreeScroll');
+      container.replaceChildren();
+      let q = $('galTreeFilterInput').value.trim().toLowerCase();
+
+      for (let vol of galleryNav.volumes || []) {
+        let groups = vol.groups || [];
+        if (q) {
+          groups = groups.filter(g => {
+            let gName = g.group || g.name || '';
+            return gName.toLowerCase().includes(q) ||
+              (g.items || []).some(it => ((it.title || it.figure_number || '') + ' ' + (it.caption || '')).toLowerCase().includes(q));
+          });
+        }
+        if (!groups.length) continue;
+
+        let acc = document.createElement('div');
+        acc.className = 'vol-accordion';
+
+        let head = document.createElement('div');
+        head.className = 'vol-acc-head';
+        head.innerHTML = `
+          <span>📚 ${vol.short_title}</span>
+          <span style="font-size:11px; color:#526b62;">${vol.total_figures}幅 / ${vol.total_sub_figures}切片 ▾</span>
+        `;
+
+        let body = document.createElement('div');
+        body.className = 'vol-acc-body';
+
+        // All in volume row
+        let allRow = document.createElement('div');
+        allRow.className = 'gal-group-row' + ($('galleryDocFilter').value === vol.manifest_id && !galleryActiveGroup ? ' active' : '');
+        allRow.innerHTML = `<span>📖 浏览${vol.short_title}全部图版</span><span class="gal-group-cnt">${vol.total_figures}</span>`;
+        allRow.onclick = () => {
+          $('galleryDocFilter').value = vol.manifest_id;
+          $('galleryTypeFilter').value = 'all';
+          galleryActiveGroup = '';
+          updateGalleryGroupBadge();
+          renderGalleryTree();
+          loadGallery(1);
+        };
+        body.appendChild(allRow);
+
+        for (let g of groups) {
+          let gName = g.group || g.name || '';
+          let gWrap = document.createElement('div');
+          gWrap.className = 'gal-group-item';
+
+          let isGroupActive = ($('galleryDocFilter').value === vol.manifest_id && galleryActiveGroup === gName);
+          let gRow = document.createElement('div');
+          gRow.className = 'gal-group-row' + (isGroupActive ? ' active' : '');
+          gRow.innerHTML = `
+            <span style="flex:1;"><span class="exp-arrow" style="display:inline-block; width:14px;">▸</span>${gName}</span>
+            <span class="gal-group-cnt">${g.count}幅</span>
+          `;
+
+          let subList = document.createElement('div');
+          subList.className = 'gal-sublist';
+          if (q) subList.style.display = 'block';
+
+          for (let it of (g.items || [])) {
+            let itTitle = it.title || it.figure_number || '';
+            if (q && !(itTitle + ' ' + (it.caption || '')).toLowerCase().includes(q) && !gName.toLowerCase().includes(q)) continue;
+            let sItem = document.createElement('div');
+            sItem.className = 'gal-subitem';
+            let pLabel = it.printed_page ? `p.${it.printed_page}` : `#${it.scan_index}`;
+            sItem.innerHTML = `
+              <span style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap; flex:1;" title="${itTitle} ${it.caption || ''}">${itTitle}</span>
+              <span style="color:#7c8f88; flex-shrink:0;">${pLabel}</span>
+            `;
+            sItem.onclick = e => {
+              e.stopPropagation();
+              openFigureModal(it, vol.short_title);
+            };
+            subList.appendChild(sItem);
+          }
+
+          gRow.onclick = () => {
+            let isOpen = subList.style.display === 'block';
+            subList.style.display = isOpen ? 'none' : 'block';
+            gRow.querySelector('.exp-arrow').textContent = isOpen ? '▸' : '▾';
+            $('galleryDocFilter').value = vol.manifest_id;
+            $('galleryTypeFilter').value = 'all';
+            galleryActiveGroup = gName;
+            $('galleryQuery').value = '';
+            updateGalleryGroupBadge();
+            loadGallery(1);
+          };
+
+          gWrap.appendChild(gRow);
+          gWrap.appendChild(subList);
+          body.appendChild(gWrap);
+        }
+
+        head.onclick = () => {
+          body.style.display = body.style.display === 'none' ? 'block' : 'none';
+        };
+        acc.appendChild(head);
+        acc.appendChild(body);
+        container.appendChild(acc);
+      }
+    }
+
+    function renderGalleryFacets() {
+      if (!galleryNav) return;
+      let glazeBox = $('galGlazeChips');
+      let shapeBox = $('galShapeChips');
+      glazeBox.replaceChildren();
+      shapeBox.replaceChildren();
+      let curQ = $('galleryQuery').value.trim();
+
+      for (let g of galleryNav.glazes || []) {
+        let chip = document.createElement('button');
+        chip.className = 'facet-chip' + (curQ === g.name ? ' active' : '');
+        chip.innerHTML = `<span>${g.name}</span><span class="fc-cnt">(${g.count})</span>`;
+        chip.onclick = () => {
+          $('galleryQuery').value = ($('galleryQuery').value === g.name) ? '' : g.name;
+          galleryActiveGroup = '';
+          updateGalleryGroupBadge();
+          renderGalleryFacets();
+          loadGallery(1);
+        };
+        glazeBox.appendChild(chip);
+      }
+
+      for (let s of galleryNav.shapes || []) {
+        let chip = document.createElement('button');
+        chip.className = 'facet-chip' + (curQ === s.name ? ' active' : '');
+        chip.innerHTML = `<span>${s.name}</span><span class="fc-cnt">(${s.count})</span>`;
+        chip.onclick = () => {
+          $('galleryQuery').value = ($('galleryQuery').value === s.name) ? '' : s.name;
+          galleryActiveGroup = '';
+          updateGalleryGroupBadge();
+          renderGalleryFacets();
+          loadGallery(1);
+        };
+        shapeBox.appendChild(chip);
+      }
+    }
+
+    function renderGalleryUnits() {
+      if (!galleryNav) return;
+      let container = $('galUnitScroll');
+      container.replaceChildren();
+      let q = $('galUnitFilterInput').value.trim().toUpperCase();
+      let curQ = $('galleryQuery').value.trim().toUpperCase();
+
+      let grid = document.createElement('div');
+      grid.className = 'unit-grid';
+      for (let u of galleryNav.units || []) {
+        if (q && !u.unit.toUpperCase().includes(q)) continue;
+        let chip = document.createElement('div');
+        chip.className = 'unit-chip' + (curQ === u.unit.toUpperCase() ? ' active' : '');
+        chip.innerHTML = `<strong>${u.unit}</strong><span class="u-cnt">${u.count}件</span>`;
+        chip.onclick = () => {
+          $('galleryQuery').value = ($('galleryQuery').value === u.unit) ? '' : u.unit;
+          $('galleryDocFilter').value = 'all';
+          galleryActiveGroup = '';
+          updateGalleryGroupBadge();
+          renderGalleryUnits();
+          loadGallery(1);
+        };
+        grid.appendChild(chip);
+      }
+      container.appendChild(grid);
+    }
+
+    function updateGalleryGroupBadge() {
+      let badge = $('galleryActiveGroupBadge');
+      if (galleryActiveGroup) {
+        badge.style.display = 'inline-flex';
+        badge.className = 'active-filter-tag';
+        badge.innerHTML = `<span>📂 目录分类：${galleryActiveGroup}</span><button title="清除目录分类筛选">✕</button>`;
+        badge.querySelector('button').onclick = () => {
+          galleryActiveGroup = '';
+          updateGalleryGroupBadge();
+          renderGalleryTree();
+          loadGallery(1);
+        };
+      } else {
+        badge.style.display = 'none';
+      }
+    }
+
+    $('galTreeFilterInput').oninput = () => renderGalleryTree();
+    $('galTreeResetBtn').onclick = () => {
+      $('galTreeFilterInput').value = '';
+      $('galleryDocFilter').value = 'all';
+      $('galleryQuery').value = '';
+      galleryActiveGroup = '';
+      updateGalleryGroupBadge();
+      renderGalleryTree();
+      loadGallery(1);
+    };
+    $('clearGalFacetBtn').onclick = () => {
+      $('galleryQuery').value = '';
+      galleryActiveGroup = '';
+      updateGalleryGroupBadge();
+      renderGalleryFacets();
+      loadGallery(1);
+    };
+    $('galUnitFilterInput').oninput = () => renderGalleryUnits();
+    $('galUnitResetBtn').onclick = () => {
+      $('galUnitFilterInput').value = '';
+      $('galleryQuery').value = '';
+      renderGalleryUnits();
+      loadGallery(1);
+    };
+
+    // Create Figure Card with Free Drag-and-Drop & Compare Button
     function createFigureCard(fig) {
       let card = document.createElement('div');
-      card.className = 'figure-card';
+      let figId = fig.id || `${fig.manifest_id}:${fig.canvas_id}:${fig.xywh || fig.figure_number}`;
+      fig.id = figId;
+      let inComp = compareList.some(c => c.id === figId);
+      card.className = 'figure-card' + (inComp ? ' in-compare-card' : '');
+      card.draggable = true;
+      card.dataset.figId = figId;
+
       let pStr = fig.printed_page ? `第 ${fig.printed_page} 页` : `物理页 ${fig.scan_index}`;
       let typeBadge = fig.category === 'line_drawing' ? '📐 线图' : (fig.category === 'sub_plate' ? '🏺 器物特写' : '🎨 彩色图版');
 
       card.innerHTML = `
+        <div class="card-drag-bar" title="按住卡片可自由拖动排序，或拖入下方器物比对工作槽">
+          <span>⠿ 自由拖动排序 / 拖入比对</span>
+          <span>${typeBadge}</span>
+        </div>
         <div class="figure-img-wrapper" title="点击放大查看高清图版">
           <img src="${fig.image_url}" loading="lazy" alt="${fig.figure_number}">
         </div>
@@ -1371,19 +2302,65 @@
               <span class="figure-num">${fig.title || fig.figure_number}</span>
               <span class="figure-book">${fig.short_title || fig.work_title} · ${pStr}</span>
             </div>
-            <div class="figure-caption" title="${fig.caption || ''}">${typeBadge} | ${fig.caption || ''}</div>
+            <div class="figure-caption" title="${fig.caption || ''}">${fig.caption || ''}</div>
           </div>
           <div class="figure-footer">
-            <button class="figure-btn view-large-btn">🔍 高清放大</button>
-            <button class="figure-btn primary jump-page-btn">📖 定位原页</button>
+            <button class="figure-btn view-large-btn">🔍 放大</button>
+            <button class="figure-btn gold-btn compare-toggle-btn ${inComp ? 'in-compare' : ''}">${inComp ? '✓ 已在比对' : '⚖️ +对比'}</button>
+            <button class="figure-btn primary jump-page-btn">📖 原页</button>
           </div>
         </div>
       `;
+
       card.querySelector('.figure-img-wrapper').onclick = () => openFigureModal(fig, fig.short_title || fig.work_title);
       card.querySelector('.view-large-btn').onclick = () => openFigureModal(fig, fig.short_title || fig.work_title);
+      card.querySelector('.compare-toggle-btn').onclick = () => toggleCompareItem(fig);
       card.querySelector('.jump-page-btn').onclick = () => {
         jumpToPage(fig.manifest_id, fig.canvas_id, fig.scan_index, fig.xywh, 'figure');
       };
+
+      // Drag-and-drop: support both reordering in grid and dropping into #compareDock
+      card.addEventListener('dragstart', e => {
+        draggedCardPayload = fig;
+        draggedDomCard = card;
+        card.classList.add('dragging');
+        $('compareDock').classList.add('drag-active');
+        e.dataTransfer.effectAllowed = 'copyMove';
+        e.dataTransfer.setData('text/plain', figId);
+      });
+      card.addEventListener('dragend', () => {
+        card.classList.remove('dragging');
+        $('compareDock').classList.remove('drag-active');
+        document.querySelectorAll('.figure-card.drag-over').forEach(el => el.classList.remove('drag-over'));
+        draggedCardPayload = null;
+        draggedDomCard = null;
+      });
+      card.addEventListener('dragover', e => {
+        e.preventDefault();
+        if (draggedDomCard && draggedDomCard !== card && draggedDomCard.parentElement === card.parentElement) {
+          card.classList.add('drag-over');
+        }
+      });
+      card.addEventListener('dragleave', () => {
+        card.classList.remove('drag-over');
+      });
+      card.addEventListener('drop', e => {
+        e.preventDefault();
+        card.classList.remove('drag-over');
+        if (draggedDomCard && draggedDomCard !== card && draggedDomCard.parentElement === card.parentElement) {
+          let parent = card.parentElement;
+          let cards = [...parent.children];
+          let fromIdx = cards.indexOf(draggedDomCard);
+          let toIdx = cards.indexOf(card);
+          if (fromIdx < toIdx) {
+            parent.insertBefore(draggedDomCard, card.nextSibling);
+          } else {
+            parent.insertBefore(draggedDomCard, card);
+          }
+          notice('已自由调整展厅器物卡片排列顺序（您也可以将卡片拖入底部比对工作槽进行同台比对）。');
+        }
+      });
+
       return card;
     }
 
@@ -1394,7 +2371,8 @@
       let q = $('galleryQuery').value.trim();
       notice('正在载入考古图版与器物切片…');
 
-      let res = await request(`/api/figures?manifest=${encodeURIComponent(docId)}&type=${encodeURIComponent(fType)}&q=${encodeURIComponent(q)}&page=${galleryPage}&limit=${galleryLimit}`);
+      let url = `/api/figures?manifest=${encodeURIComponent(docId)}&type=${encodeURIComponent(fType)}&group=${encodeURIComponent(galleryActiveGroup)}&q=${encodeURIComponent(q)}&page=${galleryPage}&limit=${galleryLimit}`;
+      let res = await request(url);
       galleryTotal = res.total || 0;
       let totalPages = Math.max(1, Math.ceil(galleryTotal / galleryLimit));
       $('galleryCount').textContent = `共匹配 ${galleryTotal} 幅图版`;
@@ -1411,15 +2389,481 @@
           grid.appendChild(createFigureCard(fig));
         }
       }
-      notice(`图版展厅已加载：共 ${galleryTotal} 幅图像，当前第 ${galleryPage}/${totalPages} 页。`);
+      notice(`图版展厅已加载：共 ${galleryTotal} 幅图像，当前第 ${galleryPage}/${totalPages} 页。可自由拖动卡片排序或拖入底部比对槽。`);
     }
 
-    $('galleryDocFilter').onchange = () => loadGallery(1);
+    $('galleryDocFilter').onchange = () => {
+      galleryActiveGroup = '';
+      updateGalleryGroupBadge();
+      renderGalleryTree();
+      loadGallery(1);
+    };
     $('galleryTypeFilter').onchange = () => loadGallery(1);
     $('gallerySearchBtn').onclick = () => loadGallery(1);
     $('galleryQuery').onkeydown = e => { if (e.key === 'Enter') loadGallery(1); };
     $('galleryPrevBtn').onclick = () => { if (galleryPage > 1) loadGallery(galleryPage - 1); };
     $('galleryNextBtn').onclick = () => loadGallery(galleryPage + 1);
+
+    // =========================================================
+    // Multi-Artifact Comparison Dock & Workbench Logic
+    // =========================================================
+    function toggleCompareItem(fig) {
+      let id = fig.id || `${fig.manifest_id}:${fig.canvas_id}:${fig.xywh || fig.figure_number}`;
+      fig.id = id;
+      let idx = compareList.findIndex(c => c.id === id);
+      if (idx >= 0) {
+        compareList.splice(idx, 1);
+        notice(`已从器物比对槽移除：${fig.title || fig.figure_number}`);
+      } else {
+        addToCompare(fig, true);
+      }
+      syncCompareButtons();
+      renderCompareDock();
+    }
+
+    function addToCompare(fig, showNotice = true) {
+      let id = fig.id || `${fig.manifest_id}:${fig.canvas_id}:${fig.xywh || fig.figure_number}`;
+      fig.id = id;
+      if (!compareList.some(c => c.id === id)) {
+        let count = compareList.length;
+        compareList.push({
+          ...fig,
+          x: 40 + (count % 4) * 310,
+          y: 35 + Math.floor(count / 4) * 280,
+          w: 295,
+          h: 340,
+          scale: 1,
+          flipX: false,
+          invert: false,
+          z: ++wbTopZ
+        });
+        if (showNotice) {
+          notice(`已加入器物比对槽 (${compareList.length}件)：${fig.title || fig.figure_number}`);
+        }
+      }
+      syncCompareButtons();
+      renderCompareDock();
+    }
+
+    function syncCompareButtons() {
+      let ids = new Set(compareList.map(c => c.id));
+      document.querySelectorAll('.figure-card').forEach(card => {
+        let fid = card.dataset.figId;
+        let inComp = ids.has(fid);
+        card.classList.toggle('in-compare-card', inComp);
+        let btn = card.querySelector('.compare-toggle-btn');
+        if (btn) {
+          btn.classList.toggle('in-compare', inComp);
+          btn.textContent = inComp ? '✓ 已在比对' : '⚖️ +对比';
+        }
+      });
+    }
+
+    function renderCompareDock() {
+      $('compareCount').textContent = compareList.length;
+      let list = $('compareDockList');
+      list.replaceChildren();
+      if (!compareList.length) {
+        list.innerHTML = '<div class="dock-empty-hint">💡 拖动任意器物卡片至此，或点击卡片上的「⚖️ +对比」即可自由同台比对</div>';
+        return;
+      }
+      for (let item of compareList) {
+        let chip = document.createElement('div');
+        chip.className = 'dock-thumb';
+        chip.innerHTML = `
+          <img src="${item.image_url}" alt="${item.figure_number || ''}">
+          <span style="max-width:120px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${item.title || item.figure_number}">${item.title || item.figure_number}</span>
+          <button class="dock-thumb-rm" title="移除">&times;</button>
+        `;
+        chip.querySelector('.dock-thumb-rm').onclick = () => {
+          compareList = compareList.filter(c => c.id !== item.id);
+          syncCompareButtons();
+          renderCompareDock();
+          if ($('compareModal').classList.contains('active')) {
+            renderWorkbench();
+          }
+        };
+        list.appendChild(chip);
+      }
+    }
+
+    // Drop target on #compareDock
+    $('compareDock').addEventListener('dragover', e => {
+      e.preventDefault();
+      $('compareDock').classList.add('drag-active');
+    });
+    $('compareDock').addEventListener('dragleave', () => {
+      $('compareDock').classList.remove('drag-active');
+    });
+    $('compareDock').addEventListener('drop', e => {
+      e.preventDefault();
+      $('compareDock').classList.remove('drag-active');
+      if (draggedCardPayload) {
+        addToCompare(draggedCardPayload, true);
+      }
+    });
+
+    $('clearCompareBtn').onclick = () => {
+      compareList = [];
+      syncCompareButtons();
+      renderCompareDock();
+      if ($('compareModal').classList.contains('active')) {
+        renderWorkbench();
+      }
+    };
+
+    $('openCompareBtn').onclick = () => openCompareModal();
+    $('closeCompareModalBtn').onclick = () => $('compareModal').classList.remove('active');
+
+    function openCompareModal() {
+      $('compareModal').classList.add('active');
+      renderWorkbench();
+    }
+
+    document.querySelectorAll('.wb-mode-btn').forEach(btn => {
+      btn.onclick = () => {
+        wbActiveMode = btn.dataset.wbmode;
+        document.querySelectorAll('.wb-mode-btn').forEach(b => b.classList.toggle('active', b === btn));
+        $('wbCanvasArea').style.display = wbActiveMode === 'canvas' ? 'block' : 'none';
+        $('wbCanvasToolbar').style.display = wbActiveMode === 'canvas' ? 'flex' : 'none';
+        $('wbSideBySideArea').style.display = wbActiveMode === 'sidebyside' ? 'block' : 'none';
+        $('wbSyncToolbar').style.display = wbActiveMode === 'sidebyside' ? 'flex' : 'none';
+        $('wbOverlayArea').style.display = wbActiveMode === 'overlay' ? 'flex' : 'none';
+        renderWorkbench();
+      };
+    });
+
+    function renderWorkbench() {
+      if (wbActiveMode === 'canvas') {
+        renderWorkbenchCanvas();
+      } else if (wbActiveMode === 'sidebyside') {
+        renderWorkbenchSideBySide();
+      } else if (wbActiveMode === 'overlay') {
+        renderWorkbenchOverlay();
+      }
+    }
+
+    // Mode 1: Free 2D Lighttable Canvas with Pointer Dragging & Resizing
+    function renderWorkbenchCanvas() {
+      let container = $('wbFloatingContainer');
+      container.replaceChildren();
+      if (!compareList.length) {
+        container.innerHTML = '<div class="empty" style="color:#b8ccc4; padding-top:120px;">比对工作台暂无器物卡片。请先从展厅或跨卷索引中添加器物卡片。</div>';
+        return;
+      }
+
+      for (let item of compareList) {
+        let fCard = document.createElement('div');
+        fCard.className = 'wb-float-card';
+        fCard.style.left = (item.x || 40) + 'px';
+        fCard.style.top = (item.y || 40) + 'px';
+        fCard.style.width = (item.w || 295) + 'px';
+        fCard.style.height = (item.h || 340) + 'px';
+        fCard.style.zIndex = item.z || 20;
+
+        let pStr = item.printed_page ? `p.${item.printed_page}` : `#${item.scan_index}`;
+        fCard.innerHTML = `
+          <div class="wb-card-head" title="按住标题栏可在画布上任意自由拖动位置">
+            <span style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">⠿ [${item.short_title || ''}] ${item.title || item.figure_number}</span>
+            <button class="dock-thumb-rm wb-rm-btn" title="从比对台移除">&times;</button>
+          </div>
+          <div class="wb-card-tools">
+            <button class="wb-tool-btn z-out" title="缩小">➖</button>
+            <span class="z-label" style="font-size:11px; min-width:36px; text-align:center;">${Math.round((item.scale || 1) * 100)}%</span>
+            <button class="wb-tool-btn z-in" title="放大">➕</button>
+            <button class="wb-tool-btn z-reset" title="1:1 复位">1:1</button>
+            <button class="wb-tool-btn flip-btn ${item.flipX ? 'active' : ''}" title="水平镜像翻转（用于比对器物左右剖面）">🔄 镜像</button>
+            <button class="wb-tool-btn inv-btn ${item.invert ? 'active' : ''}" title="反相增强（用于凸显墨线图细节）">◐ 反相</button>
+            <button class="wb-tool-btn jump-btn" style="margin-left:auto;" title="定位至原书页面">📖 ${pStr}</button>
+          </div>
+          <div class="wb-card-stage" title="滚轮可缩放器物图像">
+            <img src="${item.image_url}" alt="${item.title || item.figure_number}">
+          </div>
+          <div class="wb-card-foot">${item.caption || ''}</div>
+          <div class="wb-resize-handle" title="拖拽右下角可自由调整卡片大小"></div>
+        `;
+
+        let imgEl = fCard.querySelector('.wb-card-stage img');
+        let zLabel = fCard.querySelector('.z-label');
+        function applyTransform() {
+          let sx = (item.scale || 1) * (item.flipX ? -1 : 1);
+          let sy = item.scale || 1;
+          imgEl.style.transform = `scale(${sx}, ${sy})`;
+          imgEl.style.filter = item.invert ? 'invert(1) contrast(1.15)' : 'none';
+          zLabel.textContent = `${Math.round((item.scale || 1) * 100)}%`;
+        }
+        applyTransform();
+
+        fCard.addEventListener('pointerdown', () => {
+          item.z = ++wbTopZ;
+          fCard.style.zIndex = item.z;
+          document.querySelectorAll('.wb-float-card').forEach(c => c.classList.remove('active-card'));
+          fCard.classList.add('active-card');
+        });
+
+        // Header free drag
+        let headEl = fCard.querySelector('.wb-card-head');
+        headEl.addEventListener('pointerdown', e => {
+          if (e.target.closest('button')) return;
+          e.preventDefault();
+          headEl.setPointerCapture(e.pointerId);
+          let startX = e.clientX - (item.x || 0);
+          let startY = e.clientY - (item.y || 0);
+          const onMove = ev => {
+            item.x = Math.max(0, ev.clientX - startX);
+            item.y = Math.max(0, ev.clientY - startY);
+            fCard.style.left = item.x + 'px';
+            fCard.style.top = item.y + 'px';
+          };
+          const onUp = ev => {
+            headEl.releasePointerCapture(ev.pointerId);
+            headEl.removeEventListener('pointermove', onMove);
+            headEl.removeEventListener('pointerup', onUp);
+          };
+          headEl.addEventListener('pointermove', onMove);
+          headEl.addEventListener('pointerup', onUp);
+        });
+
+        // Corner free resize
+        let resizeEl = fCard.querySelector('.wb-resize-handle');
+        resizeEl.addEventListener('pointerdown', e => {
+          e.preventDefault();
+          e.stopPropagation();
+          resizeEl.setPointerCapture(e.pointerId);
+          let startW = item.w || 295;
+          let startH = item.h || 340;
+          let startX = e.clientX;
+          let startY = e.clientY;
+          const onMove = ev => {
+            item.w = Math.max(220, startW + (ev.clientX - startX));
+            item.h = Math.max(230, startH + (ev.clientY - startY));
+            fCard.style.width = item.w + 'px';
+            fCard.style.height = item.h + 'px';
+          };
+          const onUp = ev => {
+            resizeEl.releasePointerCapture(ev.pointerId);
+            resizeEl.removeEventListener('pointermove', onMove);
+            resizeEl.removeEventListener('pointerup', onUp);
+          };
+          resizeEl.addEventListener('pointermove', onMove);
+          resizeEl.addEventListener('pointerup', onUp);
+        });
+
+        // Wheel zoom on stage
+        fCard.querySelector('.wb-card-stage').addEventListener('wheel', e => {
+          e.preventDefault();
+          let delta = e.deltaY < 0 ? 0.12 : -0.12;
+          item.scale = Math.min(3.5, Math.max(0.4, (item.scale || 1) + delta));
+          applyTransform();
+        });
+
+        // Tool buttons
+        fCard.querySelector('.z-in').onclick = () => { item.scale = Math.min(3.5, (item.scale || 1) + 0.2); applyTransform(); };
+        fCard.querySelector('.z-out').onclick = () => { item.scale = Math.max(0.4, (item.scale || 1) - 0.2); applyTransform(); };
+        fCard.querySelector('.z-reset').onclick = () => { item.scale = 1; item.flipX = false; item.invert = false; applyTransform(); };
+        fCard.querySelector('.flip-btn').onclick = e => {
+          item.flipX = !item.flipX;
+          e.currentTarget.classList.toggle('active', item.flipX);
+          applyTransform();
+        };
+        fCard.querySelector('.inv-btn').onclick = e => {
+          item.invert = !item.invert;
+          e.currentTarget.classList.toggle('active', item.invert);
+          applyTransform();
+        };
+        fCard.querySelector('.jump-btn').onclick = () => {
+          $('compareModal').classList.remove('active');
+          jumpToPage(item.manifest_id, item.canvas_id, item.scan_index, item.xywh, 'figure');
+        };
+        fCard.querySelector('.wb-rm-btn').onclick = () => {
+          compareList = compareList.filter(c => c.id !== item.id);
+          syncCompareButtons();
+          renderCompareDock();
+          renderWorkbench();
+        };
+
+        container.appendChild(fCard);
+      }
+    }
+
+    // Auto-tile cards on canvas
+    $('wbTileBtn').onclick = () => {
+      let areaW = $('wbCanvasArea').clientWidth || 1200;
+      let cols = Math.max(1, Math.floor((areaW - 30) / 315));
+      compareList.forEach((item, idx) => {
+        item.x = 24 + (idx % cols) * 312;
+        item.y = 24 + Math.floor(idx / cols) * 355;
+        item.w = 295;
+        item.h = 340;
+      });
+      renderWorkbenchCanvas();
+    };
+
+    $('wbToggleGridBtn').onclick = e => {
+      $('wbCanvasArea').classList.toggle('show-grid');
+      e.currentTarget.classList.toggle('active', $('wbCanvasArea').classList.contains('show-grid'));
+    };
+
+    $('wbToggleRefLineBtn').onclick = e => {
+      let line = $('wbRefLine');
+      let show = line.style.display !== 'block';
+      line.style.display = show ? 'block' : 'none';
+      e.currentTarget.classList.toggle('active', show);
+    };
+
+    // Draggable horizontal reference line
+    (() => {
+      let refLine = $('wbRefLine');
+      refLine.addEventListener('pointerdown', e => {
+        e.preventDefault();
+        refLine.setPointerCapture(e.pointerId);
+        const onMove = ev => {
+          let rect = $('wbCanvasArea').getBoundingClientRect();
+          let top = Math.max(24, Math.min(rect.height - 16, ev.clientY - rect.top));
+          refLine.style.top = top + 'px';
+        };
+        const onUp = ev => {
+          refLine.releasePointerCapture(ev.pointerId);
+          refLine.removeEventListener('pointermove', onMove);
+          refLine.removeEventListener('pointerup', onUp);
+        };
+        refLine.addEventListener('pointermove', onMove);
+        refLine.addEventListener('pointerup', onUp);
+      });
+    })();
+
+    // Mode 2: Side-by-Side Synchronized Grid
+    function renderWorkbenchSideBySide() {
+      let grid = $('wbSyncGrid');
+      grid.replaceChildren();
+      if (!compareList.length) {
+        grid.innerHTML = '<div class="empty" style="color:#b8ccc4;">比对工作台暂无器物卡片。</div>';
+        return;
+      }
+      let syncScale = Number($('wbSyncZoomSlider').value) / 100;
+      for (let item of compareList) {
+        let col = document.createElement('div');
+        col.className = 'wb-sync-col';
+        let pStr = item.printed_page ? `第 ${item.printed_page} 页` : `物理页 ${item.scan_index}`;
+        let typeBadge = item.category === 'line_drawing' ? '📐 器物/遗迹线图' : '🏺 彩色图版';
+        col.innerHTML = `
+          <div class="wb-card-head" style="cursor:default;">
+            <span>[${item.short_title || ''}] ${item.title || item.figure_number}</span>
+            <span style="font-size:11px; opacity:0.85;">${pStr}</span>
+          </div>
+          <div class="wb-sync-imgbox">
+            <img src="${item.image_url}" style="transform:scale(${syncScale})" alt="${item.title || item.figure_number}">
+          </div>
+          <div style="padding:12px 14px; font-size:12.5px; color:#2b3e38; flex:1; display:flex; flex-direction:column; justify-content:space-between;">
+            <div>
+              <div style="margin-bottom:6px;"><span class="badge badge-unit">${typeBadge}</span> <span class="badge badge-vol">${item.figure_number || ''}</span></div>
+              <p style="line-height:1.5; margin-bottom:10px;">${item.caption || ''}</p>
+            </div>
+            <button class="figure-btn primary jump-sync-btn" style="flex:0 0 auto;">📖 在原书第 ${item.printed_page || item.scan_index} 页中定位</button>
+          </div>
+        `;
+        col.querySelector('.jump-sync-btn').onclick = () => {
+          $('compareModal').classList.remove('active');
+          jumpToPage(item.manifest_id, item.canvas_id, item.scan_index, item.xywh, 'figure');
+        };
+        grid.appendChild(col);
+      }
+    }
+
+    $('wbSyncZoomSlider').oninput = e => {
+      $('wbSyncZoomVal').textContent = e.target.value + '%';
+      let sc = Number(e.target.value) / 100;
+      document.querySelectorAll('#wbSyncGrid .wb-sync-imgbox img').forEach(img => {
+        img.style.transform = `scale(${sc})`;
+      });
+    };
+
+    // Mode 3: Superimposed Overlay Mode (Line Drawing over Color Photo)
+    let overlayOffset = { x: 0, y: 0, flip: false };
+    function renderWorkbenchOverlay() {
+      let selA = $('wbOverlaySelectA');
+      let selB = $('wbOverlaySelectB');
+      selA.replaceChildren();
+      selB.replaceChildren();
+      if (!compareList.length) {
+        $('wbOverlayImgA').src = '';
+        $('wbOverlayImgB').src = '';
+        return;
+      }
+      compareList.forEach((item, idx) => {
+        let label = `[${item.short_title || ''}] ${item.title || item.figure_number}`;
+        selA.appendChild(new Option(label, idx));
+        selB.appendChild(new Option(label, idx));
+      });
+      selA.value = 0;
+      selB.value = compareList.length > 1 ? 1 : 0;
+      updateOverlayImages();
+    }
+
+    function updateOverlayImages() {
+      let a = compareList[Number($('wbOverlaySelectA').value)];
+      let b = compareList[Number($('wbOverlaySelectB').value)];
+      if (a) $('wbOverlayImgA').src = a.image_url;
+      if (b) $('wbOverlayImgB').src = b.image_url;
+      applyOverlayTransform();
+    }
+
+    function applyOverlayTransform() {
+      let imgB = $('wbOverlayImgB');
+      let alpha = Number($('wbOverlayAlpha').value) / 100;
+      let sc = Number($('wbOverlayScale').value) / 100;
+      let sx = sc * (overlayOffset.flip ? -1 : 1);
+      imgB.style.opacity = alpha;
+      imgB.style.transform = `translate(${overlayOffset.x}px, ${overlayOffset.y}px) scale(${sx}, ${sc})`;
+    }
+
+    $('wbOverlaySelectA').onchange = updateOverlayImages;
+    $('wbOverlaySelectB').onchange = updateOverlayImages;
+    $('wbOverlayAlpha').oninput = e => {
+      $('wbOverlayAlphaVal').textContent = e.target.value + '%';
+      applyOverlayTransform();
+    };
+    $('wbOverlayScale').oninput = e => {
+      $('wbOverlayScaleVal').textContent = e.target.value + '%';
+      applyOverlayTransform();
+    };
+    $('wbOverlayFlipBtn').onclick = e => {
+      overlayOffset.flip = !overlayOffset.flip;
+      e.currentTarget.classList.toggle('active', overlayOffset.flip);
+      applyOverlayTransform();
+    };
+    $('wbOverlayResetBtn').onclick = () => {
+      overlayOffset = { x: 0, y: 0, flip: false };
+      $('wbOverlayAlpha').value = 65;
+      $('wbOverlayAlphaVal').textContent = '65%';
+      $('wbOverlayScale').value = 100;
+      $('wbOverlayScaleVal').textContent = '100%';
+      $('wbOverlayFlipBtn').classList.remove('active');
+      applyOverlayTransform();
+    };
+
+    // Drag overlay top image
+    (() => {
+      let imgB = $('wbOverlayImgB');
+      imgB.addEventListener('pointerdown', e => {
+        e.preventDefault();
+        imgB.setPointerCapture(e.pointerId);
+        let startX = e.clientX - overlayOffset.x;
+        let startY = e.clientY - overlayOffset.y;
+        const onMove = ev => {
+          overlayOffset.x = ev.clientX - startX;
+          overlayOffset.y = ev.clientY - startY;
+          applyOverlayTransform();
+        };
+        const onUp = ev => {
+          imgB.releasePointerCapture(ev.pointerId);
+          imgB.removeEventListener('pointermove', onMove);
+          imgB.removeEventListener('pointerup', onUp);
+        };
+        imgB.addEventListener('pointermove', onMove);
+        imgB.addEventListener('pointerup', onUp);
+      });
+    })();
 
     // =========================================================
     // View 3: Document Reader & Jumping Logic
@@ -1530,6 +2974,7 @@
         $('inPageFiguresList').replaceChildren();
         let docTitle = docs.find(d => d.id === $('documents').value)?.short_title || '';
         for (let fig of inPageFigs) {
+          fig.short_title = docTitle;
           let item = document.createElement('div');
           item.className = 'page-fig-item';
           item.innerHTML = `
@@ -1538,16 +2983,21 @@
               <div class="page-fig-num">${fig.title || fig.figure_number}</div>
               <div class="page-fig-cap">${fig.caption || ''}</div>
             </div>
+            <button class="gold-btn add-fig-comp" style="font-size:11px; padding:2px 6px;">+对比</button>
           `;
-          item.onclick = () => {
+          item.onclick = e => {
+            if (e.target.closest('.add-fig-comp')) {
+              addToCompare(fig, true);
+              return;
+            }
             highlight(fig.xywh, 'figure');
             openFigureModal(fig, docTitle);
           };
           $('inPageFiguresList').appendChild(item);
 
-          // If plate has sub_figures, also show quick pills for each sub-figure
           if (fig.sub_figures && fig.sub_figures.length > 0) {
             for (let sf of fig.sub_figures) {
+              sf.short_title = docTitle;
               let sfRow = document.createElement('div');
               sfRow.className = 'page-fig-item';
               sfRow.style.paddingLeft = '14px';
@@ -1556,8 +3006,13 @@
                 <div class="page-fig-meta">
                   <div class="page-fig-num" style="font-size:11.5px;">${sf.caption}</div>
                 </div>
+                <button class="gold-btn add-sf-comp" style="font-size:11px; padding:2px 6px;">+对比</button>
               `;
-              sfRow.onclick = () => {
+              sfRow.onclick = e => {
+                if (e.target.closest('.add-sf-comp')) {
+                  addToCompare(sf, true);
+                  return;
+                }
                 highlight(sf.xywh, 'figure');
                 openFigureModal(sf, docTitle);
               };
@@ -1575,7 +3030,26 @@
       for (let line of bundle.lines) {
         let el = document.createElement('div');
         el.className = 'line';
-        el.textContent = line.text;
+        el.id = 'source-line-' + line.id;
+        let cursor = 0;
+        let refs = (bundle.footnote_references || []).filter(r => r.line_id === line.id && r.status !== 'stale').sort((a,b) => a.start-b.start);
+        for (let ref of refs) {
+          if (ref.start < cursor || line.text.slice(ref.start,ref.end) !== ref.marker) continue;
+          el.append(document.createTextNode(line.text.slice(cursor,ref.start)));
+          let mark = document.createElement('button');
+          mark.textContent = ref.marker;
+          mark.title = ref.status === 'linked' || ref.status === 'approved' ? '查看脚注' : '脚注引用待核对';
+          mark.onclick = event => {
+            event.stopPropagation();
+            let note = (bundle.footnotes || []).find(n => n.id === ref.footnote_id);
+            if (note) {
+              document.getElementById('footnote-' + note.id)?.scrollIntoView({block:'nearest'});
+              if (note.targets.length) highlight(note.targets[0].xywh, 'text');
+            }
+          };
+          el.append(mark); cursor = ref.end;
+        }
+        el.append(document.createTextNode(line.text.slice(cursor)));
         el.onclick = () => {
           selected = line;
           $('correction').value = line.text;
@@ -1589,7 +3063,21 @@
         $('lines').innerHTML = '<p class="empty">本页未提取到文字。</p>';
       }
 
-      // Review tasks
+      if ((bundle.footnotes || []).length) {
+        let title = document.createElement('h4'); title.textContent = '脚注与引用'; $('lines').append(title);
+        for (let note of bundle.footnotes) {
+          let el = document.createElement('div'); el.id = 'footnote-' + note.id;
+          el.textContent = (note.status === 'auto_linkable' || note.status === 'approved' ? '已识别 · ' : '待核对 · ') + note.text;
+          let backlinks = (bundle.footnote_references || []).filter(r => r.footnote_id === note.id && ['linked','approved'].includes(r.status));
+          for (let ref of backlinks) {
+            let back = document.createElement('button'); back.textContent = '返回正文';
+            back.onclick = () => document.getElementById('source-line-' + ref.line_id)?.scrollIntoView({block:'center'});
+            el.append(back);
+          }
+          $('lines').append(el);
+        }
+      }
+
       $('task').replaceChildren();
       for (let t of bundle.review_tasks) {
         $('task').appendChild(new Option(t.risk_type + ' · ' + t.status, t.task_id));
@@ -1598,7 +3086,11 @@
         $('task').appendChild(new Option('本页无待审校任务', ''));
       }
 
-      // Export Links
+      $('footnoteTarget').replaceChildren(new Option('选择同页脚注', ''));
+      for (let n of bundle.footnotes || []) {
+        if (n.status !== 'rejected') $('footnoteTarget').append(new Option(n.text.slice(0,80),n.id));
+      }
+
       $('exports').replaceChildren();
       for (let [name, file] of [
         ['Manifest', 'manifest.json'],
@@ -1614,7 +3106,6 @@
       $('reviewStatus').textContent = '';
     }
 
-    // Reader Sidebar Tab Switching
     function selectReaderSideTab(tab) {
       $('tabReaderToc').classList.toggle('primary', tab === 'toc');
       $('tabReaderPages').classList.toggle('primary', tab === 'pages');
@@ -1628,11 +3119,11 @@
     $('tabReaderHits').onclick = () => selectReaderSideTab('hits');
 
     // =========================================================
-    // Lightbox Modal with Sub-figure Switcher
+    // Lightbox Modal with Sub-figure Switcher & Compare Button
     // =========================================================
     let currentModalFig = null;
     function openFigureModal(fig, workTitle) {
-      currentModalFig = fig;
+      currentModalFig = { ...fig, short_title: workTitle || fig.short_title || '' };
       $('modalFigureTitle').textContent = fig.title || fig.figure_number || '图版详情';
       $('modalFigureNumber').textContent = fig.title || fig.figure_number || '器物图版';
       let pageStr = fig.printed_page ? `印刷页码：第 ${fig.printed_page} 页` : `物理页：${fig.scan_index}`;
@@ -1652,7 +3143,7 @@
             <div style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${sf.caption}">${sf.caption}</div>
           `;
           sfBox.onclick = () => {
-            currentModalFig = sf;
+            currentModalFig = { ...sf, short_title: workTitle || fig.short_title || '' };
             $('modalImg').src = sf.image_url;
             $('modalFigureNumber').textContent = sf.title || sf.figure_number;
             $('modalFigureCaption').textContent = sf.caption;
@@ -1681,6 +3172,10 @@
         'figure'
       );
     };
+    $('modalAddCompareBtn').onclick = () => {
+      if (!currentModalFig) return;
+      addToCompare(currentModalFig, true);
+    };
 
     // Review Action
     async function review(status) {
@@ -1693,6 +3188,7 @@
           status,
           expected_revision: bundle.revision
         };
+        if ($('footnoteTarget').value) data.footnote_id = $('footnoteTarget').value;
         if (selected && status === 'approved' && $('correction').value !== selected.text) {
           data.line_id = selected.id;
           data.text = $('correction').value;

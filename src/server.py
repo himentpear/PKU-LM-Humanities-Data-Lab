@@ -82,6 +82,55 @@ def _extract_vessel_name(snippet: str) -> str:
     return s
 
 
+def _classify_figure_group(category: str, fnum: str, text: str) -> str:
+    if category == "line_drawing":
+        if fnum.startswith(("图1.1", "图1.2")):
+            return "第一章 · 历史沿革与工作概况图"
+        if fnum.startswith("图1.3"):
+            return "第三章 · 探方分布与地层剖面图"
+        if fnum.startswith("图2.1"):
+            return "宋元遗迹 · 房址/窑炉/灰坑平剖面图"
+        if fnum.startswith("图3.1"):
+            return "明清遗迹 · 窑炉/作坊/遗迹平剖面图"
+        if "青白釉" in text:
+            return "器物线图 · 青白釉瓷器"
+        if "卵白釉" in text:
+            return "器物线图 · 卵白釉瓷器"
+        if "青花" in text:
+            return "器物线图 · 青花瓷器"
+        if any(k in text for k in ("红绿彩", "铁彩", "蓝釉", "五彩")):
+            return "器物线图 · 彩绘与颜色釉瓷"
+        if any(k in text for k in ("黑釉", "酱釉", "青釉", "白釉")):
+            return "器物线图 · 白釉/青釉/黑釉/酱釉"
+        if any(k in text for k in ("匣钵", "垫钵", "垫饼")):
+            return "器物线图 · 匣钵与窑具"
+        return "器物线图 · 综合出土遗物与标本"
+    else:
+        if fnum.startswith("图版2.1") or "遗迹" in text:
+            return "遗迹图版 · 探方地层与遗迹现场"
+        if "青白釉" in text:
+            if "碗" in text:
+                return "青白釉图版 · 碗类标本"
+            if any(k in text for k in ("盘", "碟", "杯", "高足杯")):
+                return "青白釉图版 · 盘/碟/杯/高足杯"
+            return "青白釉图版 · 壶/瓶/罐/盒/器盖等"
+        if "卵白釉" in text:
+            return "卵白釉图版 · 碗/盘/杯/壶/瓶等"
+        if "青花" in text:
+            if "碗" in text:
+                return "青花瓷图版 · 碗类标本"
+            if any(k in text for k in ("盘", "碟", "杯", "高足杯")):
+                return "青花瓷图版 · 盘/碟/杯/高足杯"
+            return "青花瓷图版 · 瓶/罐/壶/炉/杂器"
+        if any(k in text for k in ("红绿彩", "铁彩", "蓝釉", "五彩")):
+            return "彩瓷与颜色釉 · 红绿彩/蓝釉/铁彩"
+        if any(k in text for k in ("黑釉", "酱釉", "青釉", "白釉")):
+            return "单色釉图版 · 白釉/青釉/黑釉/酱釉"
+        if any(k in text for k in ("匣钵", "垫钵", "垫饼")):
+            return "窑具图版 · 匣钵/垫钵/垫饼"
+        return "综合器物彩色图版"
+
+
 def _compute_plate_subfigures(
     cw: int, ch: int, print_blocks: list[tuple[int, int, int, int, str]]
 ) -> tuple[str, list[dict]]:
@@ -102,7 +151,6 @@ def _compute_plate_subfigures(
 
     plate_title = " · ".join(dict.fromkeys(summaries))
 
-    # Group numbered captions into horizontal rows
     numbered.sort(key=lambda item: (item[1], item[0]))
     rows: list[list[tuple[int, int, int, int, str, str]]] = []
     for item in numbered:
@@ -162,9 +210,8 @@ def _compute_plate_subfigures(
 
 
 def _build_index_cache(engine) -> dict:
-    """Build an in-memory multi-volume index of documents, TOC, figures, and cross-volume artifacts."""
+    """Build an in-memory multi-volume index of documents, TOC, figures, gallery tree, and cross-volume artifacts."""
     with get_session(engine) as session:
-        # 1. Load Works & Manifests ordered by Work.title
         doc_rows = session.execute(
             select(Manifest, Work)
             .join(Work, Manifest.work_id == Work.id)
@@ -186,7 +233,6 @@ def _build_index_cache(engine) -> dict:
             documents.append(meta)
             manifest_meta[m.id] = meta
 
-        # 2. Load Canvases
         canvases_by_id = {}
         for c in session.scalars(select(Canvas)):
             canvases_by_id[c.id] = {
@@ -199,7 +245,6 @@ def _build_index_cache(engine) -> dict:
                 "height": c.height,
             }
 
-        # 3. Load print_space and caption blocks per canvas
         blocks_by_canvas: dict[str, list[tuple[int, int, int, int, str, str, str]]] = (
             defaultdict(list)
         )
@@ -220,7 +265,6 @@ def _build_index_cache(engine) -> dict:
                     (x, y, w, h, txt.strip(), btype or "", zone or "")
                 )
 
-        # 4. Load ImageOccurrences to know which figures have pre-cropped files
         cropped_fig_ids = set(
             session.scalars(
                 select(ImageOccurrence.plate_figure_id).where(
@@ -229,7 +273,6 @@ def _build_index_cache(engine) -> dict:
             ).all()
         )
 
-        # 5. Enrich Figures & Build Plate TOC for Plate Volumes
         raw_figures = session.execute(
             select(PlateFigure).order_by(PlateFigure.canvas_id, PlateFigure.figure_number)
         ).all()
@@ -238,7 +281,6 @@ def _build_index_cache(engine) -> dict:
         sub_figures_flat = []
         figures_by_canvas = defaultdict(list)
         plate_toc_by_manifest = defaultdict(list)
-        # Map normalized specimen code -> list of figure/sub-figure occurrences
         specimen_fig_map = defaultdict(list)
 
         for (pf,) in raw_figures:
@@ -304,7 +346,6 @@ def _build_index_cache(engine) -> dict:
                     sub_figs.append(sf_entry)
                     sub_figures_flat.append(sf_entry)
 
-                    # Link specimen codes in sub-figure caption
                     for code_match in _SPECIMEN_EXTRACT_RE.findall(sf["caption"]):
                         norm_c = _norm_text(code_match).upper()
                         specimen_fig_map[norm_c].append(
@@ -323,7 +364,6 @@ def _build_index_cache(engine) -> dict:
                             }
                         )
             else:
-                # Line drawing or photo in Text Volume (Vol 1 & 2)
                 extra_lines = []
                 for bx, by, bw, bh, btxt in print_blocks:
                     if btxt != raw_cap and (
@@ -358,6 +398,14 @@ def _build_index_cache(engine) -> dict:
                         }
                     )
 
+            fig_cat = "plate" if is_plate else "line_drawing"
+            group_name = _classify_figure_group(
+                fig_cat, fig_num, f"{display_title} {full_caption}"
+            )
+            for sf in sub_figs:
+                sf["group_name"] = group_name
+                sf["_norm"] = f"{sf['_norm']} {_norm_text(group_name)}"
+
             fig_obj = {
                 "id": pf.id,
                 "manifest_id": pf.manifest_id,
@@ -367,7 +415,8 @@ def _build_index_cache(engine) -> dict:
                 "scan_index": c_info["scan_index"],
                 "printed_page": c_info["printed_page"],
                 "figure_number": fig_num or "图版",
-                "category": "plate" if is_plate else "line_drawing",
+                "category": fig_cat,
+                "group_name": group_name,
                 "title": display_title,
                 "caption": full_caption,
                 "xywh": xywh,
@@ -375,7 +424,7 @@ def _build_index_cache(engine) -> dict:
                 "image_url": f"/api/figure_image?id={pf.id}",
                 "sub_figures": sub_figs,
                 "_norm": _norm_text(
-                    f"{m_info['title']} {fig_num} {display_title} {full_caption}"
+                    f"{m_info['title']} {group_name} {fig_num} {display_title} {full_caption}"
                 ),
             }
             figures.append(fig_obj)
@@ -384,11 +433,102 @@ def _build_index_cache(engine) -> dict:
             if is_plate:
                 plate_toc_by_manifest[pf.manifest_id].append((fig_obj, sub_figs))
 
-        # Sort figures by volume title, then scan_index
         figures.sort(key=lambda f: (f["work_title"], f["scan_index"], f["figure_number"]))
         sub_figures_flat.sort(
             key=lambda f: (f["work_title"], f["scan_index"], f["figure_number"])
         )
+
+        # Build Gallery Left Sidebar Navigation Tree & Glaze/Shape Facets
+        gallery_volumes_tree = []
+        for doc in documents:
+            mid = doc["id"]
+            vol_figs = [f for f in figures if f["manifest_id"] == mid]
+            groups_map = defaultdict(list)
+            for f in vol_figs:
+                groups_map[f["group_name"]].append(f)
+            group_list = []
+            for gname, gitems in groups_map.items():
+                group_list.append(
+                    {
+                        "group": gname,
+                        "count": len(gitems),
+                        "sub_count": sum(len(x["sub_figures"]) for x in gitems),
+                        "items": [
+                            {
+                                "id": x["id"],
+                                "manifest_id": x["manifest_id"],
+                                "short_title": x["short_title"],
+                                "canvas_id": x["canvas_id"],
+                                "scan_index": x["scan_index"],
+                                "printed_page": x["printed_page"],
+                                "figure_number": x["figure_number"],
+                                "category": x["category"],
+                                "title": x["title"],
+                                "caption": x["caption"],
+                                "xywh": x["xywh"],
+                                "image_url": x["image_url"],
+                            }
+                            for x in gitems
+                        ],
+                    }
+                )
+            gallery_volumes_tree.append(
+                {
+                    "manifest_id": mid,
+                    "title": doc["title"],
+                    "short_title": doc["short_title"],
+                    "total_figures": len(vol_figs),
+                    "total_sub_figures": sum(len(x["sub_figures"]) for x in vol_figs),
+                    "groups": group_list,
+                }
+            )
+
+        glaze_keywords = [
+            "青花",
+            "青白釉",
+            "白釉",
+            "卵白釉",
+            "青釉",
+            "酱釉",
+            "黑釉",
+            "蓝釉",
+            "红绿彩",
+            "铁彩",
+            "匣钵",
+            "垫钵",
+            "垫饼",
+            "剖面",
+        ]
+        shape_keywords = [
+            "碗",
+            "杯",
+            "盘",
+            "罐",
+            "高足杯",
+            "器盖",
+            "瓶",
+            "壶",
+            "盒",
+            "炉",
+            "碟",
+            "匜",
+            "匣钵",
+            "器座",
+        ]
+        glaze_facets = []
+        for kw in glaze_keywords:
+            cnt = sum(1 for f in figures if kw in f["title"] or kw in f["caption"])
+            sub_cnt = sum(
+                1 for sf in sub_figures_flat if kw in sf["title"] or kw in sf["caption"]
+            )
+            if cnt > 0:
+                glaze_facets.append({"name": kw, "count": cnt, "sub_count": sub_cnt})
+
+        shape_facets = []
+        for kw in shape_keywords:
+            cnt = sum(1 for f in figures if kw in f["title"] or kw in f["caption"])
+            if cnt > 0:
+                shape_facets.append({"name": kw, "count": cnt})
 
         # 6. Build Complete Multi-Volume TOC (covering Vol 1-2 chapters AND Vol 3-5 plates)
         toc_all = []
@@ -428,7 +568,6 @@ def _build_index_cache(engine) -> dict:
                         }
                     )
             else:
-                # Synthesize structured Plate TOC for Plate Volumes (Vol 3, 4, 5)
                 plate_items = plate_toc_by_manifest.get(mid, [])
                 plate_items.sort(key=lambda pair: pair[0]["scan_index"])
                 current_prefix = None
@@ -525,7 +664,6 @@ def _build_index_cache(engine) -> dict:
             unit = (exc_unit or "").strip()
             if not unit and "∶" in disp_code:
                 unit = disp_code.split("∶")[0]
-            # Normalize stratum symbols off unit to get base excavation unit (e.g. T3H5, F12, T10)
             base_unit_m = re.match(r"^([A-Za-z]+\d+(?:扩)?(?:[A-Za-z]+\d+)?)", unit)
             base_unit = base_unit_m.group(1).upper() if base_unit_m else unit
 
@@ -569,7 +707,6 @@ def _build_index_cache(engine) -> dict:
                     }
                 )
 
-        # Attach figure/plate thumbnails to matching specimen codes
         for norm_code, fig_occs in specimen_fig_map.items():
             entry = artifacts_by_code.get(norm_code)
             if not entry:
@@ -578,7 +715,6 @@ def _build_index_cache(engine) -> dict:
                 v_name = _extract_vessel_name(f_occ.get("snippet") or "")
                 if v_name and not entry["vessel_name"]:
                     entry["vessel_name"] = v_name
-                # Check if we already have an occurrence on the same canvas; if so, attach thumb_url and upgrade xywh
                 matched_existing = False
                 for occ in entry["occurrences"]:
                     if occ["canvas_id"] == f_occ["canvas_id"]:
@@ -633,7 +769,6 @@ def _build_index_cache(engine) -> dict:
                 if entry["volume_count"] > 1:
                     unit_cross_counter[entry["unit"]] += 1
 
-        # Sort artifacts: multi-volume with thumbnails first, then by volume_count desc, then code
         cross_artifacts.sort(
             key=lambda a: (
                 -int(a["volume_count"] > 1 and a["has_thumb"]),
@@ -653,7 +788,6 @@ def _build_index_cache(engine) -> dict:
             if len(u) >= 2
         ]
 
-        # Update document summary counts
         for doc in documents:
             mid = doc["id"]
             doc["figures_count"] = sum(
@@ -676,6 +810,12 @@ def _build_index_cache(engine) -> dict:
             "figures_by_canvas": figures_by_canvas,
             "cross_artifacts": cross_artifacts,
             "top_units": top_units,
+            "gallery_nav": {
+                "volumes": gallery_volumes_tree,
+                "glazes": glaze_facets,
+                "shapes": shape_facets,
+                "units": top_units[:40],
+            },
         }
 
 
@@ -812,7 +952,6 @@ def make_server(library: Path, host: str = "127.0.0.1", port: int = 8000):
                     for item in idx["toc"]:
                         if mid and mid != "all" and item["manifest_id"] != mid:
                             continue
-                        # If searching by keyword, search across all levels; otherwise respect max_level
                         if not tokens and max_level > 0 and item["level"] > max_level:
                             continue
                         if tokens and not _matches(item["_norm"], tokens):
@@ -822,10 +961,15 @@ def make_server(library: Path, host: str = "127.0.0.1", port: int = 8000):
                         )
                     return self.send(items)
 
+                if path == "/api/gallery_nav":
+                    return self.send(idx["gallery_nav"])
+
                 if path == "/api/figures":
                     mid = query.get("manifest", ["all"])[0]
                     q_fig = query.get("q", [""])[0].strip()
                     fig_type = query.get("type", ["all"])[0]
+                    group_filter = query.get("group", [""])[0].strip()
+                    fig_id = query.get("id", [""])[0].strip()
                     page = max(1, int(query.get("page", ["1"])[0]))
                     limit = max(1, min(120, int(query.get("limit", ["48"])[0])))
                     offset = (page - 1) * limit
@@ -840,6 +984,10 @@ def make_server(library: Path, host: str = "127.0.0.1", port: int = 8000):
                     vol_counts = Counter()
 
                     for f in source_list:
+                        if fig_id and f["id"] != fig_id and f.get("parent_figure_id") != fig_id:
+                            continue
+                        if group_filter and f.get("group_name") != group_filter:
+                            continue
                         if fig_type == "line_drawing" and f["category"] != "line_drawing":
                             continue
                         if fig_type == "plate" and f["category"] != "plate":
@@ -908,7 +1056,6 @@ def make_server(library: Path, host: str = "127.0.0.1", port: int = 8000):
                         for a in matched_artifacts[offset : offset + limit]
                     ]
 
-                    # Also match TOC & Figures if query or unit is provided
                     search_tokens = tokens or (
                         [_norm_text(unit_filter)] if unit_filter else []
                     )
@@ -965,7 +1112,6 @@ def make_server(library: Path, host: str = "127.0.0.1", port: int = 8000):
                     mid = query.get("manifest", [""])[0]
                     tokens = _norm_tokens(term)
 
-                    # Colon-normalized SQL column expression
                     norm_col = func.lower(
                         func.replace(
                             func.replace(
@@ -1021,7 +1167,6 @@ def make_server(library: Path, host: str = "127.0.0.1", port: int = 8000):
                                 }
                             )
 
-                    # Also gather matching TOC, Figures, and Cross-Volume Artifacts for unified search view
                     toc_hits = [
                         {k: v for k, v in t.items() if not k.startswith("_")}
                         for t in idx["toc"]
@@ -1070,7 +1215,6 @@ def make_server(library: Path, host: str = "127.0.0.1", port: int = 8000):
                     if not canvas or not canvas.image_storage_path:
                         raise LookupError()
 
-                    # If no custom xywh override, check pre-cropped ImageAsset file on disk
                     if not custom_xywh:
                         occ = session.scalar(
                             select(ImageOccurrence).where(
@@ -1102,7 +1246,6 @@ def make_server(library: Path, host: str = "127.0.0.1", port: int = 8000):
                         elif pf.crop_w and pf.crop_h and pf.crop_w > 100 and pf.crop_h > 80:
                             x, y, w, h = pf.crop_x, pf.crop_y, pf.crop_w, pf.crop_h
                         else:
-                            # Plate page fallback: crop main print space instead of tiny 32px header
                             x = int(cw * 0.10)
                             y = int(ch * 0.09)
                             w = int(cw * 0.80)
@@ -1231,7 +1374,7 @@ def make_server(library: Path, host: str = "127.0.0.1", port: int = 8000):
                 return self.send({"error": "Not found"}, 404)
             origin = self.headers.get("Origin")
             if origin and origin != base_url.removesuffix("/iiif"):
-                return self.send({"error": "Origin rejected"}, 403)
+                return self.send({"error":"Origin rejected"}, 403)
             if not self.headers.get("Content-Type", "").startswith("application/json"):
                 return self.send({"error": "JSON required"}, 415)
             try:
