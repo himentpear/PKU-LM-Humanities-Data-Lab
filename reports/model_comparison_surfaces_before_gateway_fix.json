@@ -1,0 +1,470 @@
+{
+  "status": "completed",
+  "summary": [
+    {
+      "provider_test": "api",
+      "samples": 3,
+      "source_validation_passes": 0,
+      "mean_seconds": 2.59,
+      "max_seconds": 2.746
+    },
+    {
+      "provider_test": "local-0.6B",
+      "samples": 3,
+      "source_validation_passes": 1,
+      "mean_seconds": 9.292,
+      "max_seconds": 12.442
+    },
+    {
+      "provider_test": "local-4B",
+      "samples": 3,
+      "source_validation_passes": 2,
+      "mean_seconds": 28.202,
+      "max_seconds": 41.184
+    }
+  ],
+  "rows": [
+    {
+      "provider_test": "local-0.6B",
+      "sample": 1,
+      "source_characters": 160,
+      "source": "有跨阶层、跨时代、跨地域的巨大影响，历来受到\n学界瞩目。景德镇地区的瓷器生产可追溯至唐代，至今绵延不绝。其辖境内一度遍布窑场，形\n成湖田、镇区等多个生产片区。在景德镇陶瓷生产片区中，镇区具有极为重要的地位。镇区的\n窑业生产可上溯至宋代；至明清时期，景德镇窑业生产逐渐向镇区集中，沿昌江密集分布，南\n北绵延十三里，文献中有",
+      "status": "source_validation_passed",
+      "model": "Qwen3-0.6B-Q8_0.gguf",
+      "entities": [
+        {
+          "type": "SITE",
+          "text": "景德镇",
+          "start": 28,
+          "end": 31
+        },
+        {
+          "type": "SITE",
+          "text": "景德镇",
+          "start": 80,
+          "end": 83
+        },
+        {
+          "type": "SITE",
+          "text": "景德镇",
+          "start": 124,
+          "end": 127
+        },
+        {
+          "type": "SITE",
+          "text": "镇区",
+          "start": 69,
+          "end": 71
+        },
+        {
+          "type": "SITE",
+          "text": "镇区",
+          "start": 91,
+          "end": 93
+        },
+        {
+          "type": "SITE",
+          "text": "镇区",
+          "start": 103,
+          "end": 105
+        },
+        {
+          "type": "SITE",
+          "text": "镇区",
+          "start": 134,
+          "end": 136
+        },
+        {
+          "type": "SITE",
+          "text": "昌江",
+          "start": 140,
+          "end": 142
+        },
+        {
+          "type": "PERIOD",
+          "text": "明清",
+          "start": 119,
+          "end": 121
+        },
+        {
+          "type": "PERIOD",
+          "text": "唐代",
+          "start": 42,
+          "end": 44
+        },
+        {
+          "type": "PERIOD",
+          "text": "宋代",
+          "start": 115,
+          "end": 117
+        }
+      ],
+      "seconds": 5.365
+    },
+    {
+      "provider_test": "local-0.6B",
+      "sample": 2,
+      "source_characters": 350,
+      "source": "相对薄弱。在这样的情形下，落\n马桥窑址的考古工作显现出独特的意义。\n落马桥窑址位于景德镇古代镇区南部，是景德镇窑业核心生产区的一处重要遗址。20世\n纪80年代在配合基建的抢救性发掘中，落马桥窑址出土大量元青花瓷片，产生了巨大的影响，\n受到广泛关注。2000年前后，随着老城基建项目推进，落马桥窑址又陆续出土了一些元青花瓷\n片。这些材料促进了人们对于景德镇元代窑业特别是其中元青花产品的认识。\n2012年11月至2013年7月，为配合基本建设，景德镇陶瓷考古研究所、北京大学考古文博\n学院、江西省文物考古研究所、故宫博物院等多家单位组成联合考古队，对落马桥窑址进行了\n正式考古发掘，此后又陆续进行了一些小规模的发掘和清理。截至2017年11月揭露了大量窑业\n遗迹，出土陶瓷遗物数以吨计。此次发掘获得了从",
+      "status": "failed",
+      "error_type": "RuntimeError",
+      "local_error_type": "ValueError",
+      "seconds": 12.442
+    },
+    {
+      "provider_test": "local-0.6B",
+      "sample": 3,
+      "source_characters": 460,
+      "source": "。\n标本1，F12∶109，失口。残口径7.2、足径3.6、残高7.6厘米。白胎泛灰，较细，胎体较\n薄。青白釉泛灰，较光亮，足端刮釉，足内上部无釉。外壁足中部有粘连痕（图2.2.19，5；\n图版2.2.43，3左、4）。\n标本2，T21④∶307，足部残件。足径3.6、残高4.9厘米。白胎较细，胎体较厚。青白釉光\n亮，布满细碎开片，足端刮釉，足内无釉（图版2.2.43，3右）。\nBc型：尖圆唇，侈口，喇叭形足，足径较小，有的足中间出节，足端出台，或有内壁印\n花，胎接。\nBc型Ⅰ式：足端出台方直。\n标本，T19⑥∶312，失口。足径3.5、残高7.7厘米。白胎细，胎体很薄。青白釉光亮，足\n图2.2.19 青白釉高足杯Ba～Cc型\n1～4. Ba型 （T15H5∶27、T15④d∶20、T15④d∶12、T18④∶2） 5. Bb型 （F12∶109） 6. Bc型Ⅰ 式（T19⑥∶312）\n7. Bc型Ⅱ式 （T15H2∶3） 8. Ca型 （T3⑧b∶26） 9. Cb型（T3⑧b∶28） 10.  Cd型",
+      "status": "failed",
+      "error_type": "RuntimeError",
+      "local_error_type": "ValueError",
+      "seconds": 10.068
+    },
+    {
+      "provider_test": "local-4B",
+      "sample": 1,
+      "source_characters": 160,
+      "source": "有跨阶层、跨时代、跨地域的巨大影响，历来受到\n学界瞩目。景德镇地区的瓷器生产可追溯至唐代，至今绵延不绝。其辖境内一度遍布窑场，形\n成湖田、镇区等多个生产片区。在景德镇陶瓷生产片区中，镇区具有极为重要的地位。镇区的\n窑业生产可上溯至宋代；至明清时期，景德镇窑业生产逐渐向镇区集中，沿昌江密集分布，南\n北绵延十三里，文献中有",
+      "status": "source_validation_passed",
+      "model": "Qwen3-4B-Q4_K_M.gguf",
+      "entities": [
+        {
+          "type": "PERIOD",
+          "text": "唐代",
+          "start": 42,
+          "end": 44
+        },
+        {
+          "type": "PERIOD",
+          "text": "宋代",
+          "start": 115,
+          "end": 117
+        },
+        {
+          "type": "PERIOD",
+          "text": "明清时期",
+          "start": 119,
+          "end": 123
+        },
+        {
+          "type": "SITE",
+          "text": "景德镇",
+          "start": 28,
+          "end": 31
+        },
+        {
+          "type": "SITE",
+          "text": "景德镇",
+          "start": 80,
+          "end": 83
+        },
+        {
+          "type": "SITE",
+          "text": "景德镇",
+          "start": 124,
+          "end": 127
+        },
+        {
+          "type": "SITE",
+          "text": "景德镇地区",
+          "start": 28,
+          "end": 33
+        },
+        {
+          "type": "SITE",
+          "text": "镇区",
+          "start": 69,
+          "end": 71
+        },
+        {
+          "type": "SITE",
+          "text": "镇区",
+          "start": 91,
+          "end": 93
+        },
+        {
+          "type": "SITE",
+          "text": "镇区",
+          "start": 103,
+          "end": 105
+        },
+        {
+          "type": "SITE",
+          "text": "镇区",
+          "start": 134,
+          "end": 136
+        },
+        {
+          "type": "SITE",
+          "text": "湖田",
+          "start": 66,
+          "end": 68
+        },
+        {
+          "type": "SITE",
+          "text": "昌江",
+          "start": 140,
+          "end": 142
+        },
+        {
+          "type": "MATERIAL",
+          "text": "瓷器",
+          "start": 34,
+          "end": 36
+        }
+      ],
+      "seconds": 16.673
+    },
+    {
+      "provider_test": "local-4B",
+      "sample": 2,
+      "source_characters": 350,
+      "source": "相对薄弱。在这样的情形下，落\n马桥窑址的考古工作显现出独特的意义。\n落马桥窑址位于景德镇古代镇区南部，是景德镇窑业核心生产区的一处重要遗址。20世\n纪80年代在配合基建的抢救性发掘中，落马桥窑址出土大量元青花瓷片，产生了巨大的影响，\n受到广泛关注。2000年前后，随着老城基建项目推进，落马桥窑址又陆续出土了一些元青花瓷\n片。这些材料促进了人们对于景德镇元代窑业特别是其中元青花产品的认识。\n2012年11月至2013年7月，为配合基本建设，景德镇陶瓷考古研究所、北京大学考古文博\n学院、江西省文物考古研究所、故宫博物院等多家单位组成联合考古队，对落马桥窑址进行了\n正式考古发掘，此后又陆续进行了一些小规模的发掘和清理。截至2017年11月揭露了大量窑业\n遗迹，出土陶瓷遗物数以吨计。此次发掘获得了从",
+      "status": "failed",
+      "error_type": "RuntimeError",
+      "local_error_type": "ValueError",
+      "seconds": 26.748
+    },
+    {
+      "provider_test": "local-4B",
+      "sample": 3,
+      "source_characters": 460,
+      "source": "。\n标本1，F12∶109，失口。残口径7.2、足径3.6、残高7.6厘米。白胎泛灰，较细，胎体较\n薄。青白釉泛灰，较光亮，足端刮釉，足内上部无釉。外壁足中部有粘连痕（图2.2.19，5；\n图版2.2.43，3左、4）。\n标本2，T21④∶307，足部残件。足径3.6、残高4.9厘米。白胎较细，胎体较厚。青白釉光\n亮，布满细碎开片，足端刮釉，足内无釉（图版2.2.43，3右）。\nBc型：尖圆唇，侈口，喇叭形足，足径较小，有的足中间出节，足端出台，或有内壁印\n花，胎接。\nBc型Ⅰ式：足端出台方直。\n标本，T19⑥∶312，失口。足径3.5、残高7.7厘米。白胎细，胎体很薄。青白釉光亮，足\n图2.2.19 青白釉高足杯Ba～Cc型\n1～4. Ba型 （T15H5∶27、T15④d∶20、T15④d∶12、T18④∶2） 5. Bb型 （F12∶109） 6. Bc型Ⅰ 式（T19⑥∶312）\n7. Bc型Ⅱ式 （T15H2∶3） 8. Ca型 （T3⑧b∶26） 9. Cb型（T3⑧b∶28） 10.  Cd型",
+      "status": "source_validation_passed",
+      "model": "Qwen3-4B-Q4_K_M.gguf",
+      "entities": [
+        {
+          "type": "ARTIFACT_TYPE",
+          "text": "高足杯",
+          "start": 308,
+          "end": 311
+        },
+        {
+          "type": "TYPOLOGY",
+          "text": "Ba型",
+          "start": 323,
+          "end": 326
+        },
+        {
+          "type": "TYPOLOGY",
+          "text": "Bb型",
+          "start": 366,
+          "end": 369
+        },
+        {
+          "type": "TYPOLOGY",
+          "text": "Bc型",
+          "start": 191,
+          "end": 194
+        },
+        {
+          "type": "TYPOLOGY",
+          "text": "Bc型",
+          "start": 237,
+          "end": 240
+        },
+        {
+          "type": "TYPOLOGY",
+          "text": "Bc型",
+          "start": 383,
+          "end": 386
+        },
+        {
+          "type": "TYPOLOGY",
+          "text": "Bc型",
+          "start": 403,
+          "end": 406
+        },
+        {
+          "type": "TYPOLOGY",
+          "text": "Bc型Ⅰ式",
+          "start": 237,
+          "end": 242
+        },
+        {
+          "type": "TYPOLOGY",
+          "text": "Bc型Ⅱ式",
+          "start": 403,
+          "end": 408
+        },
+        {
+          "type": "TYPOLOGY",
+          "text": "Ca型",
+          "start": 422,
+          "end": 425
+        },
+        {
+          "type": "TYPOLOGY",
+          "text": "Cb型",
+          "start": 439,
+          "end": 442
+        },
+        {
+          "type": "TYPOLOGY",
+          "text": "Cd型",
+          "start": 457,
+          "end": 460
+        },
+        {
+          "type": "MATERIAL",
+          "text": "白胎",
+          "start": 38,
+          "end": 40
+        },
+        {
+          "type": "MATERIAL",
+          "text": "白胎",
+          "start": 143,
+          "end": 145
+        },
+        {
+          "type": "MATERIAL",
+          "text": "白胎",
+          "start": 280,
+          "end": 282
+        },
+        {
+          "type": "MATERIAL",
+          "text": "青白釉",
+          "start": 52,
+          "end": 55
+        },
+        {
+          "type": "MATERIAL",
+          "text": "青白釉",
+          "start": 153,
+          "end": 156
+        },
+        {
+          "type": "MATERIAL",
+          "text": "青白釉",
+          "start": 289,
+          "end": 292
+        },
+        {
+          "type": "MATERIAL",
+          "text": "青白釉",
+          "start": 305,
+          "end": 308
+        },
+        {
+          "type": "PERIOD",
+          "text": "图2.2.19",
+          "start": 84,
+          "end": 91
+        },
+        {
+          "type": "PERIOD",
+          "text": "图2.2.19",
+          "start": 297,
+          "end": 304
+        },
+        {
+          "type": "SITE",
+          "text": "T15H5",
+          "start": 328,
+          "end": 333
+        },
+        {
+          "type": "SITE",
+          "text": "T15④d",
+          "start": 337,
+          "end": 342
+        },
+        {
+          "type": "SITE",
+          "text": "T15④d",
+          "start": 346,
+          "end": 351
+        },
+        {
+          "type": "SITE",
+          "text": "T18④",
+          "start": 355,
+          "end": 359
+        },
+        {
+          "type": "SITE",
+          "text": "T15H2",
+          "start": 410,
+          "end": 415
+        },
+        {
+          "type": "SITE",
+          "text": "T3⑧b",
+          "start": 427,
+          "end": 431
+        },
+        {
+          "type": "SITE",
+          "text": "T3⑧b",
+          "start": 443,
+          "end": 447
+        },
+        {
+          "type": "SITE",
+          "text": "T19⑥",
+          "start": 254,
+          "end": 258
+        },
+        {
+          "type": "SITE",
+          "text": "T19⑥",
+          "start": 390,
+          "end": 394
+        },
+        {
+          "type": "SITE",
+          "text": "F12",
+          "start": 6,
+          "end": 9
+        },
+        {
+          "type": "SITE",
+          "text": "F12",
+          "start": 371,
+          "end": 374
+        },
+        {
+          "type": "SITE",
+          "text": "T21④",
+          "start": 115,
+          "end": 119
+        }
+      ],
+      "seconds": 41.184
+    },
+    {
+      "provider_test": "api",
+      "sample": 1,
+      "source_characters": 160,
+      "source": "有跨阶层、跨时代、跨地域的巨大影响，历来受到\n学界瞩目。景德镇地区的瓷器生产可追溯至唐代，至今绵延不绝。其辖境内一度遍布窑场，形\n成湖田、镇区等多个生产片区。在景德镇陶瓷生产片区中，镇区具有极为重要的地位。镇区的\n窑业生产可上溯至宋代；至明清时期，景德镇窑业生产逐渐向镇区集中，沿昌江密集分布，南\n北绵延十三里，文献中有",
+      "status": "failed",
+      "error_type": "ValidationError",
+      "local_error_type": null,
+      "seconds": 2.564
+    },
+    {
+      "provider_test": "api",
+      "sample": 2,
+      "source_characters": 350,
+      "source": "相对薄弱。在这样的情形下，落\n马桥窑址的考古工作显现出独特的意义。\n落马桥窑址位于景德镇古代镇区南部，是景德镇窑业核心生产区的一处重要遗址。20世\n纪80年代在配合基建的抢救性发掘中，落马桥窑址出土大量元青花瓷片，产生了巨大的影响，\n受到广泛关注。2000年前后，随着老城基建项目推进，落马桥窑址又陆续出土了一些元青花瓷\n片。这些材料促进了人们对于景德镇元代窑业特别是其中元青花产品的认识。\n2012年11月至2013年7月，为配合基本建设，景德镇陶瓷考古研究所、北京大学考古文博\n学院、江西省文物考古研究所、故宫博物院等多家单位组成联合考古队，对落马桥窑址进行了\n正式考古发掘，此后又陆续进行了一些小规模的发掘和清理。截至2017年11月揭露了大量窑业\n遗迹，出土陶瓷遗物数以吨计。此次发掘获得了从",
+      "status": "failed",
+      "error_type": "ValidationError",
+      "local_error_type": null,
+      "seconds": 2.46
+    },
+    {
+      "provider_test": "api",
+      "sample": 3,
+      "source_characters": 460,
+      "source": "。\n标本1，F12∶109，失口。残口径7.2、足径3.6、残高7.6厘米。白胎泛灰，较细，胎体较\n薄。青白釉泛灰，较光亮，足端刮釉，足内上部无釉。外壁足中部有粘连痕（图2.2.19，5；\n图版2.2.43，3左、4）。\n标本2，T21④∶307，足部残件。足径3.6、残高4.9厘米。白胎较细，胎体较厚。青白釉光\n亮，布满细碎开片，足端刮釉，足内无釉（图版2.2.43，3右）。\nBc型：尖圆唇，侈口，喇叭形足，足径较小，有的足中间出节，足端出台，或有内壁印\n花，胎接。\nBc型Ⅰ式：足端出台方直。\n标本，T19⑥∶312，失口。足径3.5、残高7.7厘米。白胎细，胎体很薄。青白釉光亮，足\n图2.2.19 青白釉高足杯Ba～Cc型\n1～4. Ba型 （T15H5∶27、T15④d∶20、T15④d∶12、T18④∶2） 5. Bb型 （F12∶109） 6. Bc型Ⅰ 式（T19⑥∶312）\n7. Bc型Ⅱ式 （T15H2∶3） 8. Ca型 （T3⑧b∶26） 9. Cb型（T3⑧b∶28） 10.  Cd型",
+      "status": "failed",
+      "error_type": "ValueError",
+      "local_error_type": null,
+      "seconds": 2.746
+    }
+  ],
+  "limitations": "Three source excerpts measure latency and source-span validation, not independently annotated semantic accuracy."
+}

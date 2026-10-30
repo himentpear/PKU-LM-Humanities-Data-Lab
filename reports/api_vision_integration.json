@@ -1,0 +1,12 @@
+{
+  "status": "passed",
+  "elapsed_seconds": 4.11,
+  "provider": "deepseek",
+  "model": "deepseek-flash",
+  "result": {
+    "transcription": "标本1，F12：109，失口。残口径7.2、足径3.6、残高7.6厘米。白胎泛灰，较细，胎体较",
+    "uncertain": []
+  },
+  "requires_review": true,
+  "image_sha256": "253f8a64b0f6807a12c9b7adc9eb7914fa8884a15a70f72c37b3494781cc644b"
+}

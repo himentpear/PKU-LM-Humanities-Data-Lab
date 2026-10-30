@@ -1,0 +1,1116 @@
+{
+  "audit_date": "2026-10-30",
+  "scope": "Local checkout, local database, local runtime; external hosting not independently verified",
+  "git_head": "f711b87313528aa7991ad5c7494dcbfb7988895d",
+  "database_bytes": 23998464,
+  "table_counts": {
+    "works": 1,
+    "manifests": 1,
+    "canvases": 412,
+    "alto_pages": 412,
+    "alto_blocks": 3072,
+    "alto_lines": 11251,
+    "alto_tokens": 0,
+    "iiif_ranges": 36,
+    "range_items": 36,
+    "plates_figures": 189,
+    "artifacts": 1995,
+    "artifact_occurrences": 3077,
+    "index_entries": 1995,
+    "image_assets": 0,
+    "image_occurrences": 0,
+    "arch_entities": 0,
+    "entity_mentions": 0,
+    "figure_mentions": 0,
+    "rag_chunks": 0,
+    "provenance_anchors": 0,
+    "review_tasks": 67,
+    "revisions": 412,
+    "iiif_annotations": 11251,
+    "fts_alto_lines": 11251,
+    "fts_plates_figures": 189
+  },
+  "manifests": [
+    {
+      "volume_number": 1,
+      "label": "第一卷",
+      "total_pages": 412,
+      "pdf_type": "digital"
+    }
+  ],
+  "mapping_status": [
+    {
+      "mapping_status": "auto_accepted",
+      "n": 345
+    },
+    {
+      "mapping_status": "needs_review",
+      "n": 67
+    }
+  ],
+  "review_tasks": [
+    {
+      "status": "pending",
+      "risk_type": "duplicate_scan",
+      "n": 54
+    },
+    {
+      "status": "pending",
+      "risk_type": "low_mapping_confidence",
+      "n": 12
+    },
+    {
+      "status": "pending",
+      "risk_type": "missing_page_gap",
+      "n": 1
+    }
+  ],
+  "page_domains": [
+    {
+      "page_domain": "body",
+      "first_scan": 3,
+      "last_scan": 412,
+      "n": 345
+    },
+    {
+      "page_domain": "cover",
+      "first_scan": 1,
+      "last_scan": 1,
+      "n": 1
+    },
+    {
+      "page_domain": "front_matter",
+      "first_scan": 2,
+      "last_scan": 2,
+      "n": 1
+    },
+    {
+      "page_domain": "toc",
+      "first_scan": 5,
+      "last_scan": 69,
+      "n": 65
+    }
+  ],
+  "foreign_key_violations": [],
+  "out_of_canvas_lines": [
+    {
+      "n": 0
+    }
+  ],
+  "chinese_search_probe": {
+    "query": "青花",
+    "like_line_hits": 1019,
+    "fts_match_line_hits": 13,
+    "note": "Substring and token search differ; this demonstrates inadequate Chinese substring recall, not a universal accuracy measurement."
+  },
+  "existing_pdf_inspection": [
+    {
+      "file_name": "1第一卷-已复.pdf",
+      "file_path": "docs/考古报告/1第一卷-已复.pdf",
+      "file_size_mb": 69.29,
+      "sha256": "",
+      "total_pages": 412,
+      "pdf_type": "digital",
+      "has_outline_bookmarks": false,
+      "outline_count": 0,
+      "distinct_page_labels_count": 0,
+      "median_width_pt": 595.28,
+      "median_height_pt": 807.87,
+      "foldout_page_indices": [],
+      "sampled_pages": [
+        {
+          "pdf_page_index": 0,
+          "scan_index": 1,
+          "source_page_label": "1",
+          "width_pt": 595.28,
+          "height_pt": 807.87,
+          "is_foldout": false,
+          "char_count": 60,
+          "image_count": 0,
+          "first_line_snippet": "本报告为国家社会科学基金一般项目",
+          "last_line_snippet": "（批准号21BKG028）成果之一"
+        },
+        {
+          "pdf_page_index": 1,
+          "scan_index": 2,
+          "source_page_label": "2",
+          "width_pt": 595.28,
+          "height_pt": 807.87,
+          "is_foldout": false,
+          "char_count": 0,
+          "image_count": 0,
+          "first_line_snippet": "",
+          "last_line_snippet": ""
+        },
+        {
+          "pdf_page_index": 4,
+          "scan_index": 5,
+          "source_page_label": "5",
+          "width_pt": 595.28,
+          "height_pt": 807.87,
+          "is_foldout": false,
+          "char_count": 789,
+          "image_count": 0,
+          "first_line_snippet": "目  录",
+          "last_line_snippet": "五、探方17（T17）、探方15（T15） ………………………………………………… （30）"
+        },
+        {
+          "pdf_page_index": 68,
+          "scan_index": 69,
+          "source_page_label": "69",
+          "width_pt": 595.28,
+          "height_pt": 807.87,
+          "is_foldout": false,
+          "char_count": 1297,
+          "image_count": 0,
+          "first_line_snippet": "· 11 ·第一部分·第二章　考古工作与报告编写",
+          "last_line_snippet": "e　（清）蓝浦：《景德镇陶录》卷八《陶说杂编》，浙江人民美术出版社，2019年，第117页。"
+        },
+        {
+          "pdf_page_index": 136,
+          "scan_index": 137,
+          "source_page_label": "137",
+          "width_pt": 595.28,
+          "height_pt": 807.87,
+          "is_foldout": false,
+          "char_count": 533,
+          "image_count": 1,
+          "first_line_snippet": "· 79 ·第二部分·第二章　宋元时期遗物",
+          "last_line_snippet": "11. Cc型 （T15H2∶17）"
+        },
+        {
+          "pdf_page_index": 204,
+          "scan_index": 205,
+          "source_page_label": "205",
+          "width_pt": 595.28,
+          "height_pt": 807.87,
+          "is_foldout": false,
+          "char_count": 1349,
+          "image_count": 0,
+          "first_line_snippet": "· 147 ·第二部分·第二章　宋元时期遗物",
+          "last_line_snippet": "标本，T29H3③∶46，腹径5.2、残高6 厘米。白胎细，胎体较薄。青白釉，光亮。腹壁有"
+        },
+        {
+          "pdf_page_index": 272,
+          "scan_index": 273,
+          "source_page_label": "273",
+          "width_pt": 595.28,
+          "height_pt": 807.87,
+          "is_foldout": false,
+          "char_count": 585,
+          "image_count": 1,
+          "first_line_snippet": "· 215 ·第二部分·第二章　宋元时期遗物",
+          "last_line_snippet": "5. Bc型Ⅱ式 （T13H2∶482） 6. Bd型 （T3H5①∶6）"
+        },
+        {
+          "pdf_page_index": 340,
+          "scan_index": 341,
+          "source_page_label": "341",
+          "width_pt": 595.28,
+          "height_pt": 807.87,
+          "is_foldout": false,
+          "char_count": 693,
+          "image_count": 1,
+          "first_line_snippet": "· 283 ·第二部分·第二章　宋元时期遗物",
+          "last_line_snippet": "6. 不明地区窑口黑釉罐E型（T29H3∶397） 7. 不明地区窑口黑釉壶A型（T10⑧∶12）"
+        },
+        {
+          "pdf_page_index": 408,
+          "scan_index": 409,
+          "source_page_label": "409",
+          "width_pt": 595.28,
+          "height_pt": 807.87,
+          "is_foldout": false,
+          "char_count": 1011,
+          "image_count": 0,
+          "first_line_snippet": "· 351 ·第二部分·第二章　宋元时期遗物",
+          "last_line_snippet": "A型：平底小罐。"
+        },
+        {
+          "pdf_page_index": 411,
+          "scan_index": 412,
+          "source_page_label": "412",
+          "width_pt": 595.28,
+          "height_pt": 807.87,
+          "is_foldout": false,
+          "char_count": 660,
+          "image_count": 1,
+          "first_line_snippet": "· 354 ·",
+          "last_line_snippet": "4. 铁彩高足杯B型 （T19③c∶328）　5. 铁彩器盖 （T13H2∶823）　6. 铁彩（T3扩H5∶27）"
+        }
+      ],
+      "metadata": {
+        "ModDate": "D:20260421121804+08'00'",
+        "Trapped": "/False",
+        "Producer": "Adobe PDF Library 15.0",
+        "Creator": "Adobe InDesign 15.0 (Windows)",
+        "CreationDate": "D:20250904152411+08'00'"
+      }
+    },
+    {
+      "file_name": "2第二卷-已复.pdf",
+      "file_path": "docs/考古报告/2第二卷-已复.pdf",
+      "file_size_mb": 48.57,
+      "sha256": "",
+      "total_pages": 410,
+      "pdf_type": "digital",
+      "has_outline_bookmarks": false,
+      "outline_count": 0,
+      "distinct_page_labels_count": 410,
+      "median_width_pt": 595.28,
+      "median_height_pt": 807.87,
+      "foldout_page_indices": [],
+      "sampled_pages": [
+        {
+          "pdf_page_index": 0,
+          "scan_index": 1,
+          "source_page_label": "355",
+          "width_pt": 595.28,
+          "height_pt": 807.87,
+          "is_foldout": false,
+          "char_count": 73,
+          "image_count": 0,
+          "first_line_snippet": "景德镇落马桥遗址",
+          "last_line_snippet": "（二）"
+        },
+        {
+          "pdf_page_index": 1,
+          "scan_index": 2,
+          "source_page_label": "356",
+          "width_pt": 595.28,
+          "height_pt": 807.87,
+          "is_foldout": false,
+          "char_count": 619,
+          "image_count": 0,
+          "first_line_snippet": "图书在版编目（CIP）数据",
+          "last_line_snippet": "*"
+        },
+        {
+          "pdf_page_index": 4,
+          "scan_index": 5,
+          "source_page_label": "359",
+          "width_pt": 595.28,
+          "height_pt": 807.87,
+          "is_foldout": false,
+          "char_count": 1162,
+          "image_count": 0,
+          "first_line_snippet": "· 357 ·第二部分·第二章　宋元时期遗物",
+          "last_line_snippet": "标本4，T10采∶326，口径9 、残高3.3厘米。灰白胎，胎质较密，釉面泛青。内壁近口沿"
+        },
+        {
+          "pdf_page_index": 68,
+          "scan_index": 69,
+          "source_page_label": "423",
+          "width_pt": 595.28,
+          "height_pt": 807.87,
+          "is_foldout": false,
+          "char_count": 771,
+          "image_count": 0,
+          "first_line_snippet": "· 421 ·第二部分·第三章　分期与相关讨论",
+          "last_line_snippet": "d 郑隆：《昭乌达盟辽尚暐符墓清理简报》，《文物》1961年第9期。"
+        },
+        {
+          "pdf_page_index": 136,
+          "scan_index": 137,
+          "source_page_label": "491",
+          "width_pt": 595.28,
+          "height_pt": 807.87,
+          "is_foldout": false,
+          "char_count": 735,
+          "image_count": 1,
+          "first_line_snippet": "· 489 ·第三部分·第二章　明清时期遗物",
+          "last_line_snippet": "10. Ai型（T3扩G3∶310） 11. Aj型Ⅰ式（T27H1∶314） 12. Ak型（T21H3∶300）"
+        },
+        {
+          "pdf_page_index": 204,
+          "scan_index": 205,
+          "source_page_label": "559",
+          "width_pt": 595.28,
+          "height_pt": 807.87,
+          "is_foldout": false,
+          "char_count": 1276,
+          "image_count": 0,
+          "first_line_snippet": "· 557 ·第三部分·第二章　明清时期遗物",
+          "last_line_snippet": "标本1，T2③c∶329，可复原。口径8.5、足径3 、高2.1厘米。白胎微泛灰，较细。白釉较"
+        },
+        {
+          "pdf_page_index": 272,
+          "scan_index": 273,
+          "source_page_label": "627",
+          "width_pt": 595.28,
+          "height_pt": 807.87,
+          "is_foldout": false,
+          "char_count": 1184,
+          "image_count": 0,
+          "first_line_snippet": "· 625 ·第三部分·第二章　明清时期遗物",
+          "last_line_snippet": "标本，T2C4①∶315，可复原。口径9.4、高7.2厘米。白胎，细。白釉，较光亮。通体施"
+        },
+        {
+          "pdf_page_index": 340,
+          "scan_index": 341,
+          "source_page_label": "695",
+          "width_pt": 595.28,
+          "height_pt": 807.87,
+          "is_foldout": false,
+          "char_count": 946,
+          "image_count": 0,
+          "first_line_snippet": "· 693 ·第三部分·第二章　明清时期遗物",
+          "last_line_snippet": "6；图版3.2.482，4～6）。"
+        },
+        {
+          "pdf_page_index": 408,
+          "scan_index": 409,
+          "source_page_label": "763",
+          "width_pt": 595.28,
+          "height_pt": 807.87,
+          "is_foldout": false,
+          "char_count": 986,
+          "image_count": 0,
+          "first_line_snippet": "后　　记",
+          "last_line_snippet": "此次发掘得益于多方协作。景德镇市委市政府高度关注，市文旅局大力协调，红光瓷厂的"
+        },
+        {
+          "pdf_page_index": 409,
+          "scan_index": 410,
+          "source_page_label": "764",
+          "width_pt": 595.28,
+          "height_pt": 807.87,
+          "is_foldout": false,
+          "char_count": 181,
+          "image_count": 0,
+          "first_line_snippet": "· 762 · 景德镇落马桥遗址2012～2017年考古发掘报告",
+          "last_line_snippet": "2025年7月"
+        }
+      ],
+      "metadata": {
+        "ModDate": "D:20260421140653+08'00'",
+        "Producer": "Adobe PDF Library 15.0",
+        "Trapped": "/False",
+        "Creator": "Adobe InDesign 15.0 (Windows)",
+        "CreationDate": "D:20250904152426+08'00'"
+      }
+    },
+    {
+      "file_name": "3第三卷-已复.pdf",
+      "file_path": "docs/考古报告/3第三卷-已复.pdf",
+      "file_size_mb": 256.82,
+      "sha256": "",
+      "total_pages": 286,
+      "pdf_type": "hybrid_ocr",
+      "has_outline_bookmarks": false,
+      "outline_count": 0,
+      "distinct_page_labels_count": 0,
+      "median_width_pt": 647.95,
+      "median_height_pt": 860.55,
+      "foldout_page_indices": [],
+      "sampled_pages": [
+        {
+          "pdf_page_index": 0,
+          "scan_index": 1,
+          "source_page_label": "1",
+          "width_pt": 647.95,
+          "height_pt": 860.55,
+          "is_foldout": false,
+          "char_count": 42,
+          "image_count": 2,
+          "first_line_snippet": "1. F12天井局部图",
+          "last_line_snippet": "图版 2.1.1"
+        },
+        {
+          "pdf_page_index": 1,
+          "scan_index": 2,
+          "source_page_label": "2",
+          "width_pt": 647.95,
+          "height_pt": 860.55,
+          "is_foldout": false,
+          "char_count": 65,
+          "image_count": 2,
+          "first_line_snippet": "1. Q10打破的F12废弃后堆积层（东—西）",
+          "last_line_snippet": "图版 2.1.2"
+        },
+        {
+          "pdf_page_index": 4,
+          "scan_index": 5,
+          "source_page_label": "5",
+          "width_pt": 647.95,
+          "height_pt": 860.55,
+          "is_foldout": false,
+          "char_count": 152,
+          "image_count": 12,
+          "first_line_snippet": "青白釉碗Ca型",
+          "last_line_snippet": "图版 2.2.3"
+        },
+        {
+          "pdf_page_index": 47,
+          "scan_index": 48,
+          "source_page_label": "48",
+          "width_pt": 647.95,
+          "height_pt": 860.55,
+          "is_foldout": false,
+          "char_count": 94,
+          "image_count": 6,
+          "first_line_snippet": "青白釉高足杯（Cc～Cd型）",
+          "last_line_snippet": "图版 2.2.46"
+        },
+        {
+          "pdf_page_index": 94,
+          "scan_index": 95,
+          "source_page_label": "95",
+          "width_pt": 647.95,
+          "height_pt": 860.55,
+          "is_foldout": false,
+          "char_count": 168,
+          "image_count": 12,
+          "first_line_snippet": "青白釉罐（Ea型Ⅰ式～Ea型Ⅱ式）",
+          "last_line_snippet": "图版 2.2.93"
+        },
+        {
+          "pdf_page_index": 141,
+          "scan_index": 142,
+          "source_page_label": "142",
+          "width_pt": 647.95,
+          "height_pt": 860.55,
+          "is_foldout": false,
+          "char_count": 166,
+          "image_count": 12,
+          "first_line_snippet": "人物塑像（Fb型Ⅲ式～Fb型Ⅳ式）",
+          "last_line_snippet": "图版 2.2.140"
+        },
+        {
+          "pdf_page_index": 188,
+          "scan_index": 189,
+          "source_page_label": "189",
+          "width_pt": 647.95,
+          "height_pt": 860.55,
+          "is_foldout": false,
+          "char_count": 168,
+          "image_count": 12,
+          "first_line_snippet": "青白釉盏托（Bb～Db型）",
+          "last_line_snippet": "图版 2.2.187"
+        },
+        {
+          "pdf_page_index": 235,
+          "scan_index": 236,
+          "source_page_label": "236",
+          "width_pt": 647.95,
+          "height_pt": 860.55,
+          "is_foldout": false,
+          "char_count": 133,
+          "image_count": 10,
+          "first_line_snippet": "卵白釉碗（Fd～Fe型）",
+          "last_line_snippet": "图版 2.2.234"
+        },
+        {
+          "pdf_page_index": 282,
+          "scan_index": 283,
+          "source_page_label": "283",
+          "width_pt": 647.95,
+          "height_pt": 860.55,
+          "is_foldout": false,
+          "char_count": 117,
+          "image_count": 8,
+          "first_line_snippet": "卵白釉炉（Ba型Ⅰ式～Bb型）",
+          "last_line_snippet": "图版 2.2.281"
+        },
+        {
+          "pdf_page_index": 285,
+          "scan_index": 286,
+          "source_page_label": "286",
+          "width_pt": 647.95,
+          "height_pt": 860.55,
+          "is_foldout": false,
+          "char_count": 150,
+          "image_count": 12,
+          "first_line_snippet": "卵白釉罐（Aa～Bc型）",
+          "last_line_snippet": "图版 2.2.284"
+        }
+      ],
+      "metadata": {
+        "ModDate": "D:20260421121945+08'00'",
+        "Trapped": "/False",
+        "Producer": "Adobe PDF Library 10.0.1",
+        "Creator": "Adobe InDesign CS6 (Macintosh)",
+        "CreationDate": "D:20250801162032+08'00'"
+      }
+    },
+    {
+      "file_name": "3观台磁州窑址.pdf",
+      "file_path": "docs/考古报告/3观台磁州窑址.pdf",
+      "file_size_mb": 83.34,
+      "sha256": "",
+      "total_pages": 793,
+      "pdf_type": "hybrid_ocr",
+      "has_outline_bookmarks": true,
+      "outline_count": 6,
+      "distinct_page_labels_count": 793,
+      "median_width_pt": 913.32,
+      "median_height_pt": 1258.43,
+      "foldout_page_indices": [],
+      "sampled_pages": [
+        {
+          "pdf_page_index": 0,
+          "scan_index": 1,
+          "source_page_label": "A",
+          "width_pt": 913.32,
+          "height_pt": 1278.65,
+          "is_foldout": false,
+          "char_count": 0,
+          "image_count": 1,
+          "first_line_snippet": "",
+          "last_line_snippet": ""
+        },
+        {
+          "pdf_page_index": 1,
+          "scan_index": 2,
+          "source_page_label": "B",
+          "width_pt": 913.32,
+          "height_pt": 1258.43,
+          "is_foldout": false,
+          "char_count": 0,
+          "image_count": 1,
+          "first_line_snippet": "",
+          "last_line_snippet": ""
+        },
+        {
+          "pdf_page_index": 4,
+          "scan_index": 5,
+          "source_page_label": "i",
+          "width_pt": 913.32,
+          "height_pt": 1258.43,
+          "is_foldout": false,
+          "char_count": 0,
+          "image_count": 1,
+          "first_line_snippet": "",
+          "last_line_snippet": ""
+        },
+        {
+          "pdf_page_index": 132,
+          "scan_index": 133,
+          "source_page_label": "112",
+          "width_pt": 913.32,
+          "height_pt": 1258.43,
+          "is_foldout": false,
+          "char_count": 0,
+          "image_count": 1,
+          "first_line_snippet": "",
+          "last_line_snippet": ""
+        },
+        {
+          "pdf_page_index": 264,
+          "scan_index": 265,
+          "source_page_label": "244",
+          "width_pt": 913.32,
+          "height_pt": 1258.43,
+          "is_foldout": false,
+          "char_count": 0,
+          "image_count": 1,
+          "first_line_snippet": "",
+          "last_line_snippet": ""
+        },
+        {
+          "pdf_page_index": 396,
+          "scan_index": 397,
+          "source_page_label": "376",
+          "width_pt": 913.32,
+          "height_pt": 1258.43,
+          "is_foldout": false,
+          "char_count": 0,
+          "image_count": 1,
+          "first_line_snippet": "",
+          "last_line_snippet": ""
+        },
+        {
+          "pdf_page_index": 528,
+          "scan_index": 529,
+          "source_page_label": "508",
+          "width_pt": 913.32,
+          "height_pt": 1258.43,
+          "is_foldout": false,
+          "char_count": 0,
+          "image_count": 1,
+          "first_line_snippet": "",
+          "last_line_snippet": ""
+        },
+        {
+          "pdf_page_index": 660,
+          "scan_index": 661,
+          "source_page_label": "640",
+          "width_pt": 913.32,
+          "height_pt": 1260.64,
+          "is_foldout": false,
+          "char_count": 0,
+          "image_count": 1,
+          "first_line_snippet": "",
+          "last_line_snippet": ""
+        },
+        {
+          "pdf_page_index": 792,
+          "scan_index": 793,
+          "source_page_label": "772",
+          "width_pt": 913.32,
+          "height_pt": 1260.64,
+          "is_foldout": false,
+          "char_count": 17,
+          "image_count": 0,
+          "first_line_snippet": "封面",
+          "last_line_snippet": "正文"
+        }
+      ],
+      "metadata": {
+        "CreationDate": "D:20080616163232",
+        "ModDate": "D:20080616163232",
+        "Producer": "FreePic2Pdf - 1.09",
+        "Author": "Booklover\u0000",
+        "Title": "观台磁州窑址\u0000"
+      }
+    },
+    {
+      "file_name": "4第四卷-已复.pdf",
+      "file_path": "docs/考古报告/4第四卷-已复.pdf",
+      "file_size_mb": 287.33,
+      "sha256": "",
+      "total_pages": 288,
+      "pdf_type": "hybrid_ocr",
+      "has_outline_bookmarks": false,
+      "outline_count": 0,
+      "distinct_page_labels_count": 288,
+      "median_width_pt": 647.95,
+      "median_height_pt": 860.55,
+      "foldout_page_indices": [],
+      "sampled_pages": [
+        {
+          "pdf_page_index": 0,
+          "scan_index": 1,
+          "source_page_label": "285",
+          "width_pt": 595.28,
+          "height_pt": 807.87,
+          "is_foldout": false,
+          "char_count": 73,
+          "image_count": 0,
+          "first_line_snippet": "景德镇落马桥遗址",
+          "last_line_snippet": "（四）"
+        },
+        {
+          "pdf_page_index": 1,
+          "scan_index": 2,
+          "source_page_label": "286",
+          "width_pt": 595.28,
+          "height_pt": 807.87,
+          "is_foldout": false,
+          "char_count": 621,
+          "image_count": 0,
+          "first_line_snippet": "图书在版编目（CIP）数据",
+          "last_line_snippet": "*"
+        },
+        {
+          "pdf_page_index": 4,
+          "scan_index": 5,
+          "source_page_label": "289",
+          "width_pt": 647.95,
+          "height_pt": 860.55,
+          "is_foldout": false,
+          "char_count": 152,
+          "image_count": 12,
+          "first_line_snippet": "卵白釉壶（Ba～Bb型）",
+          "last_line_snippet": "图版 2.2.287"
+        },
+        {
+          "pdf_page_index": 48,
+          "scan_index": 49,
+          "source_page_label": "333",
+          "width_pt": 647.95,
+          "height_pt": 860.55,
+          "is_foldout": false,
+          "char_count": 122,
+          "image_count": 10,
+          "first_line_snippet": "青釉碗（Ac～Ad型）",
+          "last_line_snippet": "图版 2.2.331"
+        },
+        {
+          "pdf_page_index": 96,
+          "scan_index": 97,
+          "source_page_label": "381",
+          "width_pt": 647.95,
+          "height_pt": 860.55,
+          "is_foldout": false,
+          "char_count": 138,
+          "image_count": 12,
+          "first_line_snippet": "青花盘Ba型",
+          "last_line_snippet": "图版 2.2.379"
+        },
+        {
+          "pdf_page_index": 144,
+          "scan_index": 145,
+          "source_page_label": "429",
+          "width_pt": 647.95,
+          "height_pt": 860.55,
+          "is_foldout": false,
+          "char_count": 137,
+          "image_count": 12,
+          "first_line_snippet": "青花瓶Aa型",
+          "last_line_snippet": "图版 2.2.427"
+        },
+        {
+          "pdf_page_index": 192,
+          "scan_index": 193,
+          "source_page_label": "477",
+          "width_pt": 647.95,
+          "height_pt": 860.55,
+          "is_foldout": false,
+          "char_count": 149,
+          "image_count": 12,
+          "first_line_snippet": "青花器座（Be～E型）",
+          "last_line_snippet": "图版 2.2.475"
+        },
+        {
+          "pdf_page_index": 240,
+          "scan_index": 241,
+          "source_page_label": "525",
+          "width_pt": 647.95,
+          "height_pt": 860.55,
+          "is_foldout": false,
+          "char_count": 110,
+          "image_count": 8,
+          "first_line_snippet": "缸胎酱釉缸B型",
+          "last_line_snippet": "图版 2.2.523"
+        },
+        {
+          "pdf_page_index": 287,
+          "scan_index": 288,
+          "source_page_label": "572",
+          "width_pt": 647.95,
+          "height_pt": 860.55,
+          "is_foldout": false,
+          "char_count": 81,
+          "image_count": 6,
+          "first_line_snippet": "匣钵Aa型Ⅳ式",
+          "last_line_snippet": "图版 2.2.570"
+        }
+      ],
+      "metadata": {
+        "ModDate": "D:20260421133547+08'00'",
+        "Trapped": "/False",
+        "Producer": "Adobe PDF Library 10.0.1",
+        "Creator": "Adobe InDesign CS6 (Macintosh)",
+        "CreationDate": "D:20250910131535+08'00'"
+      }
+    },
+    {
+      "file_name": "5第五卷-已复.pdf",
+      "file_path": "docs/考古报告/5第五卷-已复.pdf",
+      "file_size_mb": 274.21,
+      "sha256": "",
+      "total_pages": 288,
+      "pdf_type": "hybrid_ocr",
+      "has_outline_bookmarks": false,
+      "outline_count": 0,
+      "distinct_page_labels_count": 288,
+      "median_width_pt": 647.95,
+      "median_height_pt": 860.55,
+      "foldout_page_indices": [],
+      "sampled_pages": [
+        {
+          "pdf_page_index": 0,
+          "scan_index": 1,
+          "source_page_label": "571",
+          "width_pt": 595.28,
+          "height_pt": 807.87,
+          "is_foldout": false,
+          "char_count": 73,
+          "image_count": 0,
+          "first_line_snippet": "景德镇落马桥遗址",
+          "last_line_snippet": "（五）"
+        },
+        {
+          "pdf_page_index": 1,
+          "scan_index": 2,
+          "source_page_label": "572",
+          "width_pt": 595.28,
+          "height_pt": 807.87,
+          "is_foldout": false,
+          "char_count": 621,
+          "image_count": 0,
+          "first_line_snippet": "图书在版编目（CIP）数据",
+          "last_line_snippet": "*"
+        },
+        {
+          "pdf_page_index": 4,
+          "scan_index": 5,
+          "source_page_label": "575",
+          "width_pt": 647.95,
+          "height_pt": 860.55,
+          "is_foldout": false,
+          "char_count": 114,
+          "image_count": 8,
+          "first_line_snippet": "匣钵（Ac型Ⅰ式～Ac型Ⅱ式）",
+          "last_line_snippet": "图版 2.2.573"
+        },
+        {
+          "pdf_page_index": 48,
+          "scan_index": 49,
+          "source_page_label": "619",
+          "width_pt": 647.95,
+          "height_pt": 860.55,
+          "is_foldout": false,
+          "char_count": 161,
+          "image_count": 12,
+          "first_line_snippet": "青花碗（Ag型Ⅱ式～Ag型Ⅲ式）",
+          "last_line_snippet": "图版 3.2.7"
+        },
+        {
+          "pdf_page_index": 96,
+          "scan_index": 97,
+          "source_page_label": "667",
+          "width_pt": 647.95,
+          "height_pt": 860.55,
+          "is_foldout": false,
+          "char_count": 154,
+          "image_count": 12,
+          "first_line_snippet": "青花盘（Eb型～F型Ⅰ式）",
+          "last_line_snippet": "图版 3.2.55"
+        },
+        {
+          "pdf_page_index": 144,
+          "scan_index": 145,
+          "source_page_label": "715",
+          "width_pt": 647.95,
+          "height_pt": 860.55,
+          "is_foldout": false,
+          "char_count": 140,
+          "image_count": 12,
+          "first_line_snippet": "青花杯（Yb～Z型）",
+          "last_line_snippet": "图版 3.2.103"
+        },
+        {
+          "pdf_page_index": 192,
+          "scan_index": 193,
+          "source_page_label": "763",
+          "width_pt": 647.95,
+          "height_pt": 860.55,
+          "is_foldout": false,
+          "char_count": 142,
+          "image_count": 12,
+          "first_line_snippet": "青花炉（Cb～Eb型）",
+          "last_line_snippet": "图版 3.2.151"
+        },
+        {
+          "pdf_page_index": 240,
+          "scan_index": 241,
+          "source_page_label": "811",
+          "width_pt": 647.95,
+          "height_pt": 860.55,
+          "is_foldout": false,
+          "char_count": 159,
+          "image_count": 12,
+          "first_line_snippet": "青花人物雕塑（B～D型）",
+          "last_line_snippet": "图版 3.2.199"
+        },
+        {
+          "pdf_page_index": 287,
+          "scan_index": 288,
+          "source_page_label": "858",
+          "width_pt": 647.95,
+          "height_pt": 860.55,
+          "is_foldout": false,
+          "char_count": 141,
+          "image_count": 12,
+          "first_line_snippet": "红彩盘（B～Cb型）",
+          "last_line_snippet": "图版 3.2.246"
+        }
+      ],
+      "metadata": {
+        "ModDate": "D:20260421140631+08'00'",
+        "Trapped": "/False",
+        "Producer": "Adobe PDF Library 10.0.1",
+        "Creator": "Adobe InDesign CS6 (Macintosh)",
+        "CreationDate": "D:20250910135518+08'00'"
+      }
+    },
+    {
+      "file_name": "6第六卷.pdf",
+      "file_path": "docs/考古报告/6第六卷.pdf",
+      "file_size_mb": 272.67,
+      "sha256": "",
+      "total_pages": 288,
+      "pdf_type": "hybrid_ocr",
+      "has_outline_bookmarks": false,
+      "outline_count": 0,
+      "distinct_page_labels_count": 288,
+      "median_width_pt": 647.95,
+      "median_height_pt": 860.55,
+      "foldout_page_indices": [],
+      "sampled_pages": [
+        {
+          "pdf_page_index": 0,
+          "scan_index": 1,
+          "source_page_label": "247",
+          "width_pt": 595.28,
+          "height_pt": 807.87,
+          "is_foldout": false,
+          "char_count": 73,
+          "image_count": 0,
+          "first_line_snippet": "景德镇落马桥遗址",
+          "last_line_snippet": "（六）"
+        },
+        {
+          "pdf_page_index": 1,
+          "scan_index": 2,
+          "source_page_label": "248",
+          "width_pt": 595.28,
+          "height_pt": 807.87,
+          "is_foldout": false,
+          "char_count": 621,
+          "image_count": 0,
+          "first_line_snippet": "图书在版编目（CIP）数据",
+          "last_line_snippet": "*"
+        },
+        {
+          "pdf_page_index": 4,
+          "scan_index": 5,
+          "source_page_label": "251",
+          "width_pt": 647.95,
+          "height_pt": 860.55,
+          "is_foldout": false,
+          "char_count": 127,
+          "image_count": 12,
+          "first_line_snippet": "红彩罐、红彩壶、红彩碗盖",
+          "last_line_snippet": "图版 3.2.249"
+        },
+        {
+          "pdf_page_index": 48,
+          "scan_index": 49,
+          "source_page_label": "295",
+          "width_pt": 647.95,
+          "height_pt": 860.55,
+          "is_foldout": false,
+          "char_count": 136,
+          "image_count": 12,
+          "first_line_snippet": "白釉杯（Aa型）",
+          "last_line_snippet": "图版 3.2.293"
+        },
+        {
+          "pdf_page_index": 96,
+          "scan_index": 97,
+          "source_page_label": "343",
+          "width_pt": 647.95,
+          "height_pt": 860.55,
+          "is_foldout": false,
+          "char_count": 136,
+          "image_count": 12,
+          "first_line_snippet": "白釉勺B型、白釉砚滴A型",
+          "last_line_snippet": "图版 3.2.341"
+        },
+        {
+          "pdf_page_index": 144,
+          "scan_index": 145,
+          "source_page_label": "391",
+          "width_pt": 647.95,
+          "height_pt": 860.55,
+          "is_foldout": false,
+          "char_count": 143,
+          "image_count": 12,
+          "first_line_snippet": "紫金釉灯盏（C～D型）",
+          "last_line_snippet": "图版 3.2.389"
+        },
+        {
+          "pdf_page_index": 192,
+          "scan_index": 193,
+          "source_page_label": "439",
+          "width_pt": 647.95,
+          "height_pt": 860.55,
+          "is_foldout": false,
+          "char_count": 162,
+          "image_count": 12,
+          "first_line_snippet": "缸胎酱釉瓶A型、缸胎酱釉壶（A～B型）",
+          "last_line_snippet": "图版 3.2.437"
+        },
+        {
+          "pdf_page_index": 240,
+          "scan_index": 241,
+          "source_page_label": "487",
+          "width_pt": 647.95,
+          "height_pt": 860.55,
+          "is_foldout": false,
+          "char_count": 153,
+          "image_count": 12,
+          "first_line_snippet": "筒形匣钵（A型Ⅱ式～B型）",
+          "last_line_snippet": "图版 3.2.485"
+        },
+        {
+          "pdf_page_index": 287,
+          "scan_index": 288,
+          "source_page_label": "534",
+          "width_pt": 647.95,
+          "height_pt": 860.55,
+          "is_foldout": false,
+          "char_count": 64,
+          "image_count": 6,
+          "first_line_snippet": "砚台",
+          "last_line_snippet": "图版 3.2.532"
+        }
+      ],
+      "metadata": {
+        "CreationDate": "D:20250910105225+08'00'",
+        "Creator": "Adobe InDesign CS6 (Macintosh)",
+        "ModDate": "D:20250911093955+08'00'",
+        "Producer": "Adobe PDF Library 10.0.1",
+        "Trapped": "/False"
+      }
+    }
+  ],
+  "smoke_test": {
+    "stats": {
+      "work_id": "a9e15ca7-20fb-44ae-9ea2-59e2f23359b0",
+      "manifest_id": "1e9ddf9c-67dc-422c-bc10-1b810b98c19d",
+      "pages_ingested": 12,
+      "blocks_count": 222,
+      "lines_count": 279,
+      "running_headers_filtered": 0,
+      "toc_ranges_count": 0,
+      "figures_count": 0,
+      "artifacts_count": 0,
+      "artifact_occurrences_count": 0,
+      "index_entries_count": 0,
+      "anomalies_count": 11,
+      "elapsed_seconds": 0.54
+    },
+    "generated_canvas_count": 12,
+    "page_bundle_keys": [
+      "page_id",
+      "manifest_id",
+      "revision",
+      "identity",
+      "geometry",
+      "scan_image",
+      "layout_elements",
+      "artifact_occurrences",
+      "review_tasks"
+    ],
+    "image_service_despite_local_base": "https://lab.pku.edu.cn/iiif/image/audit-only_v1_p0001",
+    "database": "Isolated temporary database, removed after run"
+  },
+  "geometry_probe": {
+    "scan_index": 137,
+    "text": "标本1，F12∶109，失口。残口径7.2、足径3.6、残高7.6厘米。白胎泛灰，较细，胎体较",
+    "current_ingestor_bbox_pt": [
+      98.93,
+      126.62,
+      39.95,
+      10.0
+    ],
+    "pymupdf_bbox_xyxy_pt": [
+      98.9291000366211,
+      116.02569580078125,
+      529.9315185546875,
+      130.8426971435547
+    ],
+    "note": "Independent extraction and rendered-page inspection; not a full coordinate quality evaluation."
+  },
+  "hardware": {
+    "memory_bytes": 33599430656,
+    "gpu": "AMD Radeon 780M Graphics (integrated)",
+    "ollama_cli_found": false,
+    "observed_model_ports_listening": [],
+    "key_environment_check": "No DEEPSEEK/DS_API/OPENAI key variables observed; .env files and other credential stores not inspected."
+  }
+}

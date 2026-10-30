@@ -23,5 +23,14 @@ ms-playwright-go/
 # Data and temporary output
 data/raw/*
 !data/raw/.gitkeep
+*.db
+*.db-shm
+*.db-wal
 *.log
 *.tmp
+data/processed/library/
+data/processed/models/
+data/processed/benchmarks/
+*.key.txt
+# Full archaeological reports stay local; source hashes are recorded in reports.
+/docs/考古报告/*.pdf

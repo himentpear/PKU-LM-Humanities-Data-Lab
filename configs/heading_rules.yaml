@@ -1,0 +1,47 @@
+# 考古报告标题层级规则、Running Header 负规则与编号保护配置
+
+heading_rules:
+  - level: 1
+    name: "部分"
+    regex: "^第[一二三四五六七八九十百零0-9]+部分\\s*.*"
+    priority: 110
+  - level: 2
+    name: "章级标题"
+    regex: "^第[一二三四五六七八九十百零0-9]+章\\s*.*"
+    priority: 100
+
+  - level: 1
+    name: "独立一级标题（前言/结语/附表/图版）"
+    regex: "^(前\\s*言|序\\s*言|凡\\s*例|目\\s*录|结\\s*语|小\\s*结|附\\s*录|附\\s*表|英文提要|Abstract)$"
+    priority: 95
+
+  - level: 3
+    name: "节级标题"
+    regex: "^第[一二三四五六七八九十百零0-9]+节\\s*.*"
+    priority: 90
+
+  - level: 4
+    name: "大项标题（一、二、三、）"
+    regex: "^[一二三四五六七八九十百]+[、.．]\\s*\\S+"
+    priority: 80
+
+  - level: 5
+    name: "括号子项标题（（一）（二））"
+    regex: "^[（(][一二三四五六七八九十百]+[)）]\\s*\\S+"
+    priority: 70
+
+  - level: 6
+    name: "阿拉伯数字子项（1. / 1.1）"
+    regex: "^\\d+(?:\\.\\d+)*[、.．](?!\\d)\\s*\\S+"
+    priority: 60
+
+running_header_rules:
+  max_canonical_y: 1200          # 位于 Canonical Page (0~14142) 顶部 1200 以内
+  min_repeat_pages: 3            # 在全书至少 3 页相同顶部位置重复出现
+  max_text_length: 40            # 书眉字符长度上限
+
+protected_patterns:
+  artifact_id: "[THYMJGF]\\d+[①②③④⑤⑥⑦⑧⑨⑩a-zA-Z]*:\\d+"
+  excavation_unit: "\\b(?:[IVXⅠⅡⅢⅣⅤ]+)?[THYMJGF]\\d+[①②③④⑤⑥⑦⑧⑨⑩]?\\b"
+  typology: "[ⅠⅡⅢⅣⅤⅥⅦⅧⅨⅩI]+式"
+  measurement: "\\d+(?:\\.\\d+)?\\s*(?:cm|mm|m|厘米|毫米|米)"

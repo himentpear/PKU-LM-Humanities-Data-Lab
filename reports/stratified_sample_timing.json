@@ -1,0 +1,792 @@
+{
+  "status": "completed",
+  "sample_run": "D:\\Documents\\Github\\PKU-LM-Humanities-Data-Lab\\data\\processed\\benchmarks\\stratified-sample\\1793344610008326000",
+  "dpi": 180,
+  "ocr_threads": 4,
+  "total_pages": 2765,
+  "sample_pages": 49,
+  "sample_wall_seconds": 59.48,
+  "estimated_base_seconds": 3806.9,
+  "engineering_range_seconds": [
+    3046,
+    5710
+  ],
+  "documents": [
+    {
+      "source": "1第一卷-已复.pdf",
+      "total_pages": 412,
+      "sample_pages": 7,
+      "samples": [
+        {
+          "physical_page": 1,
+          "stratum_weight_pages": 1,
+          "method": "pymupdf",
+          "characters": 58,
+          "lines": 3,
+          "low_confidence_lines": 0,
+          "geometry_errors": 0,
+          "seconds": 0.1484,
+          "quality_issues": []
+        },
+        {
+          "physical_page": 35,
+          "stratum_weight_pages": 68,
+          "method": "pymupdf",
+          "characters": 741,
+          "lines": 72,
+          "low_confidence_lines": 0,
+          "geometry_errors": 0,
+          "seconds": 0.1132,
+          "quality_issues": []
+        },
+        {
+          "physical_page": 104,
+          "stratum_weight_pages": 69,
+          "method": "pymupdf",
+          "characters": 306,
+          "lines": 10,
+          "low_confidence_lines": 0,
+          "geometry_errors": 0,
+          "seconds": 0.1963,
+          "quality_issues": []
+        },
+        {
+          "physical_page": 172,
+          "stratum_weight_pages": 68,
+          "method": "pymupdf",
+          "characters": 1294,
+          "lines": 37,
+          "low_confidence_lines": 0,
+          "geometry_errors": 0,
+          "seconds": 0.1403,
+          "quality_issues": []
+        },
+        {
+          "physical_page": 241,
+          "stratum_weight_pages": 69,
+          "method": "pymupdf",
+          "characters": 839,
+          "lines": 26,
+          "low_confidence_lines": 0,
+          "geometry_errors": 0,
+          "seconds": 0.1744,
+          "quality_issues": []
+        },
+        {
+          "physical_page": 309,
+          "stratum_weight_pages": 68,
+          "method": "pymupdf",
+          "characters": 1166,
+          "lines": 35,
+          "low_confidence_lines": 0,
+          "geometry_errors": 0,
+          "seconds": 0.1593,
+          "quality_issues": []
+        },
+        {
+          "physical_page": 378,
+          "stratum_weight_pages": 69,
+          "method": "pymupdf",
+          "characters": 945,
+          "lines": 27,
+          "low_confidence_lines": 0,
+          "geometry_errors": 0,
+          "seconds": 0.2367,
+          "quality_issues": []
+        }
+      ],
+      "sample_indexing_seconds": 1.041,
+      "sample_export_seconds": 0.147,
+      "estimated_extraction_seconds": 70.13,
+      "estimated_indexing_seconds": 61.28,
+      "estimated_export_seconds": 8.64,
+      "sample_stats": {
+        "work_id": "9f097ca2-d221-481a-89c3-3fbd2192856b",
+        "manifest_id": "3cedfa4a-89f9-4907-acbb-2e0342d175cb",
+        "pages_ingested": 7,
+        "blocks_count": 58,
+        "lines_count": 210,
+        "running_headers_filtered": 3,
+        "toc_ranges_count": 3,
+        "figures_count": 3,
+        "artifacts_count": 41,
+        "artifact_occurrences_count": 44,
+        "index_entries_count": 41,
+        "anomalies_count": 4,
+        "elapsed_seconds": 0.52,
+        "image_assets_count": 3,
+        "table_candidates_count": 0,
+        "entity_mentions_count": 89,
+        "rag_chunks_count": 46
+      }
+    },
+    {
+      "source": "2第二卷-已复.pdf",
+      "total_pages": 410,
+      "sample_pages": 7,
+      "samples": [
+        {
+          "physical_page": 1,
+          "stratum_weight_pages": 1,
+          "method": "pymupdf",
+          "characters": 65,
+          "lines": 9,
+          "low_confidence_lines": 0,
+          "geometry_errors": 0,
+          "seconds": 0.1396,
+          "quality_issues": []
+        },
+        {
+          "physical_page": 35,
+          "stratum_weight_pages": 68,
+          "method": "pymupdf",
+          "characters": 487,
+          "lines": 18,
+          "low_confidence_lines": 0,
+          "geometry_errors": 0,
+          "seconds": 0.2152,
+          "quality_issues": []
+        },
+        {
+          "physical_page": 103,
+          "stratum_weight_pages": 68,
+          "method": "pymupdf",
+          "characters": 764,
+          "lines": 23,
+          "low_confidence_lines": 0,
+          "geometry_errors": 0,
+          "seconds": 0.2023,
+          "quality_issues": []
+        },
+        {
+          "physical_page": 171,
+          "stratum_weight_pages": 68,
+          "method": "pymupdf",
+          "characters": 1113,
+          "lines": 37,
+          "low_confidence_lines": 0,
+          "geometry_errors": 0,
+          "seconds": 0.1568,
+          "quality_issues": []
+        },
+        {
+          "physical_page": 239,
+          "stratum_weight_pages": 68,
+          "method": "pymupdf",
+          "characters": 1052,
+          "lines": 37,
+          "low_confidence_lines": 0,
+          "geometry_errors": 0,
+          "seconds": 0.1611,
+          "quality_issues": []
+        },
+        {
+          "physical_page": 307,
+          "stratum_weight_pages": 68,
+          "method": "pymupdf",
+          "characters": 691,
+          "lines": 20,
+          "low_confidence_lines": 0,
+          "geometry_errors": 0,
+          "seconds": 0.2269,
+          "quality_issues": []
+        },
+        {
+          "physical_page": 376,
+          "stratum_weight_pages": 69,
+          "method": "pymupdf",
+          "characters": 1623,
+          "lines": 48,
+          "low_confidence_lines": 0,
+          "geometry_errors": 0,
+          "seconds": 0.2387,
+          "quality_issues": []
+        }
+      ],
+      "sample_indexing_seconds": 1.471,
+      "sample_export_seconds": 0.123,
+      "estimated_extraction_seconds": 82.05,
+      "estimated_indexing_seconds": 86.17,
+      "estimated_export_seconds": 7.19,
+      "sample_stats": {
+        "work_id": "2f2d07de-19f9-40ce-af79-7bb281e53ef7",
+        "manifest_id": "511f6a27-dfe7-46f1-ad5a-2f7d421fb337",
+        "pages_ingested": 7,
+        "blocks_count": 53,
+        "lines_count": 192,
+        "running_headers_filtered": 4,
+        "toc_ranges_count": 3,
+        "figures_count": 3,
+        "artifacts_count": 55,
+        "artifact_occurrences_count": 61,
+        "index_entries_count": 55,
+        "anomalies_count": 5,
+        "elapsed_seconds": 0.48,
+        "image_assets_count": 3,
+        "table_candidates_count": 0,
+        "entity_mentions_count": 107,
+        "rag_chunks_count": 37
+      }
+    },
+    {
+      "source": "3第三卷-已复.pdf",
+      "total_pages": 286,
+      "sample_pages": 7,
+      "samples": [
+        {
+          "physical_page": 1,
+          "stratum_weight_pages": 1,
+          "method": "pymupdf",
+          "characters": 38,
+          "lines": 4,
+          "low_confidence_lines": 0,
+          "geometry_errors": 0,
+          "seconds": 1.0662,
+          "quality_issues": []
+        },
+        {
+          "physical_page": 25,
+          "stratum_weight_pages": 47,
+          "method": "pymupdf",
+          "characters": 151,
+          "lines": 8,
+          "low_confidence_lines": 0,
+          "geometry_errors": 0,
+          "seconds": 1.33,
+          "quality_issues": []
+        },
+        {
+          "physical_page": 72,
+          "stratum_weight_pages": 48,
+          "method": "pymupdf",
+          "characters": 56,
+          "lines": 4,
+          "low_confidence_lines": 0,
+          "geometry_errors": 0,
+          "seconds": 1.7005,
+          "quality_issues": []
+        },
+        {
+          "physical_page": 120,
+          "stratum_weight_pages": 47,
+          "method": "pymupdf",
+          "characters": 150,
+          "lines": 8,
+          "low_confidence_lines": 0,
+          "geometry_errors": 0,
+          "seconds": 1.1882,
+          "quality_issues": []
+        },
+        {
+          "physical_page": 167,
+          "stratum_weight_pages": 48,
+          "method": "pymupdf",
+          "characters": 160,
+          "lines": 8,
+          "low_confidence_lines": 0,
+          "geometry_errors": 0,
+          "seconds": 1.0556,
+          "quality_issues": []
+        },
+        {
+          "physical_page": 215,
+          "stratum_weight_pages": 47,
+          "method": "pymupdf",
+          "characters": 145,
+          "lines": 8,
+          "low_confidence_lines": 0,
+          "geometry_errors": 0,
+          "seconds": 1.2217,
+          "quality_issues": []
+        },
+        {
+          "physical_page": 262,
+          "stratum_weight_pages": 48,
+          "method": "pymupdf",
+          "characters": 110,
+          "lines": 6,
+          "low_confidence_lines": 0,
+          "geometry_errors": 0,
+          "seconds": 1.9918,
+          "quality_issues": []
+        }
+      ],
+      "sample_indexing_seconds": 0.564,
+      "sample_export_seconds": 0.112,
+      "estimated_extraction_seconds": 404.74,
+      "estimated_indexing_seconds": 23.06,
+      "estimated_export_seconds": 4.57,
+      "sample_stats": {
+        "work_id": "2b2125f9-ac77-4fb7-b599-ca43081f1940",
+        "manifest_id": "416e1a00-b716-443c-97b3-12f0340b433f",
+        "pages_ingested": 7,
+        "blocks_count": 46,
+        "lines_count": 46,
+        "running_headers_filtered": 7,
+        "toc_ranges_count": 0,
+        "figures_count": 6,
+        "artifacts_count": 11,
+        "artifact_occurrences_count": 12,
+        "index_entries_count": 11,
+        "anomalies_count": 6,
+        "elapsed_seconds": 0.35,
+        "image_assets_count": 0,
+        "table_candidates_count": 0,
+        "entity_mentions_count": 37,
+        "rag_chunks_count": 39
+      }
+    },
+    {
+      "source": "3观台磁州窑址.pdf",
+      "total_pages": 793,
+      "sample_pages": 7,
+      "samples": [
+        {
+          "physical_page": 1,
+          "stratum_weight_pages": 1,
+          "method": "rapidocr-onnx",
+          "characters": 36,
+          "lines": 5,
+          "low_confidence_lines": 0,
+          "geometry_errors": 0,
+          "seconds": 3.2223,
+          "quality_issues": [
+            "full_page_image_with_sparse_text"
+          ]
+        },
+        {
+          "physical_page": 67,
+          "stratum_weight_pages": 132,
+          "method": "rapidocr-onnx",
+          "characters": 222,
+          "lines": 33,
+          "low_confidence_lines": 2,
+          "geometry_errors": 0,
+          "seconds": 1.9788,
+          "quality_issues": [
+            "full_page_image_with_sparse_text"
+          ]
+        },
+        {
+          "physical_page": 199,
+          "stratum_weight_pages": 132,
+          "method": "rapidocr-onnx",
+          "characters": 1002,
+          "lines": 36,
+          "low_confidence_lines": 1,
+          "geometry_errors": 0,
+          "seconds": 2.7796,
+          "quality_issues": [
+            "full_page_image_with_sparse_text"
+          ]
+        },
+        {
+          "physical_page": 331,
+          "stratum_weight_pages": 132,
+          "method": "rapidocr-onnx",
+          "characters": 860,
+          "lines": 34,
+          "low_confidence_lines": 0,
+          "geometry_errors": 0,
+          "seconds": 2.5762,
+          "quality_issues": [
+            "full_page_image_with_sparse_text"
+          ]
+        },
+        {
+          "physical_page": 463,
+          "stratum_weight_pages": 132,
+          "method": "rapidocr-onnx",
+          "characters": 199,
+          "lines": 19,
+          "low_confidence_lines": 1,
+          "geometry_errors": 0,
+          "seconds": 1.4223,
+          "quality_issues": [
+            "full_page_image_with_sparse_text"
+          ]
+        },
+        {
+          "physical_page": 595,
+          "stratum_weight_pages": 132,
+          "method": "rapidocr-onnx",
+          "characters": 3095,
+          "lines": 38,
+          "low_confidence_lines": 0,
+          "geometry_errors": 0,
+          "seconds": 3.5384,
+          "quality_issues": [
+            "full_page_image_with_sparse_text"
+          ]
+        },
+        {
+          "physical_page": 727,
+          "stratum_weight_pages": 132,
+          "method": "rapidocr-onnx",
+          "characters": 145,
+          "lines": 9,
+          "low_confidence_lines": 0,
+          "geometry_errors": 0,
+          "seconds": 1.2757,
+          "quality_issues": [
+            "full_page_image_with_sparse_text"
+          ]
+        }
+      ],
+      "sample_indexing_seconds": 1.02,
+      "sample_export_seconds": 0.142,
+      "estimated_extraction_seconds": 1794.59,
+      "estimated_indexing_seconds": 115.56,
+      "estimated_export_seconds": 16.04,
+      "sample_stats": {
+        "work_id": "a5e67725-169f-4921-90d9-01f0f039ed8a",
+        "manifest_id": "3e0316de-e54b-4bad-b9ab-16477b2dc627",
+        "pages_ingested": 7,
+        "blocks_count": 84,
+        "lines_count": 174,
+        "running_headers_filtered": 0,
+        "toc_ranges_count": 12,
+        "figures_count": 0,
+        "artifacts_count": 27,
+        "artifact_occurrences_count": 27,
+        "index_entries_count": 27,
+        "anomalies_count": 5,
+        "elapsed_seconds": 0.29,
+        "image_assets_count": 0,
+        "table_candidates_count": 0,
+        "entity_mentions_count": 53,
+        "rag_chunks_count": 79
+      }
+    },
+    {
+      "source": "4第四卷-已复.pdf",
+      "total_pages": 288,
+      "sample_pages": 7,
+      "samples": [
+        {
+          "physical_page": 1,
+          "stratum_weight_pages": 1,
+          "method": "pymupdf",
+          "characters": 65,
+          "lines": 9,
+          "low_confidence_lines": 0,
+          "geometry_errors": 0,
+          "seconds": 0.1448,
+          "quality_issues": []
+        },
+        {
+          "physical_page": 25,
+          "stratum_weight_pages": 47,
+          "method": "pymupdf",
+          "characters": 162,
+          "lines": 8,
+          "low_confidence_lines": 0,
+          "geometry_errors": 0,
+          "seconds": 1.1949,
+          "quality_issues": []
+        },
+        {
+          "physical_page": 72,
+          "stratum_weight_pages": 48,
+          "method": "pymupdf",
+          "characters": 163,
+          "lines": 8,
+          "low_confidence_lines": 0,
+          "geometry_errors": 0,
+          "seconds": 1.356,
+          "quality_issues": []
+        },
+        {
+          "physical_page": 120,
+          "stratum_weight_pages": 48,
+          "method": "pymupdf",
+          "characters": 147,
+          "lines": 8,
+          "low_confidence_lines": 0,
+          "geometry_errors": 0,
+          "seconds": 1.2404,
+          "quality_issues": []
+        },
+        {
+          "physical_page": 168,
+          "stratum_weight_pages": 48,
+          "method": "pymupdf",
+          "characters": 129,
+          "lines": 8,
+          "low_confidence_lines": 0,
+          "geometry_errors": 0,
+          "seconds": 1.2376,
+          "quality_issues": []
+        },
+        {
+          "physical_page": 216,
+          "stratum_weight_pages": 48,
+          "method": "pymupdf",
+          "characters": 96,
+          "lines": 6,
+          "low_confidence_lines": 0,
+          "geometry_errors": 0,
+          "seconds": 1.281,
+          "quality_issues": []
+        },
+        {
+          "physical_page": 264,
+          "stratum_weight_pages": 48,
+          "method": "pymupdf",
+          "characters": 113,
+          "lines": 7,
+          "low_confidence_lines": 0,
+          "geometry_errors": 0,
+          "seconds": 1.0781,
+          "quality_issues": []
+        }
+      ],
+      "sample_indexing_seconds": 0.53,
+      "sample_export_seconds": 0.103,
+      "estimated_extraction_seconds": 353.57,
+      "estimated_indexing_seconds": 21.79,
+      "estimated_export_seconds": 4.25,
+      "sample_stats": {
+        "work_id": "dcf896a3-0c2e-4d3e-b7eb-0ae4a19d2cb9",
+        "manifest_id": "550be6a8-f7e0-42a3-95c4-c8358a452a06",
+        "pages_ingested": 7,
+        "blocks_count": 52,
+        "lines_count": 54,
+        "running_headers_filtered": 6,
+        "toc_ranges_count": 0,
+        "figures_count": 6,
+        "artifacts_count": 12,
+        "artifact_occurrences_count": 17,
+        "index_entries_count": 12,
+        "anomalies_count": 6,
+        "elapsed_seconds": 0.34,
+        "image_assets_count": 0,
+        "table_candidates_count": 0,
+        "entity_mentions_count": 40,
+        "rag_chunks_count": 46
+      }
+    },
+    {
+      "source": "5第五卷-已复.pdf",
+      "total_pages": 288,
+      "sample_pages": 7,
+      "samples": [
+        {
+          "physical_page": 1,
+          "stratum_weight_pages": 1,
+          "method": "pymupdf",
+          "characters": 65,
+          "lines": 9,
+          "low_confidence_lines": 0,
+          "geometry_errors": 0,
+          "seconds": 0.1419,
+          "quality_issues": []
+        },
+        {
+          "physical_page": 25,
+          "stratum_weight_pages": 47,
+          "method": "pymupdf",
+          "characters": 67,
+          "lines": 8,
+          "low_confidence_lines": 0,
+          "geometry_errors": 0,
+          "seconds": 1.1278,
+          "quality_issues": []
+        },
+        {
+          "physical_page": 72,
+          "stratum_weight_pages": 48,
+          "method": "pymupdf",
+          "characters": 130,
+          "lines": 8,
+          "low_confidence_lines": 0,
+          "geometry_errors": 0,
+          "seconds": 1.2281,
+          "quality_issues": []
+        },
+        {
+          "physical_page": 120,
+          "stratum_weight_pages": 48,
+          "method": "pymupdf",
+          "characters": 141,
+          "lines": 8,
+          "low_confidence_lines": 0,
+          "geometry_errors": 0,
+          "seconds": 1.1186,
+          "quality_issues": []
+        },
+        {
+          "physical_page": 168,
+          "stratum_weight_pages": 48,
+          "method": "pymupdf",
+          "characters": 133,
+          "lines": 8,
+          "low_confidence_lines": 0,
+          "geometry_errors": 0,
+          "seconds": 1.2761,
+          "quality_issues": []
+        },
+        {
+          "physical_page": 216,
+          "stratum_weight_pages": 48,
+          "method": "pymupdf",
+          "characters": 133,
+          "lines": 8,
+          "low_confidence_lines": 0,
+          "geometry_errors": 0,
+          "seconds": 1.2015,
+          "quality_issues": []
+        },
+        {
+          "physical_page": 264,
+          "stratum_weight_pages": 48,
+          "method": "pymupdf",
+          "characters": 122,
+          "lines": 8,
+          "low_confidence_lines": 0,
+          "geometry_errors": 0,
+          "seconds": 1.3727,
+          "quality_issues": []
+        }
+      ],
+      "sample_indexing_seconds": 0.517,
+      "sample_export_seconds": 0.093,
+      "estimated_extraction_seconds": 350.6,
+      "estimated_indexing_seconds": 21.28,
+      "estimated_export_seconds": 3.81,
+      "sample_stats": {
+        "work_id": "3a25a6d4-31c6-4e70-bf7d-7ba8572e406f",
+        "manifest_id": "5f37b535-2358-4b7b-919b-df83af425e26",
+        "pages_ingested": 7,
+        "blocks_count": 55,
+        "lines_count": 57,
+        "running_headers_filtered": 6,
+        "toc_ranges_count": 0,
+        "figures_count": 6,
+        "artifacts_count": 5,
+        "artifact_occurrences_count": 6,
+        "index_entries_count": 5,
+        "anomalies_count": 6,
+        "elapsed_seconds": 0.32,
+        "image_assets_count": 0,
+        "table_candidates_count": 0,
+        "entity_mentions_count": 30,
+        "rag_chunks_count": 49
+      }
+    },
+    {
+      "source": "6第六卷.pdf",
+      "total_pages": 288,
+      "sample_pages": 7,
+      "samples": [
+        {
+          "physical_page": 1,
+          "stratum_weight_pages": 1,
+          "method": "pymupdf",
+          "characters": 65,
+          "lines": 9,
+          "low_confidence_lines": 0,
+          "geometry_errors": 0,
+          "seconds": 0.1163,
+          "quality_issues": []
+        },
+        {
+          "physical_page": 25,
+          "stratum_weight_pages": 47,
+          "method": "pymupdf",
+          "characters": 128,
+          "lines": 8,
+          "low_confidence_lines": 0,
+          "geometry_errors": 0,
+          "seconds": 1.1953,
+          "quality_issues": []
+        },
+        {
+          "physical_page": 72,
+          "stratum_weight_pages": 48,
+          "method": "pymupdf",
+          "characters": 149,
+          "lines": 8,
+          "low_confidence_lines": 0,
+          "geometry_errors": 0,
+          "seconds": 1.0958,
+          "quality_issues": []
+        },
+        {
+          "physical_page": 120,
+          "stratum_weight_pages": 48,
+          "method": "pymupdf",
+          "characters": 146,
+          "lines": 8,
+          "low_confidence_lines": 0,
+          "geometry_errors": 0,
+          "seconds": 1.1353,
+          "quality_issues": []
+        },
+        {
+          "physical_page": 168,
+          "stratum_weight_pages": 48,
+          "method": "pymupdf",
+          "characters": 161,
+          "lines": 8,
+          "low_confidence_lines": 0,
+          "geometry_errors": 0,
+          "seconds": 1.2989,
+          "quality_issues": []
+        },
+        {
+          "physical_page": 216,
+          "stratum_weight_pages": 48,
+          "method": "pymupdf",
+          "characters": 126,
+          "lines": 8,
+          "low_confidence_lines": 0,
+          "geometry_errors": 0,
+          "seconds": 1.3562,
+          "quality_issues": []
+        },
+        {
+          "physical_page": 264,
+          "stratum_weight_pages": 48,
+          "method": "pymupdf",
+          "characters": 138,
+          "lines": 8,
+          "low_confidence_lines": 0,
+          "geometry_errors": 0,
+          "seconds": 1.265,
+          "quality_issues": []
+        }
+      ],
+      "sample_indexing_seconds": 0.525,
+      "sample_export_seconds": 0.108,
+      "estimated_extraction_seconds": 351.55,
+      "estimated_indexing_seconds": 21.6,
+      "estimated_export_seconds": 4.43,
+      "sample_stats": {
+        "work_id": "a78cbe2a-6890-4b6c-bdda-70498983add8",
+        "manifest_id": "d75e3d42-f611-45eb-914b-3b7468d998c7",
+        "pages_ingested": 7,
+        "blocks_count": 55,
+        "lines_count": 57,
+        "running_headers_filtered": 6,
+        "toc_ranges_count": 0,
+        "figures_count": 6,
+        "artifacts_count": 13,
+        "artifact_occurrences_count": 36,
+        "index_entries_count": 13,
+        "anomalies_count": 6,
+        "elapsed_seconds": 0.33,
+        "image_assets_count": 0,
+        "table_candidates_count": 0,
+        "entity_mentions_count": 47,
+        "rag_chunks_count": 49
+      }
+    }
+  ],
+  "limitations": [
+    "Engineering range is not a statistical confidence interval.",
+    "Extraction bypassed application cache, but operating-system disk cache may be warm.",
+    "Sample indexing renumbers selected pages; alignment outputs are not full-document accuracy measurements.",
+    "Full-document model calls, downloads, manual review, defect fixing and final validation are estimated separately."
+  ]
+}

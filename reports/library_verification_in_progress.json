@@ -1,0 +1,65 @@
+{
+  "integrity": "ok",
+  "foreign_key_errors": [],
+  "documents": [
+    {
+      "manifest_id": "82723408-3a2c-4d3e-89fa-8787387c7d92",
+      "source": "1第一卷-已复.pdf",
+      "pages": 412,
+      "source_preserved": true,
+      "page_methods": {
+        "pymupdf": 407,
+        "blank": 5
+      },
+      "out_of_canvas_lines": 0,
+      "errors": [],
+      "alto_blocks": 3593,
+      "alto_lines": 12221,
+      "plates_figures": 214,
+      "iiif_ranges": 124,
+      "rag_chunks": 2655,
+      "provenance_anchors": 2656,
+      "review_tasks": 292
+    },
+    {
+      "manifest_id": "e6dda03e-a43b-4958-8b1c-028615745184",
+      "source": "2第二卷-已复.pdf",
+      "pages": 410,
+      "source_preserved": true,
+      "page_methods": {
+        "pymupdf": 408,
+        "blank": 2
+      },
+      "out_of_canvas_lines": 0,
+      "errors": [],
+      "alto_blocks": 2654,
+      "alto_lines": 13970,
+      "plates_figures": 219,
+      "iiif_ranges": 356,
+      "rag_chunks": 1729,
+      "provenance_anchors": 1733,
+      "review_tasks": 275
+    },
+    {
+      "manifest_id": "0d99ea9a-c420-46bc-bf7f-19edc7071572",
+      "source": "3第三卷-已复.pdf",
+      "pages": 286,
+      "source_preserved": true,
+      "page_methods": {
+        "pymupdf": 286
+      },
+      "out_of_canvas_lines": 0,
+      "errors": [],
+      "alto_blocks": 2063,
+      "alto_lines": 2093,
+      "plates_figures": 284,
+      "iiif_ranges": 1485,
+      "rag_chunks": 1777,
+      "provenance_anchors": 1777,
+      "review_tasks": 569
+    }
+  ],
+  "fts_line_count": 28284,
+  "line_count": 28284,
+  "passed": true
+}
