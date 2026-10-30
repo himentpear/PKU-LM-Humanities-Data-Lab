@@ -1,0 +1,53 @@
+{
+  "method": "agent visual inspection of original page images, not human review",
+  "resolutions": [
+    {
+      "pdf_page": 22,
+      "marker": "③",
+      "footnote_id": "d9458ee2-7aa7-418b-b5cb-53186fd0f70a",
+      "reference_id": "c9df11e1-c045-44cd-8121-f8c68b6bc3c4",
+      "evidence": "Codex 对照 PDF 第22页原始扫描图视觉核验：注释起始圈号为③，与正文引用对应；仅确认关系，保留原始OCR。证据 reports/guantai_visual_qa/footers-1.jpg。",
+      "actor": "Codex visual QA"
+    },
+    {
+      "pdf_page": 23,
+      "marker": "③",
+      "footnote_id": "536ea804-6fbf-4ec1-ae17-64f9eb454eb0",
+      "reference_id": "406dfb0f-c0ef-443f-be0e-c037c3a778be",
+      "evidence": "Codex 对照 PDF 第23页原始扫描图视觉核验：注释起始圈号为③，与正文引用对应；仅确认关系，保留原始OCR。证据 reports/guantai_visual_qa/footers-1.jpg。",
+      "actor": "Codex visual QA"
+    },
+    {
+      "pdf_page": 25,
+      "marker": "②",
+      "footnote_id": "b9290c45-41e6-41e0-b10a-ea104b5fad95",
+      "reference_id": "e48684d8-89c7-4705-8616-11cd7add2579",
+      "evidence": "Codex 对照 PDF 第25页原始扫描图视觉核验：注释起始圈号为②，与正文引用对应；仅确认关系，保留原始OCR。证据 reports/guantai_visual_qa/footers-1.jpg。",
+      "actor": "Codex visual QA"
+    },
+    {
+      "pdf_page": 25,
+      "marker": "⑦",
+      "footnote_id": "8b81c9f0-5aa3-4fe1-8f50-e35d78444f72",
+      "reference_id": "b82791bc-379e-4e7e-a49a-7b61ebb61441",
+      "evidence": "Codex 对照 PDF 第25页原始扫描图视觉核验：注释起始圈号为⑦，与正文引用对应；仅确认关系，保留原始OCR。证据 reports/guantai_visual_qa/footers-1.jpg。",
+      "actor": "Codex visual QA"
+    },
+    {
+      "pdf_page": 131,
+      "marker": "②",
+      "footnote_id": "9b56c15f-286d-4983-9e64-da57f8c78393",
+      "reference_id": "d003cc91-1462-4051-858e-985e0b3b6027",
+      "evidence": "Codex 对照 PDF 第131页原始扫描图视觉核验：注释起始圈号为②，与正文引用对应；仅确认关系，保留原始OCR。证据 reports/guantai_visual_qa/footers-1.jpg。",
+      "actor": "Codex visual QA"
+    },
+    {
+      "pdf_page": 359,
+      "marker": "③",
+      "footnote_id": "3549ac6c-4791-4ed2-8595-38e481942674",
+      "reference_id": "3a9fd1ef-e56f-49fb-8534-c0cea334ae9d",
+      "evidence": "Codex 对照 PDF 第359页原始扫描图视觉核验：注释起始圈号为③，与正文引用对应；仅确认关系，保留原始OCR。证据 reports/guantai_visual_qa/footers-3.jpg。",
+      "actor": "Codex visual QA"
+    }
+  ]
+}

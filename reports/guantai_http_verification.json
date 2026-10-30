@@ -1,0 +1,16 @@
+{
+  "base_url": "http://127.0.0.1:8001",
+  "manifest_id": "3f6e2ea2-3baa-4462-91d1-f0051bd91d5d",
+  "pages": 793,
+  "sample_page": 331,
+  "sample_printed_page": "310",
+  "sample_note_count": 2,
+  "sample_linked_refs": [
+    "①",
+    "②"
+  ],
+  "protected_identifier": "T3③：31",
+  "image_status": 200,
+  "search_hits": 1,
+  "passed": true
+}

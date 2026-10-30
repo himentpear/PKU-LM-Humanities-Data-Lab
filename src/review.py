@@ -5,7 +5,8 @@ from src.alto.parser import AltoIngestor
 
 
 def resolve_review(session, task_id: str, *, actor: str, note: str, status: str,
-                   expected_revision: int, line_id: str | None = None, text: str | None = None):
+                   expected_revision: int, line_id: str | None = None, text: str | None = None,
+                   footnote_id: str | None = None):
     if status not in {"approved","rejected"} or not actor.strip() or not note.strip():
         raise ValueError("Reviewer, reason and valid resolution are required")
     task=session.get(ReviewTask,task_id)
@@ -42,6 +43,54 @@ def resolve_review(session, task_id: str, *, actor: str, note: str, status: str,
             annotation.body_text=text
         after.update(line_id=line.id,text=text,protected_fields_changed=changed)
         _reindex_block(session,block,canvas)
+        from src.ingest.footnotes import invalidate_after_correction
+        invalidate_after_correction(session,canvas)
+    if text is None and task.target_type in {"footnote", "footnote_reference", "footnote_page"}:
+        from src.db.models import Footnote, FootnoteReference
+        if task.target_type == "footnote_page":
+            if status!="approved":
+                raise ValueError("Recompute the stale page before closing its review")
+            from src.ingest.footnotes import recompute_page
+            after["footnotes_recomputed"]=recompute_page(session,canvas,task.id)
+        elif task.target_type == "footnote_reference":
+            ref=session.get(FootnoteReference,task.target_id)
+            if ref is None or ref.canvas_id!=canvas.id:
+                raise ValueError("Footnote reference does not belong to this page")
+            before["footnote_reference"]={"status":ref.status,"target":ref.footnote_id}
+            if status=="approved":
+                target=session.get(Footnote,footnote_id or ref.footnote_id)
+                line=session.get(AltoLine,ref.line_id)
+                if target is None or target.canvas_id!=canvas.id or target.marker not in {ref.marker,"?"} or target.status=="rejected":
+                    raise ValueError("Select a same-page footnote with the same marker")
+                from src.ingest.footnotes import reference_offsets
+                if (ref.char_start,ref.char_end,ref.marker) not in list(reference_offsets(line.content_text)):
+                    raise ValueError("Reference offsets changed or are inside an archaeological code")
+                if target.marker=="?":
+                    before["unreadable_marker"]={"footnote_id":target.id,"marker":target.marker}
+                    target.marker=ref.marker;target.status="approved"
+                    target.evidence={**target.evidence,"marker_resolved_by":actor,"resolution_note":note}
+                    for source_id in target.source_line_ids:
+                        session.get(AltoLine,source_id).block.block_type="footnote"
+                ref.footnote_id=target.id;ref.status="approved";ref.context_text=line.content_text
+                ref.source_revision=expected_revision+1
+            else:
+                ref.footnote_id=None;ref.status="rejected"
+            after["footnote_reference"]={"status":ref.status,"target":ref.footnote_id}
+        else:
+            target=session.get(Footnote,task.target_id)
+            if target is None or target.canvas_id!=canvas.id:
+                raise ValueError("Footnote does not belong to this page")
+            if status=="approved" and target.marker=="?":
+                raise ValueError("Unreadable marker: approve a body reference with this footnote selected to confirm its number")
+            before["footnote"]={"status":target.status}
+            target.status=status
+            if status=="rejected":
+                for ref in session.scalars(select(FootnoteReference).where(FootnoteReference.footnote_id==target.id)):
+                    ref.footnote_id=None;ref.status="needs_review"
+            for source_id in target.source_line_ids:
+                source=session.get(AltoLine,source_id)
+                source.block.block_type="footnote" if status=="approved" else "paragraph"
+            after["footnote"]={"status":target.status}
     task.status=status;task.reviewer=actor;task.resolution_note=note
     canvas.revision_no=expected_revision+1
     session.add(Revision(entity_type="review_task",entity_id=task.id,revision_no=canvas.revision_no,
@@ -63,6 +112,8 @@ def _reindex_block(session,block,canvas):
         session.delete(mention)
     session.execute(delete(ArtifactOccurrence).where(ArtifactOccurrence.layout_block_id==block.id))
     for line in session.scalars(select(AltoLine).where(AltoLine.block_id==block.id)):
+        if block.block_type in {"footnote","footnote_candidate"}:
+            continue
         import re
         from src.enrichment import VOCAB
         spans=AltoIngestor.extract_protected_spans(line.content_text)

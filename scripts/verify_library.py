@@ -11,12 +11,12 @@ sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
 from src.ingest.page_pipeline import atomic_json,file_hash
 
 
-def verify(library: Path) -> dict:
+def verify(library: Path, manifest_id: str | None = None) -> dict:
     connection=sqlite3.connect((library.resolve()/"library.db").as_uri()+"?mode=ro",uri=True)
     connection.row_factory=sqlite3.Row
     result={"integrity":connection.execute("pragma integrity_check").fetchone()[0],
             "foreign_key_errors":[tuple(r) for r in connection.execute("pragma foreign_key_check")],"documents":[]}
-    for manifest in connection.execute("select m.*,w.slug from manifests m join works w on w.id=m.work_id").fetchall():
+    for manifest in connection.execute("select m.*,w.slug from manifests m join works w on w.id=m.work_id where (? is null or m.id=?)",(manifest_id,manifest_id)).fetchall():
         run_dir=library/manifest["slug"]
         canvases=connection.execute("select * from canvases where manifest_id=? order by scan_index",(manifest["id"],)).fetchall()
         errors=[];methods=Counter();out_of_bounds=0
@@ -60,9 +60,10 @@ def verify(library: Path) -> dict:
 if __name__=="__main__":
     parser=argparse.ArgumentParser()
     parser.add_argument("--library",type=Path,default=Path("data/processed/library"))
+    parser.add_argument("--manifest-id",help="Limit document export checks to one manifest")
     parser.add_argument("--output",type=Path,default=Path("reports/library_verification.json"))
     args=parser.parse_args()
-    result=verify(args.library)
+    result=verify(args.library,args.manifest_id)
     atomic_json(args.output,result)
     print(json.dumps(result,ensure_ascii=False,indent=2))
     raise SystemExit(0 if result["passed"] else 1)

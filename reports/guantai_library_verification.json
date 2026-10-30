@@ -1,0 +1,28 @@
+{
+  "integrity": "ok",
+  "foreign_key_errors": [],
+  "documents": [
+    {
+      "manifest_id": "3f6e2ea2-3baa-4462-91d1-f0051bd91d5d",
+      "source": "3观台磁州窑址.pdf",
+      "pages": 793,
+      "source_preserved": true,
+      "page_methods": {
+        "rapidocr-onnx": 791,
+        "pymupdf": 2
+      },
+      "out_of_canvas_lines": 0,
+      "errors": [],
+      "alto_blocks": 12125,
+      "alto_lines": 25826,
+      "plates_figures": 91,
+      "iiif_ranges": 1614,
+      "rag_chunks": 11258,
+      "provenance_anchors": 11258,
+      "review_tasks": 883
+    }
+  ],
+  "fts_line_count": 58426,
+  "line_count": 58426,
+  "passed": true
+}

@@ -225,6 +225,7 @@ def _build_index_cache(engine) -> dict:
             meta = {
                 "id": m.id,
                 "work_id": w.id,
+                "namespace": w.metadata_json.get("source_namespace") or w.site_name or "legacy-corpus",
                 "slug": w.slug,
                 "title": w.title,
                 "short_title": short,
@@ -348,7 +349,7 @@ def _build_index_cache(engine) -> dict:
 
                     for code_match in _SPECIMEN_EXTRACT_RE.findall(sf["caption"]):
                         norm_c = _norm_text(code_match).upper()
-                        specimen_fig_map[norm_c].append(
+                        specimen_fig_map[(m_info["namespace"],norm_c)].append(
                             {
                                 "manifest_id": pf.manifest_id,
                                 "work_title": m_info["title"],
@@ -382,7 +383,7 @@ def _build_index_cache(engine) -> dict:
 
                 for code_match in _SPECIMEN_EXTRACT_RE.findall(full_caption):
                     norm_c = _norm_text(code_match).upper()
-                    specimen_fig_map[norm_c].append(
+                    specimen_fig_map[(m_info["namespace"],norm_c)].append(
                         {
                             "manifest_id": pf.manifest_id,
                             "work_title": m_info["title"],
@@ -667,18 +668,20 @@ def _build_index_cache(engine) -> dict:
             base_unit_m = re.match(r"^([A-Za-z]+\d+(?:扩)?(?:[A-Za-z]+\d+)?)", unit)
             base_unit = base_unit_m.group(1).upper() if base_unit_m else unit
 
-            entry = artifacts_by_code.get(norm_code)
+            scope_key = (m_info["namespace"],norm_code)
+            entry = artifacts_by_code.get(scope_key)
             if not entry:
                 entry = {
                     "code": disp_code,
                     "norm_code": norm_code,
+                    "source_namespace": m_info["namespace"],
                     "unit": base_unit,
                     "raw_unit": unit,
                     "vessel_name": "",
                     "occurrences": [],
                     "_seen_keys": set(),
                 }
-                artifacts_by_code[norm_code] = entry
+                artifacts_by_code[scope_key] = entry
 
             v_name = _extract_vessel_name(snippet or "")
             if v_name and (
@@ -689,9 +692,8 @@ def _build_index_cache(engine) -> dict:
             dedup_key = (c_info["manifest_id"], c_info["scan_index"], (snippet or "")[:40])
             if dedup_key not in entry["_seen_keys"]:
                 entry["_seen_keys"].add(dedup_key)
-                is_plate_vol = c_info["domain"] == "plate" or m_info["title"].startswith(
-                    ("3", "4", "5")
-                )
+                is_plate_vol = c_info["domain"] == "plate" or (
+                    m_info["namespace"] == "legacy-corpus" and m_info["title"].startswith(("3", "4", "5")))
                 entry["occurrences"].append(
                     {
                         "manifest_id": c_info["manifest_id"],
@@ -917,6 +919,10 @@ def make_server(library: Path, host: str = "127.0.0.1", port: int = 8000):
                     if canvas is None:
                         raise LookupError()
                     result = builder.build_page_bundle(cid)
+                    # A library may be served on a port different from ingestion.
+                    service = f"{base_url}/image/{canvas.manifest_id}/{canvas.scan_index}"
+                    result["scan_image"] = {"iiif_service_id": service,
+                        "full_image_url": f"{service}/full/max/0/default.jpg"}
                     result["lines"] = [
                         {
                             "id": l.id,
@@ -926,9 +932,9 @@ def make_server(library: Path, host: str = "127.0.0.1", port: int = 8000):
                             "status": l.review_status,
                         }
                         for l in session.scalars(
-                            select(AltoLine)
+                            select(AltoLine).join(AltoBlock, AltoBlock.id == AltoLine.block_id)
                             .where(AltoLine.canvas_id == cid)
-                            .order_by(AltoLine.line_index)
+                            .order_by(AltoBlock.reading_order, AltoLine.line_index)
                         )
                     ]
                     canvas_figs = idx["figures_by_canvas"].get(cid, [])

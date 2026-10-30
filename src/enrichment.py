@@ -129,15 +129,17 @@ def enrich_document(session, manifest_id: str, pages, run_dir: Path, base_url: s
             blocks=list(session.scalars(select(AltoBlock).where(AltoBlock.canvas_id==canvas.id).order_by(AltoBlock.reading_order)))
             for block in blocks:
                 text=block.resolve_display_text() or ""
-                if block.page_zone != "print_space" or not text:
+                if block.page_zone != "print_space" or not text or block.block_type=="footnote_candidate":
                     continue
-                chunk=RagChunk(manifest_id=manifest_id,chunk_index=chunk_count,breadcrumb_path=canvas.page_domain,
+                chunk=RagChunk(manifest_id=manifest_id,chunk_index=chunk_count,breadcrumb_path=canvas.page_domain+("/footnote" if block.block_type=="footnote" else ""),
                     content_text=text,token_count=len(text))
                 session.add(chunk);session.flush();chunk_count+=1
                 target=f"{base_url}/manifest/{manifest_id}/canvas/{canvas.id}#xywh={block.xywh}"
                 session.add(ProvenanceAnchor(source_entity_type="rag_chunk",source_entity_id=chunk.id,
                     manifest_id=manifest_id,canvas_id=canvas.id,printed_page=canvas.printed_page_label,
                     verbatim_quote=text,highlight_boxes=[{"xywh":block.xywh}],iiif_target_uri=target))
+                if block.block_type=="footnote":
+                    continue
                 # Exact spans, not paraphrased names: deterministic baseline before LLM.
                 for line in session.scalars(select(AltoLine).where(AltoLine.block_id==block.id)):
                     spans=AltoIngestor.extract_protected_spans(line.content_text)

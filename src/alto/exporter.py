@@ -17,13 +17,17 @@ def export_canvas(session, canvas, path: Path):
     node(description,"MeasurementUnit").text = "pixel"
     source = node(description,"sourceImageInformation")
     node(source,"fileName").text = canvas.image_storage_path or ""
+    types=list(session.scalars(select(AltoBlock.block_type).where(AltoBlock.canvas_id==canvas.id).distinct()))
+    tags=node(root,"Tags")
+    for kind in types:
+        node(tags,"OtherTag",{"ID":"type_"+kind,"LABEL":kind})
     layout = node(root,"Layout")
     page = node(layout,"Page", {"ID": "P"+canvas.id, "WIDTH":str(canvas.width),
                                 "HEIGHT":str(canvas.height), "PHYSICAL_IMG_NR":str(canvas.scan_index)})
     space = node(page,"PrintSpace",{"HPOS":"0","VPOS":"0","WIDTH":str(canvas.width),"HEIGHT":str(canvas.height)})
     for block in session.scalars(select(AltoBlock).where(AltoBlock.canvas_id==canvas.id).order_by(AltoBlock.reading_order)):
         tb = node(space,"TextBlock",{"ID":"B"+block.id,"HPOS":str(block.x),"VPOS":str(block.y),
-                    "WIDTH":str(block.w),"HEIGHT":str(block.h)})
+                    "WIDTH":str(block.w),"HEIGHT":str(block.h),"TAGREFS":"type_"+block.block_type})
         for line in session.scalars(select(AltoLine).where(AltoLine.block_id==block.id).order_by(AltoLine.line_index)):
             attrs={"HPOS":str(line.x),"VPOS":str(line.y),"WIDTH":str(line.w),"HEIGHT":str(line.h)}
             tl=node(tb,"TextLine", {"ID":"L"+line.id,**attrs})

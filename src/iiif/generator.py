@@ -174,10 +174,13 @@ class IiifBuilder:
             )
         )
 
+        from src.ingest.footnotes import page_bundle as footnote_bundle
         return {
+            **footnote_bundle(self.session, canvas.id),
             "page_id": canvas.id,
             "manifest_id": canvas.manifest_id,
-            "revision": f"revision-{canvas.revision_no}",
+            "revision": canvas.revision_no,
+            "revision_label": f"revision-{canvas.revision_no}",
             "identity": {
                 "sequence_no": canvas.sequence_index,
                 "scan_index": canvas.scan_index,
@@ -250,6 +253,8 @@ class IiifBuilder:
                 {
                     "task_id": rt.id,
                     "risk_type": rt.risk_type,
+                    "target_type": rt.target_type,
+                    "target_id": rt.target_id,
                     "priority_score": rt.priority_score,
                     "status": rt.status,
                     "description": rt.description,

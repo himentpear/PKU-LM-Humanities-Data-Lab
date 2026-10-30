@@ -241,6 +241,36 @@ class AltoPage(Base):
 # ==============================================================================
 
 
+class Footnote(Base):
+    """Page-local note with immutable source-line provenance and explicit uncertainty."""
+    __tablename__ = "footnotes"
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=_new_uuid)
+    canvas_id: Mapped[str] = mapped_column(ForeignKey("canvases.id", ondelete="CASCADE"), nullable=False)
+    marker: Mapped[str] = mapped_column(String(16), nullable=False)
+    content_text: Mapped[str] = mapped_column(Text, nullable=False)
+    source_line_ids: Mapped[list] = mapped_column(JSON, default=list)
+    status: Mapped[str] = mapped_column(String(32), nullable=False)
+    confidence: Mapped[float] = mapped_column(Float, nullable=False)
+    evidence: Mapped[dict] = mapped_column(JSON, default=dict)
+
+
+class FootnoteReference(Base):
+    """Original line offsets; missing targets stay unresolved instead of guessed."""
+    __tablename__ = "footnote_references"
+    __table_args__ = (UniqueConstraint("line_id", "char_start", "char_end"),)
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=_new_uuid)
+    canvas_id: Mapped[str] = mapped_column(ForeignKey("canvases.id", ondelete="CASCADE"), nullable=False)
+    line_id: Mapped[str] = mapped_column(ForeignKey("alto_lines.id", ondelete="CASCADE"), nullable=False)
+    footnote_id: Mapped[Optional[str]] = mapped_column(ForeignKey("footnotes.id", ondelete="SET NULL"))
+    marker: Mapped[str] = mapped_column(String(16), nullable=False)
+    char_start: Mapped[int] = mapped_column(Integer, nullable=False)
+    char_end: Mapped[int] = mapped_column(Integer, nullable=False)
+    status: Mapped[str] = mapped_column(String(32), nullable=False)
+    source_revision: Mapped[int] = mapped_column(Integer, nullable=False)
+    context_text: Mapped[str] = mapped_column(Text, nullable=False)
+    evidence: Mapped[dict] = mapped_column(JSON, default=dict)
+
+
 class AltoBlock(Base):
     """Layout Element (<ComposedBlock>/<TextBlock>/<GraphicalElement>) with V2 polygon,
     page_zone (margin vs print_space), four-state text, and cross-page continuation.
