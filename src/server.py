@@ -130,6 +130,85 @@ def _classify_figure_group(category: str, fnum: str, text: str) -> str:
             return "窑具图版 · 匣钵/垫钵/垫饼"
         return "综合器物彩色图版"
 
+def validate_heading_title(title: str, level: int = None) -> tuple[bool, str]:
+    """Automatically validate candidate headings scanned from OCR/TOC ranges.
+    Rejects footnotes, commentary annotations, dimension measurements, and narrative sentences.
+    """
+    if not title:
+        return False, "empty"
+    t = re.sub(r"\u3000+", " ", title).strip()
+    if len(t) < 2:
+        return False, "too_short"
+
+    # 1. Author credits / editorial attribution (e.g. 第一部分：丁雨、翁彦俊...)
+    if re.search(r"^(?:第[一二三四五六七八九十]+[部分章节]|附录)\s*[:：]", t):
+        return False, "author_credit"
+
+    # 2. Footnotes, commentary annotations, references, citations
+    if re.search(
+        r"^(?:\[?\s*(?:注|注释|脚注|附注|按|参见|见|考|同上|同前|译者注|编者注)\b|"
+        r"[（(〔［【]\s*(?:注|按|附注|见|参见)\s*[\d一二三四五六七八九十]*\s*[)）〕］】])",
+        t,
+    ):
+        return False, "annotation_marker"
+
+    if re.search(
+        r"(?:同上书|同上引|同前引|同上揭|见图版|详见|参见本报告|引自|选自|摘自|"
+        r"未能拼成一件|为显示整体面貌|在解剖.*?时|详情参见|藏于|馆藏|详见地层描述|选采自)",
+        t,
+    ):
+        return False, "citation_or_footnote"
+
+    if re.search(r"^\d+[、.．]\s*(?:图版|参见|见|同上|据|经.*?分析|根据|标本\d+未能)", t):
+        return False, "footnote_reference"
+
+    # 3. Measurement / dimension sentences starting with numbers
+    if re.search(
+        r"^\d+(?:\.\d+)*\s*[、，,]\s*(?:残?高|残?长|残?宽|厚|深|底径|口径|足径|孔径|腹径|内径|外径|直径|通高|南北|东西|进风道|构件|方框|墙体|缸体|区域|硬面|土质|出土|器内|器外|白胎|灰胎|红胎|胎料堆|煤堆|颜料堆|方向)",
+        t,
+    ):
+        return False, "measurement_lead"
+
+    if re.search(r"^\d+(?:\.\d+)?\s*(?:米|厘米|毫米|cm|mm|m)\b", t):
+        return False, "dimension_lead"
+
+    if re.search(r"\d+(?:\.\d+)?\s*(?:米|厘米|毫米)\s*[，,。；;]", t):
+        return False, "measurement_sentence"
+
+    # 4. Punctuation: full stop or semicolon mid-text indicates full sentences or paragraph fragments
+    if "。" in t or "；" in t or ";" in t:
+        return False, "sentence_punctuation"
+
+    # 5. Narrative paragraphs with multiple commas outside brackets
+    clean_paren = re.sub(r"[（(].*?[)）]", "", t)
+    if clean_paren.count("，") >= 2 or clean_paren.count(",") >= 2:
+        return False, "multiple_commas_narrative"
+
+    if len(t) > 65:
+        return False, "too_long"
+
+    return True, "valid"
+
+
+def _parse_line_drawing_artifacts(fig_num: str, cap: str, title: str) -> list[str]:
+    """Extract individual specimen / artifact names from line drawing caption or title."""
+    items = []
+    if cap:
+        parts = re.findall(
+            r"(?:^|\s)([\d～~、,，\s]+\s*[.．、]\s*[^（(\n]+[（(][^）)]+[)）])", cap
+        )
+        for p in parts:
+            p_clean = re.sub(r"\s+", " ", p).strip()
+            if len(p_clean) < 90 and not re.search(
+                r"(?:米|厘米|未能拼成|厚|高|深|宽)", p_clean
+            ):
+                items.append(p_clean)
+    if not items and title:
+        clean = re.sub(r"^图\d+(?:\.\d+)*\s*", "", title).strip()
+        if clean:
+            items.append(clean)
+    return items
+
 
 def _compute_plate_subfigures(
     cw: int, ch: int, print_blocks: list[tuple[int, int, int, int, str]]
@@ -439,7 +518,7 @@ def _build_index_cache(engine) -> dict:
             key=lambda f: (f["work_title"], f["scan_index"], f["figure_number"])
         )
 
-        # Build Gallery Left Sidebar Navigation Tree & Glaze/Shape Facets
+        # Build Gallery Left Sidebar Navigation Tree & Glaze/Shape Facets (down to artifact items)
         gallery_volumes_tree = []
         for doc in documents:
             mid = doc["id"]
@@ -449,28 +528,69 @@ def _build_index_cache(engine) -> dict:
                 groups_map[f["group_name"]].append(f)
             group_list = []
             for gname, gitems in groups_map.items():
+                items_with_artifacts = []
+                for x in gitems:
+                    if x["sub_figures"]:
+                        fig_artifacts = [
+                            {
+                                "id": sf["id"],
+                                "figure_number": sf["figure_number"],
+                                "title": sf["title"],
+                                "caption": sf["caption"],
+                                "xywh": sf["xywh"],
+                                "image_url": sf["image_url"],
+                                "scan_index": sf["scan_index"],
+                                "printed_page": sf["printed_page"],
+                                "canvas_id": sf["canvas_id"],
+                                "manifest_id": sf["manifest_id"],
+                                "short_title": sf.get("short_title", x["short_title"]),
+                            }
+                            for sf in x["sub_figures"]
+                        ]
+                    else:
+                        parsed_arts = _parse_line_drawing_artifacts(
+                            x["figure_number"], x["caption"], x["title"]
+                        )
+                        fig_artifacts = [
+                            {
+                                "id": f"{x['id']}_art_{idx}",
+                                "figure_number": x["figure_number"],
+                                "title": f"[{x['figure_number']}] {p_txt}",
+                                "caption": p_txt,
+                                "xywh": x["xywh"],
+                                "image_url": x["image_url"],
+                                "scan_index": x["scan_index"],
+                                "printed_page": x["printed_page"],
+                                "canvas_id": x["canvas_id"],
+                                "manifest_id": x["manifest_id"],
+                                "short_title": x["short_title"],
+                            }
+                            for idx, p_txt in enumerate(parsed_arts)
+                        ]
+                    items_with_artifacts.append(
+                        {
+                            "id": x["id"],
+                            "manifest_id": x["manifest_id"],
+                            "short_title": x["short_title"],
+                            "canvas_id": x["canvas_id"],
+                            "scan_index": x["scan_index"],
+                            "printed_page": x["printed_page"],
+                            "figure_number": x["figure_number"],
+                            "category": x["category"],
+                            "title": x["title"],
+                            "caption": x["caption"],
+                            "xywh": x["xywh"],
+                            "image_url": x["image_url"],
+                            "artifacts": fig_artifacts,
+                            "sub_figures": fig_artifacts,
+                        }
+                    )
                 group_list.append(
                     {
                         "group": gname,
                         "count": len(gitems),
-                        "sub_count": sum(len(x["sub_figures"]) for x in gitems),
-                        "items": [
-                            {
-                                "id": x["id"],
-                                "manifest_id": x["manifest_id"],
-                                "short_title": x["short_title"],
-                                "canvas_id": x["canvas_id"],
-                                "scan_index": x["scan_index"],
-                                "printed_page": x["printed_page"],
-                                "figure_number": x["figure_number"],
-                                "category": x["category"],
-                                "title": x["title"],
-                                "caption": x["caption"],
-                                "xywh": x["xywh"],
-                                "image_url": x["image_url"],
-                            }
-                            for x in gitems
-                        ],
+                        "sub_count": sum(len(it["artifacts"]) for it in items_with_artifacts),
+                        "items": items_with_artifacts,
                     }
                 )
             gallery_volumes_tree.append(
@@ -479,7 +599,9 @@ def _build_index_cache(engine) -> dict:
                     "title": doc["title"],
                     "short_title": doc["short_title"],
                     "total_figures": len(vol_figs),
-                    "total_sub_figures": sum(len(x["sub_figures"]) for x in vol_figs),
+                    "total_sub_figures": sum(
+                        sum(len(it["artifacts"]) for it in g["items"]) for g in group_list
+                    ),
                     "groups": group_list,
                 }
             )
@@ -548,6 +670,9 @@ def _build_index_cache(engine) -> dict:
 
             if has_high_level_toc:
                 for r in m_ranges:
+                    ok, _ = validate_heading_title(r.title, r.level)
+                    if not ok:
+                        continue
                     c_info = canvases_by_id.get(r.start_canvas_id)
                     clean_title = re.sub(r"\u3000+", " ", (r.title or "").strip())
                     toc_all.append(
@@ -626,7 +751,7 @@ def _build_index_cache(engine) -> dict:
                                 "manifest_id": mid,
                                 "work_title": doc["title"],
                                 "short_title": doc["short_title"],
-                                "level": 4,
+                                "level": 6,
                                 "title": f"[{fnum}] {sf['caption']}",
                                 "section_number": sf["figure_number"],
                                 "canvas_id": sf["canvas_id"],
@@ -821,7 +946,7 @@ def _build_index_cache(engine) -> dict:
         }
 
 
-def make_server(library: Path, host: str = "127.0.0.1", port: int = 8000):
+def make_server(library: Path, host: str = "127.0.0.1", port: int = 8000, source_library: Path | None = None):
     if host not in {"127.0.0.1", "localhost"}:
         raise ValueError("Review service currently supports loopback only")
     library = library.resolve()
@@ -878,6 +1003,25 @@ def make_server(library: Path, host: str = "127.0.0.1", port: int = 8000):
             if path == "/health":
                 return self.send({"status": "ok", "database": engine.dialect.name})
 
+            if path in {"/api/graphics","/api/graphic_asset","/api/graphic_export"}:
+                from src.graphics.service import object_detail,asset_path,render_html,render_xlsx
+                with get_session(engine) as session:
+                    if path=='/api/graphics' and query.get('manifest'):
+                        from src.graphics.models import GraphicObject
+                        mid=query['manifest'][0]
+                        return self.send([{'id':o.id,'run_id':o.run_id,'label':o.label,'title':o.title,'category':o.category,'status':o.status}
+                            for o in session.scalars(select(GraphicObject).where(GraphicObject.manifest_id==mid,GraphicObject.status!='superseded'))])
+                    if path=="/api/graphic_asset":
+                        asset=asset_path(session,fragment=query.get('fragment',[None])[0],cell=query.get('cell',[None])[0],object=query.get('object',[None])[0])
+                        return self.send(asset.read_bytes(),mime='image/png' if asset.suffix.lower()=='.png' else 'image/jpeg')
+                    detail=object_detail(session,query.get('id',[''])[0])
+                    if path=="/api/graphics":return self.send(detail)
+                    format=query.get('format',['json'])[0]
+                    if format=='json':return self.send(detail)
+                    if format=='html':return self.send(render_html(detail),mime='text/html; charset=utf-8')
+                    if format=='xlsx':return self.send(render_xlsx(detail),mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+                    raise ValueError('Supported graphic exports: json, html, xlsx')
+
             idx = get_index()
 
             with get_session(engine) as session:
@@ -919,6 +1063,8 @@ def make_server(library: Path, host: str = "127.0.0.1", port: int = 8000):
                     if canvas is None:
                         raise LookupError()
                     result = builder.build_page_bundle(cid)
+                    from src.graphics.context import page_regions,covered
+                    graphic_regions=page_regions(session,cid,False)
                     # A library may be served on a port different from ingestion.
                     service = f"{base_url}/image/{canvas.manifest_id}/{canvas.scan_index}"
                     result["scan_image"] = {"iiif_service_id": service,
@@ -930,6 +1076,7 @@ def make_server(library: Path, host: str = "127.0.0.1", port: int = 8000):
                             "raw": l.raw_ocr,
                             "xywh": l.xywh,
                             "status": l.review_status,
+                            "graphic_role": covered([l.x,l.y,l.w,l.h],graphic_regions),
                         }
                         for l in session.scalars(
                             select(AltoLine).join(AltoBlock, AltoBlock.id == AltoLine.block_id)
@@ -1330,7 +1477,9 @@ def make_server(library: Path, host: str = "127.0.0.1", port: int = 8000):
                             }
                         )
                     image_path = Path(canvas.image_storage_path).resolve()
-                    if not image_path.is_relative_to(library):
+                    allowed_roots=[library]
+                    if source_library is not None:allowed_roots.append(Path(source_library).resolve())
+                    if not any(image_path.is_relative_to(root) for root in allowed_roots):
                         raise LookupError()
                     from PIL import Image
 
@@ -1376,7 +1525,8 @@ def make_server(library: Path, host: str = "127.0.0.1", port: int = 8000):
             raise LookupError()
 
         def do_POST(self):
-            if urlparse(self.path).path != "/api/review":
+            post_path=urlparse(self.path).path
+            if post_path not in {"/api/review","/api/graphic_review"}:
                 return self.send({"error": "Not found"}, 404)
             origin = self.headers.get("Origin")
             if origin and origin != base_url.removesuffix("/iiif"):
@@ -1388,6 +1538,13 @@ def make_server(library: Path, host: str = "127.0.0.1", port: int = 8000):
                 if not 0 < length <= 100000:
                     raise ValueError("Invalid body length")
                 body = json.loads(self.rfile.read(length))
+                if post_path=="/api/graphic_review":
+                    from src.graphics.service import review_graphic,undo_review
+                    with get_session(engine) as session:
+                        if body.pop('undo',False):result=undo_review(session,**body)
+                        else:result=review_graphic(session,**body)
+                    invalidate_index()
+                    return self.send(result)
                 from src.review import resolve_review
 
                 with get_session(engine) as session:

@@ -220,7 +220,74 @@
     .toc-row.lvl-1 { font-weight: 700; color: #1d3f35; margin-top: 4px; background: #f8fbf9; }
     .toc-row.lvl-2 { padding-left: 14px; font-weight: 600; }
     .toc-row.lvl-3 { padding-left: 24px; color: #435851; }
-    .toc-row.lvl-4, .toc-row.lvl-5, .toc-row.lvl-6 { padding-left: 32px; font-size: 12px; color: #5b7068; }
+    .toc-row.lvl-4, .toc-row.lvl-5 { padding-left: 30px; font-size: 12px; color: #5b7068; }
+
+    .toc-row.lvl-6 {
+      padding-left: 36px;
+      font-size: 11.5px;
+      color: #385249;
+      border-left: 2px solid #ccd8d2;
+      margin-left: 10px;
+    }
+    .toc-row.lvl-6:hover {
+      border-left-color: var(--green);
+      background: var(--green-light);
+    }
+    .gal-fig-item {
+      border-bottom: 1px dashed #e8efe9;
+      padding: 2px 0;
+    }
+    .gal-fig-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 5px 6px;
+      border-radius: 3px;
+      cursor: pointer;
+      font-size: 11.5px;
+      color: #314a42;
+      gap: 6px;
+    }
+    .gal-fig-row:hover { background: #eef6f1; color: var(--green-dark); }
+    .gal-fig-row.active { background: #e3efe9; font-weight: 600; }
+    .gal-art-list {
+      padding: 2px 0 4px 14px;
+      display: none;
+      border-left: 2px solid #bcd1c7;
+      margin-left: 8px;
+    }
+    .gal-art-leaf {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 3px 6px;
+      border-radius: 3px;
+      font-size: 11px;
+      color: #2e443c;
+      cursor: pointer;
+      gap: 6px;
+    }
+    .gal-art-leaf:hover { background: var(--green-light); color: var(--green-dark); }
+    .gal-art-leaf .art-leaf-name {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      flex: 1;
+    }
+    .gal-art-leaf .art-leaf-btn {
+      font-size: 10px;
+      padding: 1px 5px;
+      border-radius: 3px;
+      border: 1px solid #c9d8d0;
+      background: #fff;
+      color: var(--green);
+      flex-shrink: 0;
+    }
+    .gal-art-leaf .art-leaf-btn:hover {
+      background: var(--green);
+      color: #fff;
+    }
+
     .toc-pnum { font-size: 11px; color: #7a8c85; flex-shrink: 0; }
 
     /* Unit Grid in Sidebar */
@@ -1209,10 +1276,10 @@
         <div id="sideTocPane" style="display:flex; flex-direction:column; flex:1; overflow:hidden;">
           <div class="sidebar-filter">
             <input id="tocFilterInput" placeholder="过滤章节或图版名 (如: 地层、青白釉)…" style="flex:1; font-size:12px;">
-            <select id="tocLevelSelect" style="font-size:12px; width:82px;" title="目录深度">
-              <option value="2">大纲</option>
-              <option value="3" selected>章节</option>
-              <option value="6">细目</option>
+            <select id="tocLevelSelect" style="font-size:12px; width:112px;" title="目录深度">
+              <option value="6" selected>细目 (到器物名称)</option>
+              <option value="3">中级章节</option>
+              <option value="2">主干大纲</option>
             </select>
           </div>
           <div id="tocAccordionList" class="sidebar-scroll"></div>
@@ -1627,12 +1694,13 @@
         let body = document.createElement('div');
         body.className = 'vol-acc-body';
 
-        for (let item of items.slice(0, 180)) {
+        for (let item of items) {
           let row = document.createElement('div');
           row.className = `toc-row lvl-${item.level}`;
           let pStr = item.printed_page ? `p.${item.printed_page}` : (item.scan_index ? `#${item.scan_index}` : '');
-          row.innerHTML = `<span>${item.title}</span><span class="toc-pnum">${pStr}</span>`;
-          row.onclick = () => jumpToPage(item.manifest_id, item.canvas_id, item.scan_index, item.xywh, 'text');
+          let icon = item.level === 6 ? '<span style="margin-right:4px;">🏺</span>' : '';
+          row.innerHTML = `<span style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap; flex:1;" title="${item.title}">${icon}${item.title}</span><span class="toc-pnum">${pStr}</span>`;
+          row.onclick = () => jumpToPage(item.manifest_id, item.canvas_id, item.scan_index, item.xywh, item.level === 6 ? 'figure' : 'text');
           body.appendChild(row);
         }
 
@@ -2076,8 +2144,13 @@
         if (q) {
           groups = groups.filter(g => {
             let gName = g.group || g.name || '';
-            return gName.toLowerCase().includes(q) ||
-              (g.items || []).some(it => ((it.title || it.figure_number || '') + ' ' + (it.caption || '')).toLowerCase().includes(q));
+            let gMatch = gName.toLowerCase().includes(q);
+            let itMatch = (g.items || []).some(it => {
+              let itT = ((it.title || it.figure_number || '') + ' ' + (it.caption || '')).toLowerCase();
+              if (itT.includes(q)) return true;
+              return (it.artifacts || it.sub_figures || []).some(a => ((a.title || '') + ' ' + (a.caption || '')).toLowerCase().includes(q));
+            });
+            return gMatch || itMatch;
           });
         }
         if (!groups.length) continue;
@@ -2089,7 +2162,7 @@
         head.className = 'vol-acc-head';
         head.innerHTML = `
           <span>📚 ${vol.short_title}</span>
-          <span style="font-size:11px; color:#526b62;">${vol.total_figures}幅 / ${vol.total_sub_figures}切片 ▾</span>
+          <span style="font-size:11px; color:#526b62;">${vol.total_figures}幅 / ${vol.total_sub_figures}件器物 ▾</span>
         `;
 
         let body = document.createElement('div');
@@ -2098,7 +2171,7 @@
         // All in volume row
         let allRow = document.createElement('div');
         allRow.className = 'gal-group-row' + ($('galleryDocFilter').value === vol.manifest_id && !galleryActiveGroup ? ' active' : '');
-        allRow.innerHTML = `<span>📖 浏览${vol.short_title}全部图版</span><span class="gal-group-cnt">${vol.total_figures}</span>`;
+        allRow.innerHTML = `<span>📖 浏览${vol.short_title}全部 (${vol.total_figures}幅图版)</span><span class="gal-group-cnt">${vol.total_sub_figures}件</span>`;
         allRow.onclick = () => {
           $('galleryDocFilter').value = vol.manifest_id;
           $('galleryTypeFilter').value = 'all';
@@ -2119,7 +2192,7 @@
           gRow.className = 'gal-group-row' + (isGroupActive ? ' active' : '');
           gRow.innerHTML = `
             <span style="flex:1;"><span class="exp-arrow" style="display:inline-block; width:14px;">▸</span>${gName}</span>
-            <span class="gal-group-cnt">${g.count}幅</span>
+            <span class="gal-group-cnt" title="${g.count}幅图版，共${g.sub_count || g.count}件器物">${g.count}幅 (${g.sub_count || g.count}件)</span>
           `;
 
           let subList = document.createElement('div');
@@ -2128,19 +2201,70 @@
 
           for (let it of (g.items || [])) {
             let itTitle = it.title || it.figure_number || '';
-            if (q && !(itTitle + ' ' + (it.caption || '')).toLowerCase().includes(q) && !gName.toLowerCase().includes(q)) continue;
-            let sItem = document.createElement('div');
-            sItem.className = 'gal-subitem';
+            let arts = it.artifacts || it.sub_figures || [];
+            if (q && !itTitle.toLowerCase().includes(q) && !(it.caption || '').toLowerCase().includes(q) && !gName.toLowerCase().includes(q)) {
+              if (!arts.some(a => ((a.title || '') + ' ' + (a.caption || '')).toLowerCase().includes(q))) {
+                continue;
+              }
+            }
+            let figBox = document.createElement('div');
+            figBox.className = 'gal-fig-item';
+
+            let figRow = document.createElement('div');
+            figRow.className = 'gal-fig-row';
             let pLabel = it.printed_page ? `p.${it.printed_page}` : `#${it.scan_index}`;
-            sItem.innerHTML = `
-              <span style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap; flex:1;" title="${itTitle} ${it.caption || ''}">${itTitle}</span>
-              <span style="color:#7c8f88; flex-shrink:0;">${pLabel}</span>
+            let hasMultiArts = arts.length > 0;
+            let artCntBadge = arts.length > 0 ? `<span style="font-size:10px; color:#5b786f; margin-left:4px;">(${arts.length}件器物)</span>` : '';
+            let arrow = hasMultiArts ? '<span class="fig-arrow" style="display:inline-block; width:12px; font-size:10px;">▸</span>' : '';
+
+            figRow.innerHTML = `
+              <span style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap; flex:1;" title="${itTitle} ${it.caption || ''}">${arrow}${itTitle}${artCntBadge}</span>
+              <span style="color:#7c8f88; flex-shrink:0; font-size:10.5px;">${pLabel}</span>
             `;
-            sItem.onclick = e => {
-              e.stopPropagation();
+
+            let artList = document.createElement('div');
+            artList.className = 'gal-art-list';
+            if (q && arts.some(a => ((a.title || '') + ' ' + (a.caption || '')).toLowerCase().includes(q))) {
+              artList.style.display = 'block';
+            }
+
+            for (let art of arts) {
+              let aTitle = art.caption || art.title || '';
+              if (q && !aTitle.toLowerCase().includes(q) && !itTitle.toLowerCase().includes(q) && !gName.toLowerCase().includes(q)) {
+                continue;
+              }
+              let aLeaf = document.createElement('div');
+              aLeaf.className = 'gal-art-leaf';
+              let isSubPlate = it.category === 'sub_plate' || (art.image_url && art.image_url.includes('/api/crop/'));
+              let artIcon = isSubPlate ? '🏺' : '📐';
+              aLeaf.innerHTML = `
+                <span class="art-leaf-name" title="${aTitle}"><span style="margin-right:4px;">${artIcon}</span>${aTitle}</span>
+                <button class="art-leaf-btn" title="加入比对槽">+对比</button>
+              `;
+              aLeaf.onclick = (e) => {
+                e.stopPropagation();
+                if (e.target.closest('.art-leaf-btn')) {
+                  addToCompare({ ...art, short_title: vol.short_title }, true);
+                  return;
+                }
+                openFigureModal({ ...art, short_title: vol.short_title }, vol.short_title);
+              };
+              artList.appendChild(aLeaf);
+            }
+
+            figRow.onclick = (e) => {
+              if (hasMultiArts) {
+                let isOpen = artList.style.display === 'block';
+                artList.style.display = isOpen ? 'none' : 'block';
+                let arrowEl = figRow.querySelector('.fig-arrow');
+                if (arrowEl) arrowEl.textContent = isOpen ? '▸' : '▾';
+              }
               openFigureModal(it, vol.short_title);
             };
-            subList.appendChild(sItem);
+
+            figBox.appendChild(figRow);
+            if (hasMultiArts) figBox.appendChild(artList);
+            subList.appendChild(figBox);
           }
 
           gRow.onclick = () => {
@@ -2903,7 +3027,7 @@
       let pane = $('readerTocPane');
       pane.replaceChildren();
       let docId = $('documents').value;
-      let items = allToc.filter(t => t.manifest_id === docId && t.level <= 3);
+      let items = allToc.filter(t => t.manifest_id === docId);
       if (!items.length) {
         pane.innerHTML = '<div class="empty">正在加载本卷目录…</div>';
         return;
@@ -2912,10 +3036,11 @@
         let row = document.createElement('div');
         row.className = `toc-row lvl-${item.level}`;
         let pStr = item.printed_page ? `p.${item.printed_page}` : `#${item.scan_index}`;
-        row.innerHTML = `<span>${item.title}</span><span class="toc-pnum">${pStr}</span>`;
+        let icon = item.level === 6 ? '<span style="margin-right:4px;">🏺</span>' : '';
+        row.innerHTML = `<span style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap; flex:1;" title="${item.title}">${icon}${item.title}</span><span class="toc-pnum">${pStr}</span>`;
         row.onclick = () => {
           let idx = pages.findIndex(p => p.id === item.canvas_id || p.scan_index === item.scan_index);
-          showPage(idx >= 0 ? idx : 0, item.xywh, 'text');
+          showPage(idx >= 0 ? idx : 0, item.xywh, item.level === 6 ? 'figure' : 'text');
         };
         pane.appendChild(row);
       }
@@ -2944,6 +3069,88 @@
       for (let [k, v] of Object.entries({ x, y, width: w, height: h })) rect.setAttribute(k, v);
       rect.setAttribute('class', type === 'figure' ? 'highlight-figure' : 'highlight-text');
       $('overlay').append(rect);
+    }
+
+    async function openGraphic(id) {
+      let detail = await request('/api/graphics?id=' + encodeURIComponent(id));
+      let old = document.getElementById('graphicDialog'); if (old) old.remove();
+      let dialog = document.createElement('dialog'); dialog.id = 'graphicDialog';
+      dialog.style.cssText = 'width:92vw;max-width:1400px;height:88vh;padding:18px;overflow:auto';
+      let heading = document.createElement('h3');
+      heading.textContent = (detail.label || '图表') + ' · ' + detail.title + (detail.published ? '' : '（试验候选，未发布）');
+      dialog.append(heading);
+      let controls = document.createElement('div'); controls.style.cssText='display:flex;gap:8px;flex-wrap:wrap'; dialog.append(controls);
+      let stage = document.createElement('div'); stage.style.cssText='height:58vh;overflow:auto;margin:12px 0'; dialog.append(stage);
+      let selectedCell = null, joins = [];
+      let status = document.createElement('p'); dialog.append(status);
+      function button(label, callback, parent=controls) {
+        let b=document.createElement('button'); b.textContent=label;
+        b.onclick=async()=>{try{await callback();}catch(e){status.textContent=e.message;}};
+        parent.append(b);return b;
+      }
+      async function source(anchor) {
+        let p=anchor.polygon, xs=p.map(v=>v[0]),ys=p.map(v=>v[1]);
+        let x=Math.min(...xs),y=Math.min(...ys),w=Math.max(...xs)-x,h=Math.max(...ys)-y;
+        dialog.close();dialog.remove();
+        await jumpToPage(detail.manifest_id,anchor.canvas_id,anchor.scan_index,[x,y,w,h].join(','),'text');
+      }
+      function wholeImages() {
+        stage.replaceChildren();
+        let images = detail.composite_url ? [detail.composite_url] : detail.fragments.map(p=>p.image_url);
+        for(let url of images){let image=document.createElement('img');image.src=url;image.style.cssText='max-width:100%;display:block;margin-bottom:12px';stage.append(image);}
+        if(!detail.composite_url && images.length>1){let p=document.createElement('p');p.textContent='同一逻辑图表的多个原始片段；尚未进行图像配准拼接。';stage.prepend(p);}
+      }
+      button('整图／原始片段',wholeImages);
+      button('结构化表格',()=>{
+        if(detail.category!=='table'){status.textContent='此对象保留整图与文字标注，不反推统计数值。';return;}
+        stage.replaceChildren();let frame=document.createElement('iframe');
+        frame.style.cssText='width:100%;height:100%;border:1px solid #ccc';frame.sandbox='allow-same-origin';
+        frame.src='/api/graphic_export?id='+encodeURIComponent(id)+'&format=html';
+        frame.onload=()=>{
+          for(let td of frame.contentDocument.querySelectorAll('[data-cell-id]')){
+            td.style.cursor='pointer';td.onclick=()=>{
+              selectedCell=detail.cells.find(c=>c.id===td.dataset.cellId);edit.value=selectedCell.text;
+              status.textContent='已选中单元格；原值：'+selectedCell.raw_text+'。可定位原页或填写依据后校对。';
+              for(let el of frame.contentDocument.querySelectorAll('td'))el.style.background='';td.style.background='#fff0b8';
+            };
+          }
+        };
+        stage.append(frame);
+      });
+      button('定位单元格原页',()=>{
+        if(selectedCell?.anchors?.length)return source(selectedCell.anchors[0]);
+        let p=detail.fragments[0];return source({canvas_id:p.canvas_id,scan_index:p.scan_index,polygon:p.polygon});
+      });
+      for(let format of ['json','html','xlsx']){
+        let link=document.createElement('a');link.textContent='导出 '+format.toUpperCase();link.href='/api/graphic_export?id='+encodeURIComponent(id)+'&format='+format;
+        link.target='_blank';controls.append(link);
+      }
+      let review=document.createElement('details');let summary=document.createElement('summary');summary.textContent='校对分类、单元格与跨页归组';review.append(summary);dialog.append(review);
+      function input(label){let l=document.createElement('label');l.textContent=label+' ';let field=document.createElement('input');l.append(field);review.append(l);return field;}
+      let actor=input('校对人'),note=input('原图依据'),edit=input('选中单元格的新值');
+      let actions=document.createElement('div');actions.style.cssText='display:flex;gap:6px;flex-wrap:wrap;margin:10px 0';review.append(actions);
+      async function apply(action,extra={}) {
+        await request('/api/graphic_review',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
+          object_id:id,expected_revision:detail.revision,actor:actor.value,note:note.value,action,...extra})});
+        dialog.close();dialog.remove();await openGraphic(id);
+      }
+      button('保存单元格',()=>{if(!selectedCell)throw Error('请先点击表格单元格');return apply('correct_cell',{cell_id:selectedCell.id,text:edit.value});},actions);
+      button('确认图表',()=>apply('approve'),actions);button('拒绝候选',()=>apply('reject'),actions);
+      let category=document.createElement('select');for(let [v,t] of [['table','数据表格'],['chart','统计图'],['figure','考古图件']])category.append(new Option(t,v));category.value=detail.category;actions.append(category);
+      button('保存分类',()=>apply('classify',{category:category.value}),actions);
+      let targets=document.createElement('select');targets.append(new Option('选择同报告归组目标',''));
+      for(let g of await request('/api/graphics?manifest='+encodeURIComponent(detail.manifest_id)))if(g.id!==id && g.run_id===detail.run_id)targets.append(new Option((g.label||g.category)+' '+g.title,g.id));
+      actions.append(targets);button('确认归组',()=>apply('group',{target_id:targets.value}),actions);
+      let parts=document.createElement('select');for(let p of detail.fragments)parts.append(new Option('物理页 '+p.scan_index+' 的片段',p.id));actions.append(parts);
+      button('拆出选中片段',()=>apply('split',{target_id:parts.value}),actions);
+      button('记录待连接单元格',()=>{if(!selectedCell)throw Error('请先选择单元格');if(!joins.includes(selectedCell.id))joins.push(selectedCell.id);status.textContent='已记录 '+joins.length+' 个来源单元格；只允许连接跨片段的同一列。';},actions);
+      button('确认跨页单元格连接',()=>apply('join_cells',{cell_ids:joins}),actions);
+      if(detail.revisions.length){button('撤销最近校对',async()=>{
+        await request('/api/graphic_review',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({undo:true,
+          object_id:id,revision_id:detail.revisions[0].id,expected_revision:detail.revision,actor:actor.value,note:note.value})});
+        dialog.close();dialog.remove();await openGraphic(id);
+      },actions);}
+      button('关闭',()=>{dialog.close();dialog.remove();});document.body.append(dialog);dialog.showModal();wholeImages();
     }
 
     async function showPage(index, xywh = null, type = 'text') {
@@ -3027,12 +3234,21 @@
       // Render Text Lines
       $('lines').replaceChildren();
       $('lines').className = '';
+      if ((bundle.graphics || []).length) {
+        let heading=document.createElement('h4');heading.textContent='本页图表';$('lines').append(heading);
+        for(let graphic of bundle.graphics){let b=document.createElement('button');
+          b.textContent=(graphic.label||graphic.category)+' · '+(graphic.published?'已发布':'候选')+' · 查看整图与结构';
+          b.onclick=()=>openGraphic(graphic.id).catch(e=>notice(e.message));$('lines').append(b);}
+      }
+      let graphicRaw=document.createElement('details');
+      let graphicRawTitle=document.createElement('summary');graphicRawTitle.textContent='图表区域原始OCR（保留来源，不按正文解释）';graphicRaw.append(graphicRawTitle);
+      if(bundle.lines.some(l=>l.graphic_role))$('lines').append(graphicRaw);
       for (let line of bundle.lines) {
         let el = document.createElement('div');
         el.className = 'line';
         el.id = 'source-line-' + line.id;
         let cursor = 0;
-        let refs = (bundle.footnote_references || []).filter(r => r.line_id === line.id && r.status !== 'stale').sort((a,b) => a.start-b.start);
+        let refs = (bundle.footnote_references || []).filter(r => !line.graphic_role && r.line_id === line.id && r.status !== 'stale').sort((a,b) => a.start-b.start);
         for (let ref of refs) {
           if (ref.start < cursor || line.text.slice(ref.start,ref.end) !== ref.marker) continue;
           el.append(document.createTextNode(line.text.slice(cursor,ref.start)));
@@ -3057,7 +3273,7 @@
           el.classList.add('selected');
           highlight(line.xywh, 'text');
         };
-        $('lines').appendChild(el);
+        (line.graphic_role ? graphicRaw : $('lines')).appendChild(el);
       }
       if (!bundle.lines.length) {
         $('lines').innerHTML = '<p class="empty">本页未提取到文字。</p>';
